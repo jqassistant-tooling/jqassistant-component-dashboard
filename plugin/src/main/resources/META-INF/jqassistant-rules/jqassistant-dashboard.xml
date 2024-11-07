@@ -1,0 +1,69 @@
+<jqassistant-rules xmlns="http://schema.jqassistant.org/rule/v2.2"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://schema.jqassistant.org/rule/v2.2 https://jqassistant.github.io/jqassistant/current/schema/jqassistant-rule-v2.2.xsd">
+
+    <group id="jqassistant-dashboard">
+        <includeConcept refId="jqassistant-dashboard:*"/>
+    </group>
+
+    <concept id="jqassistant-dashboard:ComponentVersion">
+        <description>Report components and their versions.</description>
+        <cypher><![CDATA[
+            MATCH
+              (component:Dashboard:Component)-[:HAS_VERSION]->(version:Dashboard:Version)
+            RETURN
+              component as Component, version as Version
+            ORDER BY
+              component.id, component.name, version.version
+        ]]></cypher>
+    </concept>
+
+    <concept id="jqassistant-dashboard:ComponentVersionContainsFile">
+        <requiresConcept refId="jqassistant-dashboard:ComponentVersion"/>
+        <description>Report files contained per component version.</description>
+        <cypher><![CDATA[
+            MATCH
+              (component:Dashboard:Component)-[:HAS_VERSION]->(version:Dashboard:Version)-[:CONTAINS_FILE]->(file:File)
+            RETURN
+              component as Component, version as Version, file as File
+            ORDER BY
+              component.id, version.version, file.fileName
+        ]]></cypher>
+    </concept>
+
+    <concept id="jqassistant-dashboard:FileProvidesCapability">
+        <requiresConcept refId="jqassistant-dashboard:ComponentVersionContainsFile"/>
+        <description>Report capabilities provided by files of a component version.</description>
+        <cypher><![CDATA[
+            MATCH
+              (component:Dashboard:Component)-[:HAS_VERSION]->(version:Dashboard:Version)-[:CONTAINS_FILE]->(file:File),
+              (file)-[:PROVIDES_CAPABILITY]->(capability:Dashboard:Capability)
+            RETURN
+              component as Component, version as Version, file as File, capability as Capability
+            ORDER BY
+              component.id, version.version, capability.type, capability.value
+        ]]></cypher>
+    </concept>
+
+    <concept id="jqassistant-dashboard:ComponentVersionProvidesCapability">
+        <requiresConcept refId="jqassistant-dashboard:FileProvidesCapability"/>
+        <description>Report capabilities provided by component versions.</description>
+        <cypher><![CDATA[
+            MATCH
+              (component:Dashboard:Component)-[:HAS_VERSION]->(version:Dashboard:Version)-[:CONTAINS_FILE]->(file:File),
+              (file)-[:PROVIDES_CAPABILITY]->(capability:Dashboard:Capability)
+            WITH
+              component, version, capability, count(file) as count
+            MERGE
+              (version)-[providesCapability:PROVIDES_CAPABILITY]->(capability)
+            SET
+              providesCapability.count = count
+            RETURN
+              component as Component, version as Version, capability as Capability, count as Count
+            ORDER BY
+              component.id, version.version, capability.type, capability.value
+        ]]></cypher>
+    </concept>
+
+</jqassistant-rules>
+

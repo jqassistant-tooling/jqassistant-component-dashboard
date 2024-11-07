@@ -1,0 +1,76 @@
+<jqassistant-rules xmlns="http://schema.jqassistant.org/rule/v2.2"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://schema.jqassistant.org/rule/v2.2 https://jqassistant.github.io/jqassistant/current/schema/jqassistant-rule-v2.2.xsd">
+
+    <concept id="jqassistant-plugin:MavenProjectImplementsComponentVersion">
+        <providesConcept refId="jqassistant-dashboard:ComponentVersion"/>
+        <providesConcept refId="jqassistant-dashboard:ComponentVersionContainsFile"/>
+        <description>Identify a jQAssistant plugin as component version containing files</description>
+        <cypher><![CDATA[
+            MATCH
+              (project:Maven:Project:File)-[:CREATES]->(artifact:Main:Artifact)-[:CONTAINS]->(:File:Xml{fileName:"/META-INF/jqassistant-plugin.xml"}),
+              (artifact)-[:CONTAINS]->(file:File)
+            MERGE
+              (component:Dashboard:Component{id: project.groupId + ":" + project.artifactId})
+            MERGE
+              (component)-[:HAS_VERSION]->(version:Dashboard:Version{version:project.version})
+            MERGE
+              (project)-[:IMPLEMENTS]->(version)
+            MERGE
+              (version)-[:CONTAINS_FILE]->(file)
+            RETURN
+              component as Component, version as Version
+            ORDER BY
+              component.id, component.version
+        ]]></cypher>
+    </concept>
+
+    <!-- jQAssistant Plugin -->
+
+    <concept id="jqassistant-plugin:PluginProvidesLabel">
+        <providesConcept refId="jqassistant-dashboard:FileProvidesCapability"/>
+        <requiresConcept refId="jqassistant-plugin:MavenProjectImplementsComponentVersion"/>
+        <cypher><![CDATA[
+            MATCH
+              (component:Dashboard:Component)-[:HAS_VERSION]->(version:Dashboard:Version)<-[:IMPLEMENTS]-(project:Maven:Project),
+              (project)-[:CREATES]->(:Main:Artifact)-[:CONTAINS]->(file:Java:Type:File)-[:EXTENDS|IMPLEMENTS*0..]->(interface:Interface)-[:ANNOTATED_BY]->(label)-[:OF_TYPE]->(:Type{fqn:"com.buschmais.xo.neo4j.api.annotation.Label"})
+            OPTIONAL MATCH
+              (label)-[:HAS]->(value:Value:Primitive{name:"value"})
+            WITH
+              component, version, project, file, coalesce(value.value, interface.name) as labelValue
+            MERGE
+              (capability:Dashboard:Capability{type:"Label", value:labelValue})
+            MERGE
+              (file)-[:PROVIDES_CAPABILITY]->(capability)
+            RETURN
+              component as Component, version as Version, file as File, capability as Capability
+            ORDER BY
+              component.id, version.version, capability.type, capability.value
+        ]]></cypher>
+    </concept>
+
+    <concept id="jqassistant-plugin:PluginProvidesRule">
+        <providesConcept refId="jqassistant-dashboard:FileProvidesCapability"/>
+        <requiresConcept refId="jqassistant-plugin:MavenProjectImplementsComponentVersion"/>
+        <cypher><![CDATA[
+            MATCH
+              (component:Dashboard:Component)-[:HAS_VERSION]->(version:Dashboard:Version)<-[:IMPLEMENTS]-(project:Maven:Project),
+              (project)-[:CREATES]->(:Main:Artifact)-[:CONTAINS]->(file:File:Xml)-[:HAS_ROOT_ELEMENT]->(root:Element{name:"jqassistant-rules"}),
+              (root)-[:HAS_ELEMENT]->(rule:Xml:Element)-[:HAS_ATTRIBUTE]->(id:Xml:Attribute{name:"id"})
+            WITH
+              component, version, project, file, case rule.name
+                when "concept" then "Concept"
+                when "constraint" then "Constraint"
+                when "group" then "Group"
+                else "unknown"
+              end as capabilityType, id.value as ruleId
+            MERGE
+              (file)-[:PROVIDES_CAPABILITY]->(capability:Dashboard:Capability{type:capabilityType, value:ruleId})
+            RETURN
+              component as Component, version as Version, file as File, capability as Capability
+            ORDER BY
+              component.id, version.version, capability.type, capability.value
+        ]]></cypher>
+    </concept>
+</jqassistant-rules>
+

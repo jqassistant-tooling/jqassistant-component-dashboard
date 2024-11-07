@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.jqassistant.tooling.common</groupId>
+        <artifactId>parent</artifactId>
+        <version>2.4.0-SNAPSHOT</version>
+    </parent>
+
+    <groupId>org.jqassistant.tooling.dashboard</groupId>
+    <artifactId>parent</artifactId>
+    <packaging>pom</packaging>
+    <version>1.0.0-SNAPSHOT</version>
+
+    <properties>
+        <jqassistant.analyze.rule.directory>plugin/src/main/resources/META-INF/jqassistant-rules</jqassistant.analyze.rule.directory>
+        <jqassistant.analyze.groups>jqassistant-tooling-maven:Default,jqassistant-dashboard</jqassistant.analyze.groups>
+    </properties>
+
+    <modules>
+        <module>plugin</module>
+    </modules>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>com.buschmais.jqassistant</groupId>
+                <artifactId>jqassistant-maven-plugin</artifactId>
+                <configuration>
+                    <yaml><![CDATA[
+                        jqassistant:
+                          scan:
+                            properties:
+                              xml.file.include: "*.xml"
+                    ]]></yaml>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

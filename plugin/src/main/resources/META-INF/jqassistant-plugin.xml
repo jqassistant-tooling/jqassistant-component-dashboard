@@ -1,0 +1,19 @@
+<jqassistant-plugin xmlns="http://schema.jqassistant.org/plugin/v2.4"
+                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                    xsi:schemaLocation="http://schema.jqassistant.org/plugin/v2.4 https://jqassistant.github.io/jqassistant/current/schema/jqassistant-plugin-v2.4.xsd"
+                    id="jqa.tooling.dashboard"
+                    name="jQAssistant Component Dashboard Plugin"
+                    version="${project.version}">
+    <description>
+        Provides model, rules and reports to gather component information for the jQAssistant Component dashboard.
+    </description>
+    <model>
+        <class>org.jqassistant.tooling.dashboard.plugin.api.model.Component</class>
+        <class>org.jqassistant.tooling.dashboard.plugin.api.model.Version</class>
+        <class>org.jqassistant.tooling.dashboard.plugin.api.model.Capability</class>
+    </model>
+    <rules>
+        <resource>jqassistant-dashboard.xml</resource>
+        <resource>jqassistant-plugin.xml</resource>
+    </rules>
+</jqassistant-plugin>
