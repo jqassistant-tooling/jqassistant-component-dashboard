@@ -16,4 +16,7 @@
         <resource>jqassistant-dashboard.xml</resource>
         <resource>jqassistant-plugin.xml</resource>
     </rules>
+    <report>
+        <class id="dashboard-publisher">org.jqassistant.tooling.dashboard.plugin.impl.DashboardPublisherPlugin</class>
+    </report>
 </jqassistant-plugin>

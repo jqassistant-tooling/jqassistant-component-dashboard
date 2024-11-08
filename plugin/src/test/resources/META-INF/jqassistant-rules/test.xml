@@ -1,0 +1,21 @@
+<jqassistant-rules xmlns="http://schema.jqassistant.org/rule/v2.2"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://schema.jqassistant.org/rule/v2.2 https://jqassistant.github.io/jqassistant/current/schema/jqassistant-rule-v2.2.xsd">
+
+    <group id="test">
+        <includeConcept refId="jqassistant-dashboard:*"/>
+    </group>
+
+    <concept id="test:Concept">
+        <description>Test Concept</description>
+        <cypher>
+        </cypher>
+    </concept>
+
+    <constraint id="test:Constraint">
+        <description>Test Constraint</description>
+        <cypher>
+        </cypher>
+    </constraint>
+</jqassistant-rules>
+

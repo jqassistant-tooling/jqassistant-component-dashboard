@@ -6,20 +6,7 @@
         <includeConcept refId="jqassistant-dashboard:*"/>
     </group>
 
-    <concept id="jqassistant-dashboard:ComponentVersion">
-        <description>Report components and their versions.</description>
-        <cypher><![CDATA[
-            MATCH
-              (component:Dashboard:Component)-[:HAS_VERSION]->(version:Dashboard:Version)
-            RETURN
-              component as Component, version as Version
-            ORDER BY
-              component.id, component.name, version.version
-        ]]></cypher>
-    </concept>
-
     <concept id="jqassistant-dashboard:ComponentVersionContainsFile">
-        <requiresConcept refId="jqassistant-dashboard:ComponentVersion"/>
         <description>Report files contained per component version.</description>
         <cypher><![CDATA[
             MATCH
@@ -43,6 +30,7 @@
             ORDER BY
               component.id, version.version, capability.type, capability.value
         ]]></cypher>
+        <report type="dashboard-publisher"/>
     </concept>
 
     <concept id="jqassistant-dashboard:ComponentVersionProvidesCapability">
