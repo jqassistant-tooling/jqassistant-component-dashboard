@@ -100,4 +100,17 @@ class PluginIT extends AbstractJavaPluginIT {
         assertThat(result.getRows()).hasSize(5);
         store.commitTransaction();
     }
+
+    @Test
+    void componentVersionReport() throws RuleException {
+        scanClasses(ARTIFACT_ID, TestLanguage.class, TestType.class);
+        scanClassPathResources(NONE, ARTIFACT_ID, "/META-INF/jqassistant-rules/test.xml");
+
+        Result<Concept> result = applyConcept("jqassistant-dashboard:ComponentVersionReport");
+
+        store.beginTransaction();
+        assertThat(result.getStatus()).isEqualTo(SUCCESS);
+        assertThat(result.getRows()).hasSize(1);
+        store.commitTransaction();
+    }
 }

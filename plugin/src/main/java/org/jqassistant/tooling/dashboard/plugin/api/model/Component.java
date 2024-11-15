@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.buschmais.xo.neo4j.api.annotation.Label;
 import com.buschmais.xo.neo4j.api.annotation.Relation;
+import com.buschmais.xo.neo4j.api.annotation.Relation.Outgoing;
 
 @Label
 public interface Component extends Dashboard, CapabilitiesTemplate {
@@ -12,8 +13,10 @@ public interface Component extends Dashboard, CapabilitiesTemplate {
 
     void setId(String id);
 
-    @Relation("HAS_VERSION")
+    @HasVersion
+    @Outgoing
     List<Version> getVersions();
 
-
+    @Relation("HAS_VERSION")
+    @interface HasVersion {}
 }

@@ -10,6 +10,7 @@
     <model>
         <class>org.jqassistant.tooling.dashboard.plugin.api.model.Component</class>
         <class>org.jqassistant.tooling.dashboard.plugin.api.model.Version</class>
+        <class>org.jqassistant.tooling.dashboard.plugin.api.model.File</class>
         <class>org.jqassistant.tooling.dashboard.plugin.api.model.Capability</class>
     </model>
     <rules>
@@ -17,6 +18,6 @@
         <resource>jqassistant-plugin.xml</resource>
     </rules>
     <report>
-        <class id="dashboard-publisher">org.jqassistant.tooling.dashboard.plugin.impl.DashboardPublisherPlugin</class>
+        <class id="dashboard-component-version-report">org.jqassistant.tooling.dashboard.plugin.impl.DashboardComponentVersionReportPlugin</class>
     </report>
 </jqassistant-plugin>

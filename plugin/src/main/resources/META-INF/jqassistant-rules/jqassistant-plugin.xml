@@ -18,6 +18,8 @@
               (artifact)-[:IMPLEMENTS]->(version)
             MERGE
               (version)-[:CONTAINS_FILE]->(file)
+            SET
+              file:Dashboard
             RETURN
               component as Component, version as Version, file as File
             ORDER BY
