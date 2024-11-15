@@ -15,7 +15,10 @@ public interface Component extends NameTemplate {
     @ContainsComponent
     Project getProject();
 
-    @Relation("HAS_VERSION")
+    @HasVersion
     List<Version> getVersions();
 
+    @Relation("HAS_VERSION")
+    @interface HasVersion {
+    }
 }
