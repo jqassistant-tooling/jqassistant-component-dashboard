@@ -14,6 +14,7 @@ import com.buschmais.xo.spring.XOAutoConfiguration;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
+import org.jqassistant.tooling.dashboard.service.application.CapabilityRepository;
 import org.jqassistant.tooling.dashboard.service.application.ComponentRepository;
 import org.jqassistant.tooling.dashboard.service.application.FileRepository;
 import org.jqassistant.tooling.dashboard.service.application.VersionRepository;
@@ -43,7 +44,8 @@ public class XOConfiguration {
                 Project.class, //
                 Component.class, XOComponentRepository.class, //
                 Version.class, XOVersionRepository.class, //
-                File.class, XOFileRepository.class))
+                File.class, XOFileRepository.class, //
+                Capability.class, XOCapabilityRepository.class))
             .build();
         this.xoManagerFactory = new XOManagerFactoryImpl(xoUnit);
     }
@@ -74,5 +76,11 @@ public class XOConfiguration {
     @RequestScope
     FileRepository fileRepository(XOManager xoManager) {
         return xoManager.getRepository(XOFileRepository.class);
+    }
+
+    @Bean
+    @RequestScope
+    CapabilityRepository capabilityRepository(XOManager xoManager) {
+        return xoManager.getRepository(XOCapabilityRepository.class);
     }
 }
