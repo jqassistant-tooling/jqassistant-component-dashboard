@@ -17,7 +17,7 @@ public abstract class CapabilityMapper {
 
     @ObjectFactory
     Capability create(CapabilityDTO capabilityDTO) {
-        return this.capabilityService.resolve(capabilityDTO.getType(), capabilityDTO.getType());
+        return this.capabilityService.resolve(capabilityDTO.getType(), capabilityDTO.getValue());
 
     }
 }

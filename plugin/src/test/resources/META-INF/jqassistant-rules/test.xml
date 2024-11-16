@@ -3,7 +3,12 @@
                    xsi:schemaLocation="http://schema.jqassistant.org/rule/v2.2 https://jqassistant.github.io/jqassistant/current/schema/jqassistant-rule-v2.2.xsd">
 
     <group id="test">
-        <includeConcept refId="jqassistant-dashboard:*"/>
+        <includeConcept refId="test:Concept"/>
+        <includeConstraint refId="test:Constraint"/>
+        <includeGroup refId="test:Group"/>
+    </group>
+
+    <group id="test:Group">
     </group>
 
     <concept id="test:Concept">
@@ -13,6 +18,7 @@
     </concept>
 
     <constraint id="test:Constraint">
+        <requiresConcept refId="test:Concept"/>
         <description>Test Constraint</description>
         <cypher>
         </cypher>
