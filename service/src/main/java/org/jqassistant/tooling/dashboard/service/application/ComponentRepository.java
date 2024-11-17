@@ -8,4 +8,8 @@ public interface ComponentRepository {
 
     Component resolve(String projectId, String componentId);
 
+    Iterable<Component> findAll(String nameFilter, int offset, int limit);
+
+    int countAll(String nameFilter);
+
 }

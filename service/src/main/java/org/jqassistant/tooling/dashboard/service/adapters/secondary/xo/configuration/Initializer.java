@@ -1,4 +1,4 @@
-package org.jqassistant.tooling.dashboard.service.adapters.secondary.xo;
+package org.jqassistant.tooling.dashboard.service.adapters.secondary.xo.configuration;
 
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;

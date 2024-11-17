@@ -23,4 +23,35 @@ public interface XOComponentRepository extends ComponentRepository {
     @Override
     Component resolve(@Parameter("projectId") String projectId, @Parameter("componentId") String componentId);
 
+    @ResultOf
+    @Cypher("""
+        MATCH
+          (component:Component)
+        WHERE
+          ($nameFilter is null or toLower(component.name) contains toLower($nameFilter))
+        WITH
+          component
+        ORDER BY
+          component.name
+        SKIP
+          $offset
+        RETURN
+          component
+        LIMIT
+          $limit
+        """)
+    @Override
+    Iterable<Component> findAll(@Parameter("nameFilter") String nameFilter, @Parameter("offset") int offset, @Parameter("limit") int limit);
+
+    @ResultOf
+    @Cypher("""
+        MATCH
+          (component:Component)
+        WHERE
+          ($nameFilter is null or toLower(component.name) contains toLower($nameFilter))
+        RETURN
+          count(component)
+        """)
+    @Override
+    int countAll(@Parameter("nameFilter") String nameFilter);
 }

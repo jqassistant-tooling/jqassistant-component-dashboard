@@ -1,4 +1,4 @@
-package org.jqassistant.tooling.dashboard.service.adapters.secondary.xo;
+package org.jqassistant.tooling.dashboard.service.adapters.secondary.xo.configuration;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -13,6 +13,10 @@ import com.buschmais.xo.spring.XOAutoConfiguration;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
+import org.jqassistant.tooling.dashboard.service.adapters.secondary.xo.XOCapabilityRepository;
+import org.jqassistant.tooling.dashboard.service.adapters.secondary.xo.XOComponentRepository;
+import org.jqassistant.tooling.dashboard.service.adapters.secondary.xo.XOFileRepository;
+import org.jqassistant.tooling.dashboard.service.adapters.secondary.xo.XOVersionRepository;
 import org.jqassistant.tooling.dashboard.service.application.model.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
