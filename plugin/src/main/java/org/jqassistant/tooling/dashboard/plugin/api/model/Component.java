@@ -18,5 +18,6 @@ public interface Component extends Dashboard, CapabilitiesTemplate {
     List<Version> getVersions();
 
     @Relation("HAS_VERSION")
-    @interface HasVersion {}
+    @interface HasVersion {
+    }
 }

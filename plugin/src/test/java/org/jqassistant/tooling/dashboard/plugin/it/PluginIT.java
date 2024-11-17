@@ -9,6 +9,7 @@ import com.buschmais.jqassistant.core.rule.api.model.Concept;
 import com.buschmais.jqassistant.core.rule.api.model.RuleException;
 import com.buschmais.jqassistant.plugin.java.api.model.JavaClassesDirectoryDescriptor;
 import com.buschmais.jqassistant.plugin.java.test.AbstractJavaPluginIT;
+import com.buschmais.jqassistant.plugin.maven3.api.model.MavenMainArtifactDescriptor;
 
 import org.jqassistant.tooling.dashboard.plugin.api.model.Capability;
 import org.jqassistant.tooling.dashboard.plugin.it.model.TestLanguage;
@@ -43,13 +44,14 @@ class PluginIT extends AbstractJavaPluginIT {
     }
 
     private void createPluginArtifact() {
-        JavaClassesDirectoryDescriptor artifact = store.create(JavaClassesDirectoryDescriptor.class);
-        artifact.setGroup(GROUP);
-        artifact.setName(NAME);
-        artifact.setVersion(VERSION);
-        artifact.setType(TYPE);
-        artifact.setFullQualifiedName(ARTIFACT_ID);
-        artifact.setFileName(FILENAME);
+        JavaClassesDirectoryDescriptor javaArtifact = store.create(JavaClassesDirectoryDescriptor.class);
+        MavenMainArtifactDescriptor mavenMainArtifact = store.addDescriptorType(javaArtifact, MavenMainArtifactDescriptor.class);
+        mavenMainArtifact.setGroup(GROUP);
+        mavenMainArtifact.setName(NAME);
+        mavenMainArtifact.setVersion(VERSION);
+        mavenMainArtifact.setType(TYPE);
+        mavenMainArtifact.setFullQualifiedName(ARTIFACT_ID);
+        mavenMainArtifact.setFileName(FILENAME);
         store.commitTransaction();
     }
 
@@ -143,7 +145,10 @@ class PluginIT extends AbstractJavaPluginIT {
 
         store.beginTransaction();
         assertThat(result.getStatus()).isEqualTo(SUCCESS);
-        assertThat(result.getRows()).hasSize(1);
+        assertThat(result.getRows()).hasSize(3);
+        assertThat(getCapabilities(result.getRows())).haveExactly(1, capability("Concept", "test:Concept"));
+        assertThat(getCapabilities(result.getRows())).haveExactly(1, capability("Constraint", "test:Constraint"));
+        assertThat(getCapabilities(result.getRows())).haveExactly(1, capability("Group", "test:Group"));
         store.commitTransaction();
     }
 

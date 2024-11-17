@@ -8,6 +8,8 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.*;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 
+import static org.jqassistant.tooling.dashboard.service.Application.Metadata.APPLICATION_NAME_SHORT;
+
 @RoutePrefix("ui")
 @Route("login")
 @PageTitle("Login")
@@ -26,14 +28,13 @@ public class LoginView extends VerticalLayout implements BeforeEnterObserver {
         setJustifyContentMode(JustifyContentMode.CENTER);
         setAlignItems(Alignment.CENTER);
 
-//        login.setAction("login");
         login.addLoginListener(event -> {
             System.out.println("Login event: " + event);
             UI.getCurrent()
                 .navigate(target, routeParameters);
         });
 
-        add(new H1("jQAssistant Dashboard"), login);
+        add(new H1(APPLICATION_NAME_SHORT), login);
     }
 
     public void setRouteParameters(Class<Component> target, RouteParameters routeParameters) {

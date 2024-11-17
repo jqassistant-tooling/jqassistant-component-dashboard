@@ -87,6 +87,11 @@
             <artifactId>java</artifactId>
             <type>test-jar</type>
         </dependency>
+        <dependency>
+            <groupId>com.buschmais.jqassistant.plugin</groupId>
+            <artifactId>maven3</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
 </project>

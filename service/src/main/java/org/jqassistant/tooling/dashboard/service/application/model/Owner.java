@@ -12,6 +12,7 @@ public interface Owner extends NameTemplate {
     List<Project> getProjects();
 
     @Relation("OWNS_PROJECT")
-    @interface OwnsProject {}
+    @interface OwnsProject {
+    }
 
 }

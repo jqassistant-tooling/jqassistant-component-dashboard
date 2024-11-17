@@ -5,7 +5,6 @@ import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Properties;
 
-import com.buschmais.xo.api.XOManager;
 import com.buschmais.xo.api.XOManagerFactory;
 import com.buschmais.xo.api.bootstrap.XOUnit;
 import com.buschmais.xo.impl.XOManagerFactoryImpl;
@@ -14,15 +13,10 @@ import com.buschmais.xo.spring.XOAutoConfiguration;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
-import org.jqassistant.tooling.dashboard.service.application.CapabilityRepository;
-import org.jqassistant.tooling.dashboard.service.application.ComponentRepository;
-import org.jqassistant.tooling.dashboard.service.application.FileRepository;
-import org.jqassistant.tooling.dashboard.service.application.VersionRepository;
 import org.jqassistant.tooling.dashboard.service.application.model.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.context.annotation.RequestScope;
 
 @Configuration
 @ComponentScan(basePackageClasses = { XOConfiguration.class, XOAutoConfiguration.class })
@@ -58,29 +52,5 @@ public class XOConfiguration {
     @Bean
     public XOManagerFactory getXOManagerFactory() {
         return xoManagerFactory;
-    }
-
-    @Bean
-    @RequestScope
-    ComponentRepository componentRepository(XOManager xoManager) {
-        return xoManager.getRepository(XOComponentRepository.class);
-    }
-
-    @Bean
-    @RequestScope
-    VersionRepository versionRepository(XOManager xoManager) {
-        return xoManager.getRepository(XOVersionRepository.class);
-    }
-
-    @Bean
-    @RequestScope
-    FileRepository fileRepository(XOManager xoManager) {
-        return xoManager.getRepository(XOFileRepository.class);
-    }
-
-    @Bean
-    @RequestScope
-    CapabilityRepository capabilityRepository(XOManager xoManager) {
-        return xoManager.getRepository(XOCapabilityRepository.class);
     }
 }

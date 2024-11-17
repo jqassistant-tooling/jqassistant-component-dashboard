@@ -16,6 +16,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 
+import static org.jqassistant.tooling.dashboard.service.Application.Metadata.APPLICATION_NAME_SHORT;
+
 @RequiredArgsConstructor
 public class DashboardLayout extends AppLayout implements BeforeEnterObserver {
 
@@ -24,7 +26,7 @@ public class DashboardLayout extends AppLayout implements BeforeEnterObserver {
 
     @PostConstruct
     void init() {
-        H1 logo = new H1("jQAssistant Dashboard");
+        H1 logo = new H1(APPLICATION_NAME_SHORT);
         logo.addClassName("logo");
         HorizontalLayout header;
         if (getAuthenticatedUser() != null) {
@@ -43,8 +45,9 @@ public class DashboardLayout extends AppLayout implements BeforeEnterObserver {
     private void login() {
 
         getUI().ifPresent(ui -> {
-            ui.navigate(LoginView.class).ifPresent(loginView -> loginView.setRouteParameters(target, routeParameters));
-        } );
+            ui.navigate(LoginView.class)
+                .ifPresent(loginView -> loginView.setRouteParameters(target, routeParameters));
+        });
     }
 
     private void logout() {
