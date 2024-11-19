@@ -1,5 +1,7 @@
 package org.jqassistant.tooling.dashboard.service.adapters.secondary.xo;
 
+import java.util.stream.Stream;
+
 import com.buschmais.xo.api.XOManager;
 
 import org.jqassistant.tooling.dashboard.service.application.ComponentRepository;
@@ -18,8 +20,8 @@ public class ComponentRepositoryImpl extends AbstractXORepository<XOComponentRep
     }
 
     @Override
-    public Iterable<Component> findAll(String nameFilter, int offset, int limit) {
-        return getXORepository().findAll(nameFilter, offset, limit);
+    public Stream<Component> findAll(String nameFilter, int offset, int limit) {
+        return toStream(getXORepository().findAll(nameFilter, offset, limit)).map(co -> co);
     }
 
     @Override

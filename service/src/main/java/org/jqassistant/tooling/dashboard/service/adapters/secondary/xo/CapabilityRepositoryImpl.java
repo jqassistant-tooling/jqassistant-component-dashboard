@@ -1,14 +1,15 @@
 package org.jqassistant.tooling.dashboard.service.adapters.secondary.xo;
 
 import java.util.List;
-import java.util.stream.StreamSupport;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 import com.buschmais.xo.api.Query;
-import com.buschmais.xo.api.ResultIterable;
 import com.buschmais.xo.api.XOManager;
 
 import org.jqassistant.tooling.dashboard.service.application.CapabilityRepository;
 import org.jqassistant.tooling.dashboard.service.application.model.Capability;
+import org.jqassistant.tooling.dashboard.service.application.model.CapabilityFilter;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -24,8 +25,16 @@ public class CapabilityRepositoryImpl extends AbstractXORepository<XOCapabilityR
     }
 
     @Override
-    public ResultIterable<Capability> findAll(String typeFilter, String valueFilter, int offset, int limit) {
-        return getXORepository().findAll(typeFilter, valueFilter, offset, limit);
+    public Stream<CapabilitySummary> findAll(Optional<CapabilityFilter> filter, int offset, int limit) {
+        Query.Result<? extends CapabilityRepository.CapabilitySummary> result = xoManager.createQuery(XOCapabilityRepository.CapabilitySummary.class)
+            .withParameter("typeFilter", filter.map(f -> f.getTypeFilter())
+                .orElse(null))
+            .withParameter("valueFilter", filter.map(f -> f.getValueFilter())
+                .orElse(null))
+            .withParameter("offset", offset)
+            .withParameter("limit", limit)
+            .execute();
+        return toStream(result).map(summary -> summary);
     }
 
     @Override
@@ -37,8 +46,7 @@ public class CapabilityRepositoryImpl extends AbstractXORepository<XOCapabilityR
     public List<String> getTypes() {
         Query.Result<XOCapabilityRepository.Types> result = xoManager.createQuery(XOCapabilityRepository.Types.class)
             .execute();
-        return StreamSupport.stream(result.spliterator(), false)
-            .map(XOCapabilityRepository.Types::getType)
+        return toStream(result).map(XOCapabilityRepository.Types::getType)
             .toList();
     }
 }

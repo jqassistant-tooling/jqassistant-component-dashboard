@@ -1,5 +1,6 @@
 package org.jqassistant.tooling.dashboard.service.adapters.secondary.xo;
 
+import com.buschmais.xo.api.ResultIterable;
 import com.buschmais.xo.api.annotation.Repository;
 import com.buschmais.xo.api.annotation.ResultOf;
 import com.buschmais.xo.api.annotation.ResultOf.Parameter;
@@ -38,7 +39,7 @@ public interface XOComponentRepository {
         LIMIT
           $limit
         """)
-    Iterable<Component> findAll(@Parameter("nameFilter") String nameFilter, @Parameter("offset") int offset, @Parameter("limit") int limit);
+    ResultIterable<Component> findAll(@Parameter("nameFilter") String nameFilter, @Parameter("offset") int offset, @Parameter("limit") int limit);
 
     @ResultOf
     @Cypher("""

@@ -2,6 +2,7 @@ package org.jqassistant.tooling.dashboard.service.application;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import lombok.RequiredArgsConstructor;
 import org.jqassistant.tooling.dashboard.service.application.model.Capability;
@@ -20,10 +21,8 @@ public class CapabilityService {
         return capabilityRepository.resolve(type, value);
     }
 
-    public Iterable<Capability> findAll(Optional<CapabilityFilter> filter, int offset, int limit) {
-        return capabilityRepository.findAll(filter.map(CapabilityFilter::getTypeFilter)
-            .orElse(null), filter.map(CapabilityFilter::getValueFilter)
-            .orElse(null), offset, limit);
+    public Stream<CapabilityRepository.CapabilitySummary> findAll(Optional<CapabilityFilter> filter, int offset, int limit) {
+        return capabilityRepository.findAll(filter, offset, limit);
     }
 
     public int countAll(Optional<CapabilityFilter> filter) {

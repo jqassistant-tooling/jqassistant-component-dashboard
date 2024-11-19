@@ -16,5 +16,4 @@ public interface Capability {
     String getDescription();
 
     void setDescription(String description);
-
 }

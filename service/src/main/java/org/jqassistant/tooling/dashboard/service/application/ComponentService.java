@@ -1,6 +1,7 @@
 package org.jqassistant.tooling.dashboard.service.application;
 
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import lombok.RequiredArgsConstructor;
 import org.jqassistant.tooling.dashboard.service.application.model.Component;
@@ -19,7 +20,7 @@ public class ComponentService {
         return componentRepository.resolve(projectId, componentId);
     }
 
-    public Iterable<Component> findAll(Optional<ComponentFilter> filter, int offset, int limit) {
+    public Stream<Component> findAll(Optional<ComponentFilter> filter, int offset, int limit) {
         return componentRepository.findAll(filter.map(ComponentFilter::getNameFilter)
             .orElse(null), offset, limit);
     }
