@@ -6,11 +6,10 @@ import com.buschmais.xo.api.annotation.ResultOf;
 import com.buschmais.xo.api.annotation.ResultOf.Parameter;
 import com.buschmais.xo.neo4j.api.annotation.Cypher;
 
-import org.jqassistant.tooling.dashboard.service.application.CapabilityRepository;
 import org.jqassistant.tooling.dashboard.service.application.model.Capability;
 
 @Repository
-public interface XOCapabilityRepository extends CapabilityRepository {
+public interface XOCapabilityRepository {
 
     @ResultOf
     @Cypher("""
@@ -19,7 +18,6 @@ public interface XOCapabilityRepository extends CapabilityRepository {
         RETURN
           capability
         """)
-    @Override
     Capability resolve(@Parameter("type") String type, @Parameter("value") String value);
 
     @ResultOf
@@ -40,7 +38,6 @@ public interface XOCapabilityRepository extends CapabilityRepository {
         LIMIT
           $limit
         """)
-    @Override
     ResultIterable<Capability> findAll(@Parameter("typeFilter") String typeFilter, @Parameter("valueFilter") String valueFilter,
         @Parameter("offset") int offset, @Parameter("limit") int limit);
 
@@ -54,6 +51,18 @@ public interface XOCapabilityRepository extends CapabilityRepository {
         RETURN
           count(capability)
         """)
-    @Override
     int countAll(@Parameter("typeFilter") String typeFilter, @Parameter("valueFilter") String valueFilter);
+
+    @Cypher("""
+        MATCH
+          (capability:Capability)
+        RETURN
+          distinct capability.type as type
+        ORDER BY
+          type
+        """)
+    interface Types {
+        String getType();
+    }
+
 }

@@ -1,5 +1,7 @@
 package org.jqassistant.tooling.dashboard.service.application;
 
+import java.util.List;
+
 import org.jqassistant.tooling.dashboard.service.application.model.Capability;
 import org.springframework.stereotype.Repository;
 
@@ -11,4 +13,7 @@ public interface CapabilityRepository {
     Iterable<Capability> findAll(String typeFilter, String valueFilter, int offset, int limit);
 
     int countAll(String typeFilter, String valueFilter);
+
+    List<String> getTypes();
+
 }

@@ -1,5 +1,9 @@
 package org.jqassistant.tooling.dashboard.service.adapters.secondary.xo;
 
+import java.util.List;
+import java.util.stream.StreamSupport;
+
+import com.buschmais.xo.api.Query;
 import com.buschmais.xo.api.ResultIterable;
 import com.buschmais.xo.api.XOManager;
 
@@ -27,5 +31,14 @@ public class CapabilityRepositoryImpl extends AbstractXORepository<XOCapabilityR
     @Override
     public int countAll(String typeFilter, String valueFilter) {
         return getXORepository().countAll(typeFilter, valueFilter);
+    }
+
+    @Override
+    public List<String> getTypes() {
+        Query.Result<XOCapabilityRepository.Types> result = xoManager.createQuery(XOCapabilityRepository.Types.class)
+            .execute();
+        return StreamSupport.stream(result.spliterator(), false)
+            .map(XOCapabilityRepository.Types::getType)
+            .toList();
     }
 }

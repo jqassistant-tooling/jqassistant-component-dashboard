@@ -5,11 +5,10 @@ import com.buschmais.xo.api.annotation.ResultOf;
 import com.buschmais.xo.api.annotation.ResultOf.Parameter;
 import com.buschmais.xo.neo4j.api.annotation.Cypher;
 
-import org.jqassistant.tooling.dashboard.service.application.ComponentRepository;
 import org.jqassistant.tooling.dashboard.service.application.model.Component;
 
 @Repository
-public interface XOComponentRepository extends ComponentRepository {
+public interface XOComponentRepository {
 
     @ResultOf
     @Cypher("""
@@ -20,7 +19,6 @@ public interface XOComponentRepository extends ComponentRepository {
         RETURN
           component
         """)
-    @Override
     Component resolve(@Parameter("projectId") String projectId, @Parameter("componentId") String componentId);
 
     @ResultOf
@@ -40,7 +38,6 @@ public interface XOComponentRepository extends ComponentRepository {
         LIMIT
           $limit
         """)
-    @Override
     Iterable<Component> findAll(@Parameter("nameFilter") String nameFilter, @Parameter("offset") int offset, @Parameter("limit") int limit);
 
     @ResultOf
@@ -52,6 +49,5 @@ public interface XOComponentRepository extends ComponentRepository {
         RETURN
           count(component)
         """)
-    @Override
     int countAll(@Parameter("nameFilter") String nameFilter);
 }

@@ -18,6 +18,6 @@
         <resource>jqassistant-dashboard-jqassistant-plugin.xml</resource>
     </rules>
     <report>
-        <class id="dashboard-component-version-report">org.jqassistant.tooling.dashboard.plugin.impl.DashboardComponentVersionReportPlugin</class>
+        <class id="dashboard-component-version-report">org.jqassistant.tooling.dashboard.plugin.impl.ComponentVersionReportPlugin</class>
     </report>
 </jqassistant-plugin>

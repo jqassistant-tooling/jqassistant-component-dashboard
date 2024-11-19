@@ -9,7 +9,7 @@ import static lombok.AccessLevel.PROTECTED;
 @RequiredArgsConstructor(access = PROTECTED)
 public class AbstractXORepository<T> {
 
-    private final XOManager xoManager;
+    protected final XOManager xoManager;
 
     private final Class<T> repositoryClass;
 

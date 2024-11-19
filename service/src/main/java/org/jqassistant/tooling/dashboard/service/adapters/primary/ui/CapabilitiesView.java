@@ -1,8 +1,10 @@
 package org.jqassistant.tooling.dashboard.service.adapters.primary.ui;
 
+import java.util.List;
 import java.util.function.Consumer;
 
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.HeaderRow;
 import com.vaadin.flow.component.grid.dataview.GridDataView;
@@ -33,7 +35,7 @@ import static java.util.stream.StreamSupport.stream;
 @Transactional
 public class CapabilitiesView extends VerticalLayout {
 
-    private transient final CapabilityService capabilityService;
+    private final transient CapabilityService capabilityService;
 
     private final Grid<Capability> grid = new Grid<>(Capability.class, false);
 
@@ -52,15 +54,16 @@ public class CapabilitiesView extends VerticalLayout {
         CapabilityFilter capabilityFilter = new CapabilityFilter();
         gridDataView = grid.setItems(getDataProvider(capabilityFilter));
 
-        // Name
+        // Type
+        List<String> types = capabilityService.getTypes();
         Grid.Column<Capability> typeColumn = grid.addColumn(new ComponentRenderer<>(capability -> new Span(capability.getType())))
             .setHeader("Type");
-        addFilterHeader(typeColumn, "Type", capabilityFilter::setTypeFilter);
+        addFilterHeader(typeColumn, "Type", createComboxBoxFilterHeader(types, capabilityFilter::setTypeFilter));
 
         // Value
         Grid.Column<Capability> valueColumn = grid.addColumn(new ComponentRenderer<>(capability -> new Span(capability.getValue())))
             .setHeader("Value");
-        addFilterHeader(valueColumn, "Value", capabilityFilter::setValueFilter);
+        addFilterHeader(valueColumn, "Value", createTextFilterHeader(capabilityFilter::setValueFilter));
 
         this.add(grid);
     }
@@ -74,22 +77,32 @@ public class CapabilitiesView extends VerticalLayout {
         return filterDataProvider;
     }
 
-    private void addFilterHeader(Grid.Column<Capability> column, String label, Consumer<String> updateFilterAction) {
-        Component filterHeader = createFilterHeader(label, valueFilter -> {
-            updateFilterAction.accept(valueFilter);
-            gridDataView.refreshAll();
-        });
-        headerRow.getCell(column)
-            .setComponent(filterHeader);
-    }
-
-    private static Component createFilterHeader(String labelText, Consumer<String> filterChangeConsumer) {
+    private Component createTextFilterHeader(Consumer<String> updateFilterAction) {
         TextField textField = new TextField();
         textField.setValueChangeMode(ValueChangeMode.EAGER);
         textField.setClearButtonVisible(true);
         textField.setWidthFull();
-        textField.addValueChangeListener(e -> filterChangeConsumer.accept(e.getValue()));
-        return new VerticalLayout(new NativeLabel(labelText), textField);
+        textField.addValueChangeListener(valueChangeEvent -> {
+            updateFilterAction.accept(valueChangeEvent.getValue());
+            gridDataView.refreshAll();
+        });
+        return textField;
     }
 
+    private Component createComboxBoxFilterHeader(List<String> items, Consumer<String> updateFilterAction) {
+        ComboBox<String> comboBox = new ComboBox<>();
+        comboBox.setItems(items);
+        comboBox.setClearButtonVisible(true);
+        comboBox.setWidthFull();
+        comboBox.addValueChangeListener(valueChangeEvent -> {
+            updateFilterAction.accept(valueChangeEvent.getValue());
+            gridDataView.refreshAll();
+        });
+        return comboBox;
+    }
+
+    private void addFilterHeader(Grid.Column<Capability> column, String label, Component filterHeader) {
+        headerRow.getCell(column)
+            .setComponent(new VerticalLayout(new NativeLabel(label), filterHeader));
+    }
 }

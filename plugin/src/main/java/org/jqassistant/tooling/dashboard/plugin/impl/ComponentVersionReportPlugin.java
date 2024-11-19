@@ -3,7 +3,6 @@ package org.jqassistant.tooling.dashboard.plugin.impl;
 import java.util.Map;
 
 import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 
@@ -23,24 +22,23 @@ import org.jqassistant.tooling.dashboard.plugin.api.model.Component;
 import org.jqassistant.tooling.dashboard.plugin.api.model.Version;
 import org.jqassistant.tooling.dashboard.plugin.impl.mapper.VersionMapper;
 
+import static javax.ws.rs.client.Entity.json;
+
 @Slf4j
-public class DashboardComponentVersionReportPlugin implements ReportPlugin {
+public class ComponentVersionReportPlugin implements ReportPlugin {
 
     private static final String CONCEPT_ID = "jqassistant-dashboard:ComponentVersionReport";
     private static final String COLUMN_COMPONENT = "Component";
     private static final String COLUMN_VERSION = "Version";
 
-    private String url;
-    private String owner;
-    private String project;
-    WebTarget target;
+    private WebTarget apiTarget;
 
     @Override
     public void configure(ReportContext reportContext, Map<String, Object> properties) {
-        this.url = "http://localhost:8080/api/rest/v1/";
-        this.owner = "jqassistant";
-        this.project = "plugins";
-        this.target = ClientBuilder.newClient()
+        String url = "http://localhost:8080/api/rest/v1/";
+        String owner = "jqassistant";
+        String project = "plugins";
+        this.apiTarget = ClientBuilder.newClient()
             .register(JacksonJsonProvider.class)
             .target(url)
             .path(owner)
@@ -68,25 +66,24 @@ public class DashboardComponentVersionReportPlugin implements ReportPlugin {
             Column<Version> versionColumn = getColumn(row, COLUMN_VERSION);
             Version version = versionColumn.getValue();
             VersionDTO versionDTO = VersionMapper.MAPPER.toDTO(version);
-            publish(componentColumn, version, versionDTO);
+            publish(componentColumn.getValue(), version, versionDTO);
         }
     }
 
-    private void publish(Column<Component> componentColumn, Version version, VersionDTO versionDTO) {
-        WebTarget target = this.target.path(componentColumn.getValue()
-                .getId())
+    private void publish(Component component, Version version, VersionDTO versionDTO) {
+        WebTarget target = this.apiTarget.path(component.getId())
             .path(version.getVersion());
         int status = target.request(MediaType.APPLICATION_JSON_TYPE)
-            .put(Entity.json(versionDTO))
+            .put(json(versionDTO))
             .getStatus();
-        System.out.println(status);
+        log.info("Component '{}' version '{}' published to '{}' (status={}).", component.getId(), version.getVersion(), target.getUri(), status);
     }
 
     private static <T> Column<T> getColumn(Row row, String columnName) throws ReportException {
         Column<T> column = (Column<T>) row.getColumns()
             .get(columnName);
         if (column == null) {
-            throw new ReportException("The row does not contain a the required column " + columnName);
+            throw new ReportException("The row does not contain the required column " + columnName);
         }
         return column;
     }

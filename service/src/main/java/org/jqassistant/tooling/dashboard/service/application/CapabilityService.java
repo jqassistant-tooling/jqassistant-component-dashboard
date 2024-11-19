@@ -1,5 +1,6 @@
 package org.jqassistant.tooling.dashboard.service.application;
 
+import java.util.List;
 import java.util.Optional;
 
 import lombok.RequiredArgsConstructor;
@@ -29,5 +30,9 @@ public class CapabilityService {
         return capabilityRepository.countAll(filter.map(CapabilityFilter::getTypeFilter)
             .orElse(null), filter.map(CapabilityFilter::getValueFilter)
             .orElse(null));
+    }
+
+    public List<String> getTypes() {
+        return capabilityRepository.getTypes();
     }
 }
