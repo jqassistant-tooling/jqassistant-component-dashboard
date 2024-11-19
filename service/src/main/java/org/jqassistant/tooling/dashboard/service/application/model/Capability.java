@@ -13,4 +13,8 @@ public interface Capability {
 
     void setValue(String value);
 
+    String getDescription();
+
+    void setDescription(String description);
+
 }

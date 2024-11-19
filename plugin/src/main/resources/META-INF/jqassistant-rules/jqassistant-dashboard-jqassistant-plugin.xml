@@ -57,15 +57,21 @@
               (component:Dashboard:Component)-[:HAS_VERSION]->(version:Dashboard:Version)<-[:PROVIDES]-(artifact:Artifact),
               (artifact)-[:CONTAINS]->(file:File:Xml)-[:HAS_ROOT_ELEMENT]->(root:Element{name:"jqassistant-rules"}),
               (root)-[:HAS_ELEMENT]->(rule:Xml:Element)-[:HAS_ATTRIBUTE]->(id:Xml:Attribute{name:"id"})
+            OPTIONAL MATCH
+              (rule)-[:HAS_ELEMENT]->(:Xml:Element{name:"description"})-[:HAS_TEXT]->(description:Xml:Text)
             WITH
               component, version, file, case rule.name
                 when "concept" then "Concept"
                 when "constraint" then "Constraint"
                 when "group" then "Group"
                 else "unknown"
-              end as capabilityType, id.value as ruleId
+              end as capabilityType, id.value as ruleId, description
             MERGE
-              (file)-[:PROVIDES_CAPABILITY]->(capability:Dashboard:Capability{type:capabilityType, value:ruleId})
+              (capability:Dashboard:Capability{type:capabilityType, value:ruleId})
+            MERGE
+              (file)-[:PROVIDES_CAPABILITY]->(capability)
+            SET
+              capability.description=trim(description.value)
             RETURN
               component as Component, version as Version, file as File, capability as Capability
             ORDER BY
@@ -85,7 +91,9 @@
             WHERE
               rule.name in ["concept", "constraint"]
             MERGE
-              (file)-[:REQUIRES_CAPABILITY]->(capability:Dashboard:Capability{type:"Concept", value:refId.value})
+              (capability:Dashboard:Capability{type:"Concept", value:refId.value})
+            MERGE
+              (file)-[:REQUIRES_CAPABILITY]->(capability)
             RETURN
               component as Component, version as Version, file as File, capability as Capability
             ORDER BY
@@ -110,7 +118,9 @@
                 else "unknown"
               end as capabilityType, refId.value as ruleId
             MERGE
-              (file)-[:REQUIRES_CAPABILITY]->(capability:Dashboard:Capability{type:capabilityType, value:ruleId})
+              (capability:Dashboard:Capability{type:capabilityType, value:ruleId})
+            MERGE
+              (file)-[:REQUIRES_CAPABILITY]->(capability)
             RETURN
               component as Component, version as Version, file as File, capability as Capability
             ORDER BY

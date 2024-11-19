@@ -58,13 +58,16 @@ public class CapabilitiesView extends VerticalLayout {
         List<String> types = capabilityService.getTypes();
         Grid.Column<Capability> typeColumn = grid.addColumn(new ComponentRenderer<>(capability -> new Span(capability.getType())))
             .setHeader("Type");
-        addFilterHeader(typeColumn, "Type", createComboxBoxFilterHeader(types, capabilityFilter::setTypeFilter));
+        addColumnHeader(typeColumn, "Type", createComboxBoxFilterHeader(types, capabilityFilter::setTypeFilter));
 
         // Value
         Grid.Column<Capability> valueColumn = grid.addColumn(new ComponentRenderer<>(capability -> new Span(capability.getValue())))
             .setHeader("Value");
-        addFilterHeader(valueColumn, "Value", createTextFilterHeader(capabilityFilter::setValueFilter));
+        addColumnHeader(valueColumn, "Value", createTextFilterHeader(capabilityFilter::setValueFilter));
 
+        Grid.Column<Capability> descriptionColumn = grid.addColumn(new ComponentRenderer<>(capability -> new Span(capability.getDescription())))
+            .setHeader("Description");
+        addColumnHeader(descriptionColumn, "Description", new Span());
         this.add(grid);
     }
 
@@ -101,8 +104,8 @@ public class CapabilitiesView extends VerticalLayout {
         return comboBox;
     }
 
-    private void addFilterHeader(Grid.Column<Capability> column, String label, Component filterHeader) {
+    private void addColumnHeader(Grid.Column<Capability> column, String label, Component columnHeader) {
         headerRow.getCell(column)
-            .setComponent(new VerticalLayout(new NativeLabel(label), filterHeader));
+            .setComponent(new VerticalLayout(new NativeLabel(label), columnHeader));
     }
 }

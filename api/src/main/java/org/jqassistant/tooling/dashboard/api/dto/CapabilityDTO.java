@@ -13,4 +13,6 @@ public class CapabilityDTO {
 
     private String value;
 
+    private String description;
+
 }
