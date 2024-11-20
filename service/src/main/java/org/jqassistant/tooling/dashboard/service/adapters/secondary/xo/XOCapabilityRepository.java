@@ -1,6 +1,7 @@
 package org.jqassistant.tooling.dashboard.service.adapters.secondary.xo;
 
 import java.util.List;
+import java.util.Set;
 
 import com.buschmais.xo.api.annotation.Repository;
 import com.buschmais.xo.api.annotation.ResultOf;
@@ -28,12 +29,12 @@ public interface XOCapabilityRepository {
         MATCH
           (capability:Capability)
         WHERE
-          ($typeFilter is null or toLower(capability.type) contains toLower($typeFilter))
+          ($typeFilter is null or capability.type in $typeFilter)
           and ($valueFilter is null or toLower(capability.value) contains toLower($valueFilter))
         RETURN
           count(capability)
         """)
-    int countAll(@Parameter("typeFilter") String typeFilter, @Parameter("valueFilter") String valueFilter);
+    int countAll(@Parameter("typeFilter") Set<String> typeFilter, @Parameter("valueFilter") String valueFilter);
 
     @Cypher("""
         MATCH
@@ -51,7 +52,7 @@ public interface XOCapabilityRepository {
         MATCH
           (component)-[:HAS_VERSION]->(:Version)-[:CONTAINS_FILE]->(:File)-[:PROVIDES_CAPABILITY]->(capability:Capability)
         WHERE
-          ($typeFilter is null or toLower(capability.type) contains toLower($typeFilter))
+          ($typeFilter is null or capability.type in $typeFilter)
           and ($valueFilter is null or toLower(capability.value) contains toLower($valueFilter))
         WITH
           component, capability

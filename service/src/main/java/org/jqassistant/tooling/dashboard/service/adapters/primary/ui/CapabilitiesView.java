@@ -1,10 +1,13 @@
 package org.jqassistant.tooling.dashboard.service.adapters.primary.ui;
 
 import java.util.List;
+import java.util.Set;
 import java.util.function.Consumer;
 
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.combobox.ComboBox;
+import com.vaadin.flow.component.combobox.MultiSelectComboBox;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.HeaderRow;
 import com.vaadin.flow.component.grid.dataview.GridDataView;
@@ -40,8 +43,6 @@ public class CapabilitiesView extends VerticalLayout {
 
     private final Grid<CapabilitySummary> grid = new Grid<>(CapabilitySummary.class, false);
 
-    private HeaderRow headerRow;
-
     private GridDataView<CapabilitySummary> gridDataView;
 
     @PostConstruct
@@ -50,7 +51,7 @@ public class CapabilitiesView extends VerticalLayout {
         grid.setAllRowsVisible(true);
         grid.getHeaderRows()
             .clear();
-        this.headerRow = grid.appendHeaderRow();
+        HeaderRow headerRow = grid.appendHeaderRow();
 
         CapabilityFilter capabilityFilter = new CapabilityFilter();
         gridDataView = grid.setItems(getDataProvider(capabilityFilter));
@@ -59,17 +60,18 @@ public class CapabilitiesView extends VerticalLayout {
         List<String> types = capabilityService.getTypes();
         Grid.Column<CapabilitySummary> typeColumn = grid.addColumn(new ComponentRenderer<>(capabilitySummary -> new Span(capabilitySummary.getCapability()
             .getType())));
-        addColumnHeader(typeColumn, "Type", createComboxBoxFilterHeader(types, capabilityFilter::setTypeFilter));
+        addColumnHeader(headerRow, typeColumn, "Type",
+            createMultiselectComboxBoxFilter(types, typeFilter -> capabilityFilter.setTypeFilter(typeFilter.isEmpty() ? null : typeFilter)));
 
         // Value
         Grid.Column<CapabilitySummary> valueColumn = grid.addColumn(new ComponentRenderer<>(capabilitySummary -> new Span(capabilitySummary.getCapability()
             .getValue())));
-        addColumnHeader(valueColumn, "Value", createTextFilterHeader(capabilityFilter::setValueFilter));
+        addColumnHeader(headerRow, valueColumn, "Value", createTextFilter(capabilityFilter::setValueFilter));
 
         Grid.Column<CapabilitySummary> descriptionColumn = grid.addColumn(new ComponentRenderer<>(capabilitySummary -> new Span(
             capabilitySummary.getCapability()
                 .getDescription())));
-        addColumnHeader(descriptionColumn, "Description", new Span());
+        addColumnHeader(headerRow, descriptionColumn, "Description", new Span());
 
         Grid.Column<CapabilitySummary> providedByComponentsColumn = grid.addColumn(new ComponentRenderer<>(capabilitySummary -> {
             VerticalLayout verticalLayout = new VerticalLayout();
@@ -79,7 +81,7 @@ public class CapabilitiesView extends VerticalLayout {
                 .forEach(verticalLayout::add);
             return verticalLayout;
         }));
-        addColumnHeader(providedByComponentsColumn, "Provided By", new Span());
+        addColumnHeader(headerRow, providedByComponentsColumn, "Provided By", new Span());
         grid.addThemeVariants(LUMO_WRAP_CELL_CONTENT, LUMO_ROW_STRIPES);
         this.add(grid);
     }
@@ -92,31 +94,41 @@ public class CapabilitiesView extends VerticalLayout {
         return filterDataProvider;
     }
 
-    private Component createTextFilterHeader(Consumer<String> updateFilterAction) {
+    private Component createTextFilter(Consumer<String> updateFilterAction) {
         TextField textField = new TextField();
         textField.setValueChangeMode(ValueChangeMode.EAGER);
         textField.setClearButtonVisible(true);
         textField.setWidthFull();
-        textField.addValueChangeListener(valueChangeEvent -> {
-            updateFilterAction.accept(valueChangeEvent.getValue());
-            gridDataView.refreshAll();
-        });
+        addValueChangeListener(textField, updateFilterAction);
         return textField;
     }
 
-    private Component createComboxBoxFilterHeader(List<String> items, Consumer<String> updateFilterAction) {
+    private Component createComboBoxFilter(List<String> items, Consumer<String> updateFilterAction) {
         ComboBox<String> comboBox = new ComboBox<>();
         comboBox.setItems(items);
         comboBox.setClearButtonVisible(true);
         comboBox.setWidthFull();
-        comboBox.addValueChangeListener(valueChangeEvent -> {
-            updateFilterAction.accept(valueChangeEvent.getValue());
-            gridDataView.refreshAll();
-        });
+        addValueChangeListener(comboBox, updateFilterAction);
         return comboBox;
     }
 
-    private void addColumnHeader(Grid.Column<CapabilitySummary> column, String label, Component columnHeader) {
+    private Component createMultiselectComboxBoxFilter(List<String> items, Consumer<Set<String>> updateFilterAction) {
+        MultiSelectComboBox<String> multiSelectComboBox = new MultiSelectComboBox<>();
+        multiSelectComboBox.setItems(items);
+        multiSelectComboBox.setClearButtonVisible(true);
+        multiSelectComboBox.setWidthFull();
+        addValueChangeListener(multiSelectComboBox, updateFilterAction);
+        return multiSelectComboBox;
+    }
+
+    private <T> void addValueChangeListener(HasValue<?, T> hasValue, Consumer<T> updateFilterAction) {
+        hasValue.addValueChangeListener(valueChangeEvent -> {
+            updateFilterAction.accept(valueChangeEvent.getValue());
+            gridDataView.refreshAll();
+        });
+    }
+
+    private void addColumnHeader(HeaderRow headerRow, Grid.Column<CapabilitySummary> column, String label, Component columnHeader) {
         headerRow.getCell(column)
             .setComponent(new VerticalLayout(new NativeLabel(label), columnHeader));
     }

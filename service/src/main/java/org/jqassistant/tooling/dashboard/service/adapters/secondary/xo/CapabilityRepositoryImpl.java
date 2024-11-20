@@ -2,6 +2,7 @@ package org.jqassistant.tooling.dashboard.service.adapters.secondary.xo;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import com.buschmais.xo.api.Query;
@@ -38,7 +39,7 @@ public class CapabilityRepositoryImpl extends AbstractXORepository<XOCapabilityR
     }
 
     @Override
-    public int countAll(String typeFilter, String valueFilter) {
+    public int countAll(Set<String> typeFilter, String valueFilter) {
         return getXORepository().countAll(typeFilter, valueFilter);
     }
 

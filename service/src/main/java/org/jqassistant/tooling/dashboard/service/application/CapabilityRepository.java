@@ -2,6 +2,7 @@ package org.jqassistant.tooling.dashboard.service.application;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import org.jqassistant.tooling.dashboard.service.application.model.Capability;
@@ -16,10 +17,9 @@ public interface CapabilityRepository {
 
     Stream<CapabilitySummary> findAll(Optional<CapabilityFilter> filter, int offset, int limit);
 
-    int countAll(String typeFilter, String valueFilter);
+    int countAll(Set<String> typeFilter, String valueFilter);
 
     List<String> getTypes();
-
 
     interface CapabilitySummary {
 
