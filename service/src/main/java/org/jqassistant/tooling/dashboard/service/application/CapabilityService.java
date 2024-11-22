@@ -21,6 +21,10 @@ public class CapabilityService {
         return capabilityRepository.resolve(type, value);
     }
 
+    public Capability find(String capabilityType, String capabilityValue) {
+        return capabilityRepository.find(capabilityType, capabilityValue);
+    }
+
     public Stream<CapabilityRepository.CapabilitySummary> findAll(Optional<CapabilityFilter> filter, int offset, int limit) {
         return capabilityRepository.findAll(filter, offset, limit);
     }
@@ -33,5 +37,9 @@ public class CapabilityService {
 
     public List<String> getTypes() {
         return capabilityRepository.getTypes();
+    }
+
+    public Stream<CapabilityRepository.CapabilityRequiredBy> getRequiredByBy(Capability capability) {
+        return capabilityRepository.getRequiredBy(capability);
     }
 }

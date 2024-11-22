@@ -43,7 +43,6 @@ public class DashboardLayout extends AppLayout implements BeforeEnterObserver {
     }
 
     private void login() {
-
         getUI().ifPresent(ui -> {
             ui.navigate(LoginView.class)
                 .ifPresent(loginView -> loginView.setRouteParameters(target, routeParameters));

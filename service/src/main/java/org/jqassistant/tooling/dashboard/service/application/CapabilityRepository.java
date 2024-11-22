@@ -1,6 +1,7 @@
 package org.jqassistant.tooling.dashboard.service.application;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -13,13 +14,13 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface CapabilityRepository {
 
-    Capability resolve(String type, String name);
+    List<String> getTypes();
+
+    Capability find(String type, String value);
+
+    Capability resolve(String type, String value);
 
     Stream<CapabilitySummary> findAll(Optional<CapabilityFilter> filter, int offset, int limit);
-
-    int countAll(Set<String> typeFilter, String valueFilter);
-
-    List<String> getTypes();
 
     interface CapabilitySummary {
 
@@ -29,4 +30,15 @@ public interface CapabilityRepository {
 
     }
 
+    int countAll(Set<String> typeFilter, String valueFilter);
+
+    Stream<CapabilityRequiredBy> getRequiredBy(Capability capability);
+
+    interface CapabilityRequiredBy {
+
+        Component getComponent();
+
+        Map<String, Object> getVersions();
+
+    }
 }

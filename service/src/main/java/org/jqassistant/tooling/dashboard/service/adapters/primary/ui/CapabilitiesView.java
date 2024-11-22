@@ -6,6 +6,7 @@ import java.util.function.Consumer;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasValue;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.combobox.MultiSelectComboBox;
 import com.vaadin.flow.component.grid.Grid;
@@ -19,31 +20,47 @@ import com.vaadin.flow.data.provider.CallbackDataProvider;
 import com.vaadin.flow.data.provider.ConfigurableFilterDataProvider;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.data.value.ValueChangeMode;
-import com.vaadin.flow.router.Route;
-import com.vaadin.flow.router.RoutePrefix;
+import com.vaadin.flow.router.*;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.jqassistant.tooling.dashboard.service.application.CapabilityRepository.CapabilitySummary;
 import org.jqassistant.tooling.dashboard.service.application.CapabilityService;
+import org.jqassistant.tooling.dashboard.service.application.model.Capability;
 import org.jqassistant.tooling.dashboard.service.application.model.CapabilityFilter;
 import org.springframework.transaction.annotation.Transactional;
 
 import static com.vaadin.flow.component.grid.GridVariant.LUMO_ROW_STRIPES;
 import static com.vaadin.flow.component.grid.GridVariant.LUMO_WRAP_CELL_CONTENT;
+import static org.jqassistant.tooling.dashboard.service.adapters.primary.ui.CapabilityView.PARAMETER_CAPABILITY_TYPE;
+import static org.jqassistant.tooling.dashboard.service.adapters.primary.ui.CapabilityView.PARAMETER_CAPABILITY_VALUE;
 
 @RoutePrefix("ui")
 @Route(value = ":owner/:project/capabilities", layout = DashboardLayout.class)
 @AnonymousAllowed
 @RequiredArgsConstructor
 @Transactional
-public class CapabilitiesView extends VerticalLayout {
+public class CapabilitiesView extends VerticalLayout implements BeforeEnterObserver {
 
     private final transient CapabilityService capabilityService;
 
     private final Grid<CapabilitySummary> grid = new Grid<>(CapabilitySummary.class, false);
 
+    private String owner;
+
+    private String project;
+
     private GridDataView<CapabilitySummary> gridDataView;
+
+    @Override
+    public void beforeEnter(BeforeEnterEvent event) {
+        this.owner = event.getRouteParameters()
+            .get("owner")
+            .orElse(null);
+        this.project = event.getRouteParameters()
+            .get("project")
+            .orElse(null);
+    }
 
     @PostConstruct
     void init() {
@@ -83,6 +100,13 @@ public class CapabilitiesView extends VerticalLayout {
         }));
         addColumnHeader(headerRow, providedByComponentsColumn, "Provided By", new Span());
         grid.addThemeVariants(LUMO_WRAP_CELL_CONTENT, LUMO_ROW_STRIPES);
+        grid.addItemClickListener(event -> {
+            Capability capability = event.getItem()
+                .getCapability();
+            UI.getCurrent()
+                .navigate(CapabilityView.class, new RouteParam("owner", this.owner), new RouteParam("project", this.project),
+                    new RouteParam(PARAMETER_CAPABILITY_TYPE, capability.getType()), new RouteParam(PARAMETER_CAPABILITY_VALUE, capability.getValue()));
+        });
         this.add(grid);
     }
 
@@ -132,4 +156,5 @@ public class CapabilitiesView extends VerticalLayout {
         headerRow.getCell(column)
             .setComponent(new VerticalLayout(new NativeLabel(label), columnHeader));
     }
+
 }

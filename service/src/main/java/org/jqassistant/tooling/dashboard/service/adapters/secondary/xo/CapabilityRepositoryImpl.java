@@ -21,8 +21,13 @@ public class CapabilityRepositoryImpl extends AbstractXORepository<XOCapabilityR
     }
 
     @Override
-    public Capability resolve(String type, String name) {
-        return getXORepository().resolve(type, name);
+    public Capability find(String type, String value) {
+        return getXORepository().find(type, value);
+    }
+
+    @Override
+    public Capability resolve(String type, String value) {
+        return getXORepository().resolve(type, value);
     }
 
     @Override
@@ -49,5 +54,14 @@ public class CapabilityRepositoryImpl extends AbstractXORepository<XOCapabilityR
             .execute();
         return toStream(result).map(XOCapabilityRepository.Types::getType)
             .toList();
+    }
+
+    @Override
+    public Stream<CapabilityRepository.CapabilityRequiredBy> getRequiredBy(Capability capability) {
+        Query.Result<XOCapabilityRepository.CapabilityRequiredBy> result = xoManager.createQuery(XOCapabilityRepository.CapabilityRequiredBy.class)
+            .withParameter("type", capability.getType())
+            .withParameter("value", capability.getValue())
+            .execute();
+        return toStream(result).map(capabilityRequiredBy -> capabilityRequiredBy);
     }
 }

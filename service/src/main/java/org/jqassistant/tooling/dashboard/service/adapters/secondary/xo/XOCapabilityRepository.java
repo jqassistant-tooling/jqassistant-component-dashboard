@@ -1,6 +1,7 @@
 package org.jqassistant.tooling.dashboard.service.adapters.secondary.xo;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import com.buschmais.xo.api.annotation.Repository;
@@ -23,6 +24,15 @@ public interface XOCapabilityRepository {
           capability
         """)
     Capability resolve(@Parameter("type") String type, @Parameter("value") String value);
+
+    @ResultOf
+    @Cypher("""
+        MATCH
+          (capability:Capability{type: $type, value: $value})
+        RETURN
+          capability
+        """)
+    Capability find(@Parameter("type") String type, @Parameter("value") String value);
 
     @ResultOf
     @Cypher("""
@@ -73,4 +83,25 @@ public interface XOCapabilityRepository {
         @Override
         List<Component> getProvidedByComponents();
     }
+
+    @Cypher("""
+        MATCH
+          (component:Component)-[:HAS_VERSION]->(version)-[:CONTAINS_FILE]->(file:File),
+          (file)-[:REQUIRES_CAPABILITY]->(capability:Capability{type: $type, value: $value})
+        WITH
+          component, version, collect(file) as files
+        RETURN
+          component, {
+            version: version,
+            files: files
+          } as versions
+        """)
+    interface CapabilityRequiredBy extends CapabilityRepository.CapabilityRequiredBy {
+
+        Component getComponent();
+
+        Map<String, Object> getVersions();
+
+    }
+
 }

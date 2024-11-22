@@ -50,6 +50,7 @@ public class ComponentsView extends VerticalLayout {
 
         ComponentFilter componentFilter = new ComponentFilter();
         gridDataView = grid.setItems(getDataProvider(componentFilter));
+        
 
         // Name
         Grid.Column<Component> typeColumn = grid.addColumn(new ComponentRenderer<>(component -> new Span(component.getName())))
