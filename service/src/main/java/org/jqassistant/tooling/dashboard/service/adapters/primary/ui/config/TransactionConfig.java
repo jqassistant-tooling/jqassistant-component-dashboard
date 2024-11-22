@@ -1,4 +1,4 @@
-package org.jqassistant.tooling.dashboard.service.adapters.primary.ui;
+package org.jqassistant.tooling.dashboard.service.adapters.primary.ui.config;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;

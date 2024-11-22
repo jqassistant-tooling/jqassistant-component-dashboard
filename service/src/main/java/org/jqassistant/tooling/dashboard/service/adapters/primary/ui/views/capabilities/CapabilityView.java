@@ -1,4 +1,4 @@
-package org.jqassistant.tooling.dashboard.service.adapters.primary.ui;
+package org.jqassistant.tooling.dashboard.service.adapters.primary.ui.views.capabilities;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +17,8 @@ import com.vaadin.flow.router.RoutePrefix;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import org.jqassistant.tooling.dashboard.service.adapters.primary.ui.shared.DashboardLayout;
+import org.jqassistant.tooling.dashboard.service.adapters.primary.ui.shared.TreeNode;
 import org.jqassistant.tooling.dashboard.service.application.CapabilityRepository;
 import org.jqassistant.tooling.dashboard.service.application.CapabilityService;
 import org.jqassistant.tooling.dashboard.service.application.model.Capability;

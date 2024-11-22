@@ -1,4 +1,4 @@
-package org.jqassistant.tooling.dashboard.service.adapters.primary.ui;
+package org.jqassistant.tooling.dashboard.service.adapters.primary.ui.shared;
 
 import java.util.List;
 

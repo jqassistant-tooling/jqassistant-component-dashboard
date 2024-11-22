@@ -1,4 +1,4 @@
-package org.jqassistant.tooling.dashboard.service.adapters.primary.ui;
+package org.jqassistant.tooling.dashboard.service.adapters.primary.ui.shared;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.applayout.AppLayout;
@@ -11,6 +11,7 @@ import com.vaadin.flow.router.RouteParameters;
 import com.vaadin.flow.server.VaadinServletRequest;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import org.jqassistant.tooling.dashboard.service.adapters.primary.ui.views.login.LoginView;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;

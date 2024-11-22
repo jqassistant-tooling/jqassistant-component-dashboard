@@ -1,4 +1,4 @@
-package org.jqassistant.tooling.dashboard.service.adapters.primary.ui;
+package org.jqassistant.tooling.dashboard.service.adapters.primary.ui.views.login;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;

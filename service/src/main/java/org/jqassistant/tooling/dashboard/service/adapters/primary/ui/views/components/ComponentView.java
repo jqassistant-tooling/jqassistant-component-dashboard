@@ -1,4 +1,4 @@
-package org.jqassistant.tooling.dashboard.service.adapters.primary.ui;
+package org.jqassistant.tooling.dashboard.service.adapters.primary.ui.views.components;
 
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.Route;
@@ -6,6 +6,7 @@ import com.vaadin.flow.router.RoutePrefix;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import org.jqassistant.tooling.dashboard.service.adapters.primary.ui.shared.DashboardLayout;
 import org.jqassistant.tooling.dashboard.service.application.ComponentService;
 import org.springframework.transaction.annotation.Transactional;
 

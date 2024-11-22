@@ -1,6 +1,7 @@
-package org.jqassistant.tooling.dashboard.service.adapters.primary.ui;
+package org.jqassistant.tooling.dashboard.service.adapters.primary.ui.config;
 
 import com.vaadin.flow.spring.security.VaadinWebSecurity;
+import org.jqassistant.tooling.dashboard.service.adapters.primary.ui.views.login.LoginView;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;

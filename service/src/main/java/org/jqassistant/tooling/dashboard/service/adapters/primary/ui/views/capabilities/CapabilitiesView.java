@@ -1,4 +1,4 @@
-package org.jqassistant.tooling.dashboard.service.adapters.primary.ui;
+package org.jqassistant.tooling.dashboard.service.adapters.primary.ui.views.capabilities;
 
 import java.util.List;
 import java.util.Set;
@@ -24,6 +24,7 @@ import com.vaadin.flow.router.*;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import org.jqassistant.tooling.dashboard.service.adapters.primary.ui.shared.DashboardLayout;
 import org.jqassistant.tooling.dashboard.service.application.CapabilityRepository.CapabilitySummary;
 import org.jqassistant.tooling.dashboard.service.application.CapabilityService;
 import org.jqassistant.tooling.dashboard.service.application.model.Capability;
@@ -32,8 +33,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import static com.vaadin.flow.component.grid.GridVariant.LUMO_ROW_STRIPES;
 import static com.vaadin.flow.component.grid.GridVariant.LUMO_WRAP_CELL_CONTENT;
-import static org.jqassistant.tooling.dashboard.service.adapters.primary.ui.CapabilityView.PARAMETER_CAPABILITY_TYPE;
-import static org.jqassistant.tooling.dashboard.service.adapters.primary.ui.CapabilityView.PARAMETER_CAPABILITY_VALUE;
+import static org.jqassistant.tooling.dashboard.service.adapters.primary.ui.views.capabilities.CapabilityView.PARAMETER_CAPABILITY_TYPE;
+import static org.jqassistant.tooling.dashboard.service.adapters.primary.ui.views.capabilities.CapabilityView.PARAMETER_CAPABILITY_VALUE;
 
 @RoutePrefix("ui")
 @Route(value = ":owner/:project/capabilities", layout = DashboardLayout.class)
