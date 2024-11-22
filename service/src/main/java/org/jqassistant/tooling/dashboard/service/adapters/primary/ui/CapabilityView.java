@@ -1,28 +1,30 @@
 package org.jqassistant.tooling.dashboard.service.adapters.primary.ui;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Stream;
 
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.treegrid.TreeGrid;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RoutePrefix;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 import jakarta.annotation.PostConstruct;
-import lombok.Builder;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.ToString;
+import org.jqassistant.tooling.dashboard.service.application.CapabilityRepository;
 import org.jqassistant.tooling.dashboard.service.application.CapabilityService;
 import org.jqassistant.tooling.dashboard.service.application.model.Capability;
+import org.jqassistant.tooling.dashboard.service.application.model.Component;
+import org.jqassistant.tooling.dashboard.service.application.model.File;
+import org.jqassistant.tooling.dashboard.service.application.model.Version;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
-
-import static java.util.Collections.emptyList;
-import static java.util.stream.Collectors.joining;
 
 @RoutePrefix("ui")
 @Route(value = ":owner/:project/capabilities/:capabilityType/:capabilityValue", layout = DashboardLayout.class)
@@ -42,14 +44,16 @@ public class CapabilityView extends VerticalLayout implements BeforeEnterObserve
 
     private Span description = new Span();
 
-    private Span requiredBy = new Span();
+    private TreeGrid<TreeNode> requiredBySpan = new TreeGrid<>();
 
     @PostConstruct
     void init() {
         add(title);
         add(description);
         add(new H3("Required By"));
-        add(requiredBy);
+        requiredBySpan.addHierarchyColumn(TreeNode::getLabel)
+            .setHeader("Component");
+        add(requiredBySpan);
     }
 
     @Override
@@ -64,25 +68,37 @@ public class CapabilityView extends VerticalLayout implements BeforeEnterObserve
             Capability capability = capabilityService.find(capabilityType, capabilityValue);
             this.title.setText(String.format("%s '%s'", capabilityType, capabilityValue));
             this.description.setText(capability.getDescription());
-            requiredBy.setText(capabilityService.getRequiredByBy(capability)
-                .map(r -> r.getComponent()
-                    .getName())
-                .collect(joining(", ")));
+            Stream<CapabilityRepository.CapabilityRequiredBy> requiredBy = capabilityService.getRequiredByBy(capability);
+
+            List<TreeNode> treeItems = new ArrayList<>();
+            for (CapabilityRepository.CapabilityRequiredBy capabilityRequiredBy : requiredBy.toList()) {
+                TreeNode.TreeNodeBuilder<Component> componentNodeBuilder = TreeNode.builder();
+
+                Component component = capabilityRequiredBy.getComponent();
+                componentNodeBuilder.value(component);
+                componentNodeBuilder.label(component.getName());
+
+                Map<String, Object> versions = capabilityRequiredBy.getVersions();
+                TreeNode.TreeNodeBuilder<Version> versionNodeBuilder = TreeNode.builder();
+                Version version = (Version) versions.get("version");
+                versionNodeBuilder.value(version);
+                versionNodeBuilder.label(version.getVersion());
+
+                List<File> files = (List<File>) versions.get("files");
+                for (File file : files) {
+                    TreeNode.TreeNodeBuilder<File> fileNodeBuilder = TreeNode.builder();
+                    fileNodeBuilder.value(file);
+                    fileNodeBuilder.label(file.getFileName());
+                    TreeNode<File> fileTreeNode = fileNodeBuilder.build();
+                    versionNodeBuilder.child(fileTreeNode);
+                }
+                TreeNode<Version> versionTreeNode = versionNodeBuilder.build();
+                componentNodeBuilder.child(versionTreeNode);
+                treeItems.add(componentNodeBuilder.build());
+            }
+            this.requiredBySpan.setItems(treeItems, t -> t.getChildren());
 
         });
-    }
-
-    @Getter
-    @Builder
-    @ToString
-    private static class TreeNode<V> {
-
-        private V value;
-
-        private String label;
-
-        @Builder.Default
-        private List<TreeNode> children = emptyList();
     }
 
 }
