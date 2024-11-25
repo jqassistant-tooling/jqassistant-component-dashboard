@@ -46,16 +46,22 @@ public class CapabilityView extends VerticalLayout implements BeforeEnterObserve
 
     private Span description = new Span();
 
-    private TreeGrid<TreeNode> requiredBySpan = new TreeGrid<>();
+    private TreeGrid<TreeNode> providedBy = new TreeGrid<>();
+
+    private TreeGrid<TreeNode> requiredBy = new TreeGrid<>();
 
     @PostConstruct
     void init() {
         add(title);
         add(description);
-        add(new H3("Required By"));
-        requiredBySpan.addHierarchyColumn(TreeNode::getLabel)
+        add(new H3("Provided By"));
+        providedBy.addHierarchyColumn(TreeNode::getLabel)
             .setHeader("Component");
-        add(requiredBySpan);
+        add(providedBy);
+        add(new H3("Required By"));
+        requiredBy.addHierarchyColumn(TreeNode::getLabel)
+            .setHeader("Component");
+        add(requiredBy);
     }
 
     @Override
@@ -67,40 +73,43 @@ public class CapabilityView extends VerticalLayout implements BeforeEnterObserve
             String capabilityValue = event.getRouteParameters()
                 .get(CapabilityView.PARAMETER_CAPABILITY_VALUE)
                 .orElse(null);
+
             Capability capability = capabilityService.find(capabilityType, capabilityValue);
             this.title.setText(String.format("%s '%s'", capabilityType, capabilityValue));
             this.description.setText(capability.getDescription());
-            Stream<CapabilityRepository.CapabilityRequiredBy> requiredBy = capabilityService.getRequiredByBy(capability);
-
-            List<TreeNode> treeItems = new ArrayList<>();
-            for (CapabilityRepository.CapabilityRequiredBy capabilityRequiredBy : requiredBy.toList()) {
-                TreeNode.TreeNodeBuilder<Component> componentNodeBuilder = TreeNode.builder();
-
-                Component component = capabilityRequiredBy.getComponent();
-                componentNodeBuilder.value(component);
-                componentNodeBuilder.label(component.getName());
-
-                Map<String, Object> versions = capabilityRequiredBy.getVersions();
-                TreeNode.TreeNodeBuilder<Version> versionNodeBuilder = TreeNode.builder();
-                Version version = (Version) versions.get("version");
-                versionNodeBuilder.value(version);
-                versionNodeBuilder.label(version.getVersion());
-
-                List<File> files = (List<File>) versions.get("files");
-                for (File file : files) {
-                    TreeNode.TreeNodeBuilder<File> fileNodeBuilder = TreeNode.builder();
-                    fileNodeBuilder.value(file);
-                    fileNodeBuilder.label(file.getFileName());
-                    TreeNode<File> fileTreeNode = fileNodeBuilder.build();
-                    versionNodeBuilder.child(fileTreeNode);
-                }
-                TreeNode<Version> versionTreeNode = versionNodeBuilder.build();
-                componentNodeBuilder.child(versionTreeNode);
-                treeItems.add(componentNodeBuilder.build());
-            }
-            this.requiredBySpan.setItems(treeItems, t -> t.getChildren());
-
+            this.providedBy.setItems(getTreeNodes(capabilityService.getProvidedBy(capability)), TreeNode::getChildren);
+            this.requiredBy.setItems(getTreeNodes(capabilityService.getRequiredByBy(capability)), TreeNode::getChildren);
         });
+    }
+
+    private static List<TreeNode> getTreeNodes(Stream<CapabilityRepository.Dependencies> requiredBy) {
+        List<TreeNode> treeItems = new ArrayList<>();
+        for (CapabilityRepository.Dependencies dependencies : requiredBy.toList()) {
+            TreeNode.TreeNodeBuilder<Component> componentNodeBuilder = TreeNode.builder();
+
+            Component component = dependencies.getComponent();
+            componentNodeBuilder.value(component);
+            componentNodeBuilder.label(component.getName());
+
+            Map<String, Object> versions = dependencies.getVersions();
+            TreeNode.TreeNodeBuilder<Version> versionNodeBuilder = TreeNode.builder();
+            Version version = (Version) versions.get("version");
+            versionNodeBuilder.value(version);
+            versionNodeBuilder.label(version.getVersion());
+
+            List<File> files = (List<File>) versions.get("files");
+            for (File file : files) {
+                TreeNode.TreeNodeBuilder<File> fileNodeBuilder = TreeNode.builder();
+                fileNodeBuilder.value(file);
+                fileNodeBuilder.label(file.getFileName());
+                TreeNode<File> fileTreeNode = fileNodeBuilder.build();
+                versionNodeBuilder.child(fileTreeNode);
+            }
+            TreeNode<Version> versionTreeNode = versionNodeBuilder.build();
+            componentNodeBuilder.child(versionTreeNode);
+            treeItems.add(componentNodeBuilder.build());
+        }
+        return treeItems;
     }
 
 }

@@ -96,7 +96,27 @@ public interface XOCapabilityRepository {
             files: files
           } as versions
         """)
-    interface CapabilityRequiredBy extends CapabilityRepository.CapabilityRequiredBy {
+    interface CapabilityRequiredBy extends CapabilityRepository.Dependencies {
+
+        Component getComponent();
+
+        Map<String, Object> getVersions();
+
+    }
+
+    @Cypher("""
+        MATCH
+          (component:Component)-[:HAS_VERSION]->(version)-[:CONTAINS_FILE]->(file:File),
+          (file)-[:PROVIDES_CAPABILITY]->(capability:Capability{type: $type, value: $value})
+        WITH
+          component, version, collect(file) as files
+        RETURN
+          component, {
+            version: version,
+            files: files
+          } as versions
+        """)
+    interface CapabilityProvidedBy extends CapabilityRepository.Dependencies {
 
         Component getComponent();
 

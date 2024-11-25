@@ -57,8 +57,17 @@ public class CapabilityRepositoryImpl extends AbstractXORepository<XOCapabilityR
     }
 
     @Override
-    public Stream<CapabilityRepository.CapabilityRequiredBy> getRequiredBy(Capability capability) {
+    public Stream<Dependencies> getRequiredBy(Capability capability) {
         Query.Result<XOCapabilityRepository.CapabilityRequiredBy> result = xoManager.createQuery(XOCapabilityRepository.CapabilityRequiredBy.class)
+            .withParameter("type", capability.getType())
+            .withParameter("value", capability.getValue())
+            .execute();
+        return toStream(result).map(capabilityRequiredBy -> capabilityRequiredBy);
+    }
+
+    @Override
+    public Stream<Dependencies> getProvidedBy(Capability capability) {
+        Query.Result<XOCapabilityRepository.CapabilityProvidedBy> result = xoManager.createQuery(XOCapabilityRepository.CapabilityProvidedBy.class)
             .withParameter("type", capability.getType())
             .withParameter("value", capability.getValue())
             .execute();

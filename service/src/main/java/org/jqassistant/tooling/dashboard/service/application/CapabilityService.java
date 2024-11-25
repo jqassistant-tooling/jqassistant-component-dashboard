@@ -39,7 +39,11 @@ public class CapabilityService {
         return capabilityRepository.getTypes();
     }
 
-    public Stream<CapabilityRepository.CapabilityRequiredBy> getRequiredByBy(Capability capability) {
+    public Stream<CapabilityRepository.Dependencies> getRequiredByBy(Capability capability) {
         return capabilityRepository.getRequiredBy(capability);
+    }
+
+    public Stream<CapabilityRepository.Dependencies> getProvidedBy(Capability capability) {
+        return capabilityRepository.getProvidedBy(capability);
     }
 }

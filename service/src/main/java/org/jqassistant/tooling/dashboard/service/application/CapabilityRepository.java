@@ -32,9 +32,11 @@ public interface CapabilityRepository {
 
     int countAll(Set<String> typeFilter, String valueFilter);
 
-    Stream<CapabilityRequiredBy> getRequiredBy(Capability capability);
+    Stream<Dependencies> getRequiredBy(Capability capability);
 
-    interface CapabilityRequiredBy {
+    Stream<Dependencies> getProvidedBy(Capability capability);
+
+    interface Dependencies {
 
         Component getComponent();
 
