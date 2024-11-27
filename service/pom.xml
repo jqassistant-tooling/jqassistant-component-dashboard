@@ -15,6 +15,7 @@
     <properties>
         <spring-boot.version>3.3.5</spring-boot.version>
         <vaadin.version>24.5.3</vaadin.version>
+        <jib-maven-plugin.version>3.4.4</jib-maven-plugin.version>
     </properties>
 
     <repositories>
@@ -152,6 +153,17 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>com.google.cloud.tools</groupId>
+                <artifactId>jib-maven-plugin</artifactId>
+                <version>${jib-maven-plugin.version}</version>
+                <configuration>
+                    <allowInsecureRegistries>true</allowInsecureRegistries>
+                    <to>
+                        <image>jqassistant-plugin-dashboard</image>
+                    </to>
+                </configuration>
             </plugin>
         </plugins>
     </build>
