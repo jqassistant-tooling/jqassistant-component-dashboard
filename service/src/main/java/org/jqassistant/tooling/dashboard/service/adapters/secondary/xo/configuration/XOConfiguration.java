@@ -13,6 +13,7 @@ import com.buschmais.xo.spring.XOAutoConfiguration;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
+import lombok.RequiredArgsConstructor;
 import org.jqassistant.tooling.dashboard.service.adapters.secondary.xo.XOCapabilityRepository;
 import org.jqassistant.tooling.dashboard.service.adapters.secondary.xo.XOComponentRepository;
 import org.jqassistant.tooling.dashboard.service.adapters.secondary.xo.XOFileRepository;
@@ -24,19 +25,22 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @ComponentScan(basePackageClasses = { XOConfiguration.class, XOAutoConfiguration.class })
+@RequiredArgsConstructor
 public class XOConfiguration {
 
-    private static final String NEO4J_URL = "bolt://localhost:7687";
+    private final XOConfigurationProperties xoConfigurationProperties;
 
     private XOManagerFactory xoManagerFactory;
 
     @PostConstruct
     void init() throws URISyntaxException {
         Properties properties = new Properties();
+        properties.setProperty(RemoteNeo4jXOProvider.Property.USERNAME.getKey(), xoConfigurationProperties.getUsername());
+        properties.setProperty(RemoteNeo4jXOProvider.Property.PASSWORD.getKey(), xoConfigurationProperties.getPassword());
         properties.setProperty(RemoteNeo4jXOProvider.Property.ENCRYPTION.getKey(), "false");
         XOUnit xoUnit = XOUnit.builder()
             .provider(RemoteNeo4jXOProvider.class)
-            .uri(new URI(NEO4J_URL))
+            .uri(new URI(xoConfigurationProperties.getUrl()))
             .properties(properties)
             .types(List.of(Owner.class, //
                 Project.class, //
@@ -45,7 +49,7 @@ public class XOConfiguration {
                 File.class, XOFileRepository.class, //
                 Capability.class, XOCapabilityRepository.class))
             .build();
-        this.xoManagerFactory = new XOManagerFactoryImpl(xoUnit);
+        this.xoManagerFactory = new XOManagerFactoryImpl<>(xoUnit);
     }
 
     @PreDestroy

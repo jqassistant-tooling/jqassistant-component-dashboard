@@ -19,8 +19,6 @@ import org.jqassistant.tooling.dashboard.service.application.model.Capability;
 import org.jqassistant.tooling.dashboard.service.application.model.CapabilityFilter;
 import org.springframework.transaction.annotation.Transactional;
 
-import static com.vaadin.flow.component.grid.GridVariant.LUMO_ROW_STRIPES;
-import static com.vaadin.flow.component.grid.GridVariant.LUMO_WRAP_CELL_CONTENT;
 import static org.jqassistant.tooling.dashboard.service.adapters.primary.ui.views.capabilities.CapabilityView.PARAMETER_CAPABILITY_TYPE;
 import static org.jqassistant.tooling.dashboard.service.adapters.primary.ui.views.capabilities.CapabilityView.PARAMETER_CAPABILITY_VALUE;
 
@@ -53,26 +51,26 @@ public class CapabilitiesView extends VerticalLayout implements BeforeEnterObser
     void init() {
         CallbackDataProvider<CapabilitySummary, CapabilityFilter> callbackDataProvider = new CallbackDataProvider<>(
             query -> capabilityService.findAll(query.getFilter(), query.getOffset(), query.getLimit()), query -> capabilityService.countAll(query.getFilter()));
-        FilterableGrid<CapabilitySummary, CapabilityFilter> filterableGrid = new FilterableGrid<>(CapabilitySummary.class, callbackDataProvider,
+        FilterableGrid<CapabilitySummary, CapabilityFilter> filterableGrid = FilterableGrid.builder(CapabilitySummary.class, callbackDataProvider,
             new CapabilityFilter());
 
         // Type
         Component typeFilterComboBox = filterableGrid.multiselectComboBox(capabilityService.getTypes(),
             (capabilityFilter, typeFilter) -> capabilityFilter.setTypeFilter(typeFilter.isEmpty() ? null : typeFilter));
-        filterableGrid.addColumn("Type", typeFilterComboBox, summary -> new Span(summary.getCapability()
+        filterableGrid.withColumn("Type", typeFilterComboBox, summary -> new Span(summary.getCapability()
             .getType()));
 
         // Value
-        Component valueFilterTextComponent = filterableGrid.text((capabilityFilter, valueFilter) -> capabilityFilter.setValueFilter(valueFilter));
-        filterableGrid.addColumn("Value", valueFilterTextComponent, capabilitySummary -> new Span(capabilitySummary.getCapability()
+        Component valueFilterTextComponent = filterableGrid.text(CapabilityFilter::setValueFilter);
+        filterableGrid.withColumn("Value", valueFilterTextComponent, capabilitySummary -> new Span(capabilitySummary.getCapability()
             .getValue()));
 
         // Description
-        filterableGrid.addColumn("Description", new Span(), capabilitySummary -> new Span(capabilitySummary.getCapability()
+        filterableGrid.withColumn("Description", new Span(), capabilitySummary -> new Span(capabilitySummary.getCapability()
             .getDescription()));
 
         // Provided By
-        filterableGrid.addColumn("Provided By", new Span(), capabilitySummary -> {
+        filterableGrid.withColumn("Provided By", new Span(), capabilitySummary -> {
             VerticalLayout verticalLayout = new VerticalLayout();
             capabilitySummary.getProvidedByComponents()
                 .stream()
@@ -81,8 +79,7 @@ public class CapabilitiesView extends VerticalLayout implements BeforeEnterObser
             return verticalLayout;
         });
 
-        Grid<CapabilitySummary> grid = filterableGrid.getGrid();
-        grid.addThemeVariants(LUMO_WRAP_CELL_CONTENT, LUMO_ROW_STRIPES);
+        Grid<CapabilitySummary> grid = filterableGrid.build();
         grid.addItemClickListener(event -> {
             Capability capability = event.getItem()
                 .getCapability();

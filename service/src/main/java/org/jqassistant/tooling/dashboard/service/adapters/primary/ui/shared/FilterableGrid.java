@@ -19,31 +19,37 @@ import com.vaadin.flow.data.provider.ConfigurableFilterDataProvider;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.function.SerializableFunction;
-import lombok.Getter;
+
+import static com.vaadin.flow.component.grid.GridVariant.LUMO_ROW_STRIPES;
+import static com.vaadin.flow.component.grid.GridVariant.LUMO_WRAP_CELL_CONTENT;
 
 public class FilterableGrid<T, F> {
 
     private final F filter;
 
     private final GridDataView<T> gridDataView;
-    @Getter
     private final Grid<T> grid;
     private final HeaderRow headerRow;
 
-    public FilterableGrid(Class<T> type, CallbackDataProvider<T, F> callbackDataProvider, F filter) {
+    public static <T, F> FilterableGrid<T, F> builder(Class<T> type, CallbackDataProvider<T, F> callbackDataProvider, F filter) {
+        return new FilterableGrid<>(type, callbackDataProvider, filter);
+    }
+
+    private FilterableGrid(Class<T> type, CallbackDataProvider<T, F> callbackDataProvider, F filter) {
         this.filter = filter;
         this.grid = new Grid<>(type, false);
         this.grid.setSizeFull();
         this.grid.setAllRowsVisible(true);
         this.grid.getHeaderRows()
             .clear();
+        grid.addThemeVariants(LUMO_WRAP_CELL_CONTENT, LUMO_ROW_STRIPES);
         ConfigurableFilterDataProvider<T, Void, F> filterDataProvider = callbackDataProvider.withConfigurableFilter();
         filterDataProvider.setFilter(filter);
         this.gridDataView = this.grid.setItems(filterDataProvider);
         this.headerRow = this.grid.appendHeaderRow();
     }
 
-    public Grid.Column<T> addColumn(String header, Component columnHeader, SerializableFunction<T, Component> rendererFunction) {
+    public Grid.Column<T> withColumn(String header, Component columnHeader, SerializableFunction<T, Component> rendererFunction) {
         Grid.Column<T> column = grid.addColumn(new ComponentRenderer<>(rendererFunction));
         headerRow.getCell(column)
             .setComponent(new VerticalLayout(new NativeLabel(header), columnHeader));
@@ -77,11 +83,14 @@ public class FilterableGrid<T, F> {
         return multiSelectComboBox;
     }
 
-    private <T> void addValueChangeListener(HasValue<?, T> hasValue, BiConsumer<F, T> updateFilterAction) {
+    private <V> void addValueChangeListener(HasValue<?, V> hasValue, BiConsumer<F, V> updateFilterAction) {
         hasValue.addValueChangeListener(valueChangeEvent -> {
             updateFilterAction.accept(filter, valueChangeEvent.getValue());
             gridDataView.refreshAll();
         });
     }
 
+    public Grid<T> build() {
+        return grid;
+    }
 }

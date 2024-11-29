@@ -1,0 +1,53 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: http-ingress
+spec:
+  rules:
+    - http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: dashboard
+                port:
+                  number: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: dashboard
+spec:
+  ports:
+    - port: 8080
+      name: http
+  type: LoadBalancer
+  selector:
+    app: dashboard
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dashboard
+spec:
+  selector:
+    matchLabels:
+      app: dashboard
+  template:
+    metadata:
+      labels:
+        app: dashboard
+    spec:
+      containers:
+        - name: dashboard
+          image: localhost:32000/jqassistant-component-dashboard
+          env:
+            - name: XO_NEO4J_URL
+              value: neo4j://neo4j.default.svc.cluster.local:7687
+            - name: XO_NEO4J_USERNAME
+              value: neo4j
+            - name: XO_NEO4J_PASSWORD
+              value: neo4j-admin
+          ports:
+            - containerPort: 8080

@@ -28,14 +28,15 @@ public class ComponentsView extends VerticalLayout {
 
     @PostConstruct
     void init() {
-        FilterableGrid<Component, ComponentFilter> filterableGrid = new FilterableGrid<>(Component.class, new CallbackDataProvider<Component, ComponentFilter>(
-            query -> stream(componentService.findAll(query.getFilter(), query.getOffset(), query.getLimit())
-                .spliterator(), false), query -> componentService.countAll(query.getFilter())), new ComponentFilter());
+        FilterableGrid<Component, ComponentFilter> filterableGrid = FilterableGrid.builder(Component.class,
+            new CallbackDataProvider<Component, ComponentFilter>(query -> stream(
+                componentService.findAll(query.getFilter(), query.getOffset(), query.getLimit())
+                    .spliterator(), false), query -> componentService.countAll(query.getFilter())), new ComponentFilter());
 
         // Name
-        com.vaadin.flow.component.Component nameFilterTextBox = filterableGrid.text((componentFilter, nameFilter) -> componentFilter.setNameFilter(nameFilter));
-        filterableGrid.addColumn("Name", nameFilterTextBox, component -> new Span(component.getName()));
+        com.vaadin.flow.component.Component nameFilterTextBox = filterableGrid.text(ComponentFilter::setNameFilter);
+        filterableGrid.withColumn("Name", nameFilterTextBox, component -> new Span(component.getName()));
 
-        this.add(filterableGrid.getGrid());
+        this.add(filterableGrid.build());
     }
 }
