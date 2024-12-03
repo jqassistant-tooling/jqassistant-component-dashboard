@@ -7,15 +7,17 @@
         <description>Identify a jQAssistant plugin as component version containing files</description>
         <cypher><![CDATA[
             MATCH
-              (artifact:Main:Artifact)-[:CONTAINS]->(file:File)
-            WHERE
-              (artifact)-[:CONTAINS]->(:File:Xml{fileName:"/META-INF/jqassistant-plugin.xml"})
+              (artifact:Artifact{type:"jar"})-[:CONTAINS]->(:File:Xml{fileName:"/META-INF/jqassistant-plugin.xml"})
             MERGE
               (component:Dashboard:Component{id: artifact.group + ":" + artifact.name})
             MERGE
               (component)-[:HAS_VERSION]->(version:Dashboard:Version{version:artifact.version})
             MERGE
               (artifact)-[:PROVIDES]->(version)
+            WITH
+              artifact, component, version
+            MATCH
+              (artifact:Artifact)-[:CONTAINS]->(file:File)
             MERGE
               (version)-[:CONTAINS_FILE]->(file)
             SET
