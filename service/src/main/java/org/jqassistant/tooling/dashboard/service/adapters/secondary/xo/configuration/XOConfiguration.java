@@ -14,10 +14,7 @@ import com.buschmais.xo.spring.XOAutoConfiguration;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import lombok.RequiredArgsConstructor;
-import org.jqassistant.tooling.dashboard.service.adapters.secondary.xo.XOCapabilityRepository;
-import org.jqassistant.tooling.dashboard.service.adapters.secondary.xo.XOComponentRepository;
-import org.jqassistant.tooling.dashboard.service.adapters.secondary.xo.XOFileRepository;
-import org.jqassistant.tooling.dashboard.service.adapters.secondary.xo.XOVersionRepository;
+import org.jqassistant.tooling.dashboard.service.adapters.secondary.xo.*;
 import org.jqassistant.tooling.dashboard.service.application.model.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -43,7 +40,7 @@ public class XOConfiguration {
             .uri(new URI(xoConfigurationProperties.getUrl()))
             .properties(properties)
             .types(List.of(Owner.class, //
-                Project.class, //
+                Project.class, XOProjectRepository.class, //
                 Component.class, XOComponentRepository.class, //
                 Version.class, XOVersionRepository.class, //
                 File.class, XOFileRepository.class, //

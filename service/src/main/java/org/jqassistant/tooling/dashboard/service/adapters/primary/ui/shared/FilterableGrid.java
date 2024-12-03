@@ -56,7 +56,7 @@ public class FilterableGrid<T, F> {
         return column;
     }
 
-    public Component text(BiConsumer<F, String> updateFilterAction) {
+    public TextField text(BiConsumer<F, String> updateFilterAction) {
         TextField textField = new TextField();
         textField.setValueChangeMode(ValueChangeMode.EAGER);
         textField.setClearButtonVisible(true);
@@ -65,7 +65,7 @@ public class FilterableGrid<T, F> {
         return textField;
     }
 
-    public Component comboBox(List<String> items, BiConsumer<F, String> updateFilterAction) {
+    public ComboBox comboBox(List<String> items, BiConsumer<F, String> updateFilterAction) {
         ComboBox<String> comboBox = new ComboBox<>();
         comboBox.setItems(items);
         comboBox.setClearButtonVisible(true);
@@ -74,9 +74,8 @@ public class FilterableGrid<T, F> {
         return comboBox;
     }
 
-    public Component multiselectComboBox(List<String> items, BiConsumer<F, Set<String>> updateFilterAction) {
+    public MultiSelectComboBox<String> multiselectComboBox(BiConsumer<F, Set<String>> updateFilterAction) {
         MultiSelectComboBox<String> multiSelectComboBox = new MultiSelectComboBox<>();
-        multiSelectComboBox.setItems(items);
         multiSelectComboBox.setClearButtonVisible(true);
         multiSelectComboBox.setWidthFull();
         addValueChangeListener(multiSelectComboBox, updateFilterAction);

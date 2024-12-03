@@ -3,6 +3,8 @@ package org.jqassistant.tooling.dashboard.service.adapters.primary.api.rest.mapp
 import org.jqassistant.tooling.dashboard.api.dto.CapabilityDTO;
 import org.jqassistant.tooling.dashboard.service.application.CapabilityService;
 import org.jqassistant.tooling.dashboard.service.application.model.Capability;
+import org.jqassistant.tooling.dashboard.service.application.model.Project;
+import org.mapstruct.Context;
 import org.mapstruct.Mapper;
 import org.mapstruct.ObjectFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,11 +15,10 @@ public abstract class CapabilityMapper {
     @Autowired
     private CapabilityService capabilityService;
 
-    abstract Capability toCapability(CapabilityDTO capabilityDTO);
+    abstract Capability toCapability(@Context Project project, CapabilityDTO capabilityDTO);
 
     @ObjectFactory
-    Capability create(CapabilityDTO capabilityDTO) {
-        return this.capabilityService.resolve(capabilityDTO.getType(), capabilityDTO.getValue());
-
+    Capability create(@Context Project project, CapabilityDTO capabilityDTO) {
+        return this.capabilityService.resolve(project, capabilityDTO.getType(), capabilityDTO.getValue());
     }
 }

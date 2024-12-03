@@ -14,11 +14,13 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
 
 @RoutePrefix("ui")
-@Route(value = ":owner/:project/components/:componentId", layout = DashboardLayout.class)
+@Route(value = ":owner/:project/components/:component", layout = DashboardLayout.class)
 @AnonymousAllowed
 @RequiredArgsConstructor
 @Transactional
 public class ComponentView extends VerticalLayout implements BeforeEnterObserver {
+
+    public static final String PARAMETER_COMPONENT = "component";
 
     private final ComponentService componentService;
 

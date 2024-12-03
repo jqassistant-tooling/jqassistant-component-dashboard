@@ -6,21 +6,19 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 
-import org.jqassistant.tooling.dashboard.service.application.model.Capability;
-import org.jqassistant.tooling.dashboard.service.application.model.CapabilityFilter;
-import org.jqassistant.tooling.dashboard.service.application.model.Component;
+import org.jqassistant.tooling.dashboard.service.application.model.*;
 import org.springframework.stereotype.Repository;
 
 @Repository
 public interface CapabilityRepository {
 
-    List<String> getTypes();
+    List<String> getTypes(Project project);
 
-    Capability find(String type, String value);
+    Capability find(Project project, CapabilityKey capabilityKey);
 
-    Capability resolve(String type, String value);
+    Capability resolve(Project project, String type, String value);
 
-    Stream<CapabilitySummary> findAll(Optional<CapabilityFilter> filter, int offset, int limit);
+    Stream<CapabilitySummary> findAll(Project project, Optional<CapabilityFilter> filter, int offset, int limit);
 
     interface CapabilitySummary {
 
@@ -30,11 +28,11 @@ public interface CapabilityRepository {
 
     }
 
-    int countAll(Set<String> typeFilter, String valueFilter);
+    int countAll(Project project, Set<String> typeFilter, String valueFilter);
 
-    Stream<Dependencies> getRequiredBy(Capability capability);
+    Stream<Dependencies> getRequiredBy(Project project, CapabilityKey capabilityKey);
 
-    Stream<Dependencies> getProvidedBy(Capability capability);
+    Stream<Dependencies> getProvidedBy(Project project, CapabilityKey capabilityKey);
 
     interface Dependencies {
 

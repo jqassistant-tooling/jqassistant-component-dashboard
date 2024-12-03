@@ -2,8 +2,8 @@ package org.jqassistant.tooling.dashboard.service.adapters.primary.ui.views.capa
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
+import com.vaadin.flow.component.combobox.MultiSelectComboBox;
 import com.vaadin.flow.component.grid.Grid;
-import com.vaadin.flow.component.grid.dataview.GridDataView;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.provider.CallbackDataProvider;
@@ -17,10 +17,13 @@ import org.jqassistant.tooling.dashboard.service.application.CapabilityRepositor
 import org.jqassistant.tooling.dashboard.service.application.CapabilityService;
 import org.jqassistant.tooling.dashboard.service.application.model.Capability;
 import org.jqassistant.tooling.dashboard.service.application.model.CapabilityFilter;
+import org.jqassistant.tooling.dashboard.service.application.model.ProjectKey;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import static org.jqassistant.tooling.dashboard.service.adapters.primary.ui.views.capabilities.CapabilityView.PARAMETER_CAPABILITY_TYPE;
 import static org.jqassistant.tooling.dashboard.service.adapters.primary.ui.views.capabilities.CapabilityView.PARAMETER_CAPABILITY_VALUE;
+import static org.jqassistant.tooling.dashboard.service.adapters.primary.ui.views.projects.ProjectView.*;
 
 @RoutePrefix("ui")
 @Route(value = ":owner/:project/capabilities", layout = DashboardLayout.class)
@@ -29,33 +32,32 @@ import static org.jqassistant.tooling.dashboard.service.adapters.primary.ui.view
 @Transactional
 public class CapabilitiesView extends VerticalLayout implements BeforeEnterObserver {
 
-    private final transient CapabilityService capabilityService;
+    private final CapabilityService capabilityService;
 
-    private String owner;
+    private final TransactionTemplate transactionTemplate;
 
-    private String project;
+    private ProjectKey projectKey;
 
-    private GridDataView<CapabilitySummary> gridDataView;
+    private MultiSelectComboBox<String> typeFilterComboBox;
 
     @Override
     public void beforeEnter(BeforeEnterEvent event) {
-        this.owner = event.getRouteParameters()
-            .get("owner")
-            .orElse(null);
-        this.project = event.getRouteParameters()
-            .get("project")
-            .orElse(null);
+        transactionTemplate.executeWithoutResult(tx -> {
+            this.projectKey = getProjectKey(event);
+            this.typeFilterComboBox.setItems(capabilityService.getTypes(projectKey));
+        });
     }
 
     @PostConstruct
     void init() {
         CallbackDataProvider<CapabilitySummary, CapabilityFilter> callbackDataProvider = new CallbackDataProvider<>(
-            query -> capabilityService.findAll(query.getFilter(), query.getOffset(), query.getLimit()), query -> capabilityService.countAll(query.getFilter()));
+            query -> capabilityService.findAll(projectKey, query.getFilter(), query.getOffset(), query.getLimit()),
+            query -> capabilityService.countAll(projectKey, query.getFilter()));
         FilterableGrid<CapabilitySummary, CapabilityFilter> filterableGrid = FilterableGrid.builder(CapabilitySummary.class, callbackDataProvider,
             new CapabilityFilter());
 
         // Type
-        Component typeFilterComboBox = filterableGrid.multiselectComboBox(capabilityService.getTypes(),
+        this.typeFilterComboBox = filterableGrid.multiselectComboBox(
             (capabilityFilter, typeFilter) -> capabilityFilter.setTypeFilter(typeFilter.isEmpty() ? null : typeFilter));
         filterableGrid.withColumn("Type", typeFilterComboBox, summary -> new Span(summary.getCapability()
             .getType()));
@@ -84,8 +86,9 @@ public class CapabilitiesView extends VerticalLayout implements BeforeEnterObser
             Capability capability = event.getItem()
                 .getCapability();
             UI.getCurrent()
-                .navigate(CapabilityView.class, new RouteParam("owner", this.owner), new RouteParam("project", this.project),
-                    new RouteParam(PARAMETER_CAPABILITY_TYPE, capability.getType()), new RouteParam(PARAMETER_CAPABILITY_VALUE, capability.getValue()));
+                .navigate(CapabilityView.class, new RouteParam(PARAMETER_OWNER, this.projectKey.getOwner()),
+                    new RouteParam(PARAMETER_PROJECT, this.projectKey.getProject()), new RouteParam(PARAMETER_CAPABILITY_TYPE, capability.getType()),
+                    new RouteParam(PARAMETER_CAPABILITY_VALUE, capability.getValue()));
         });
         this.add(grid);
     }

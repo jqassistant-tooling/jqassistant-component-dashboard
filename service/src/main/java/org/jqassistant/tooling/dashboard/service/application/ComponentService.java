@@ -6,6 +6,8 @@ import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import org.jqassistant.tooling.dashboard.service.application.model.Component;
 import org.jqassistant.tooling.dashboard.service.application.model.ComponentFilter;
+import org.jqassistant.tooling.dashboard.service.application.model.Project;
+import org.jqassistant.tooling.dashboard.service.application.model.ProjectKey;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,19 +16,24 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class ComponentService {
 
+    private final ProjectService projectService;
+
     private final ComponentRepository componentRepository;
 
-    public Component resolve(String ownerId, String projectId, String componentId) {
-        return componentRepository.resolve(projectId, componentId);
+    public Component resolve(ProjectKey projectKey, String component) {
+        Project project = projectService.find(projectKey);
+        return componentRepository.resolve(project.getName(), component);
     }
 
-    public Stream<Component> findAll(Optional<ComponentFilter> filter, int offset, int limit) {
-        return componentRepository.findAll(filter.map(ComponentFilter::getNameFilter)
+    public Stream<Component> findAll(ProjectKey projectKey, Optional<ComponentFilter> filter, int offset, int limit) {
+        Project project = projectService.find(projectKey);
+        return componentRepository.findAll(project, filter.map(ComponentFilter::getNameFilter)
             .orElse(null), offset, limit);
     }
 
-    public int countAll(Optional<ComponentFilter> filter) {
-        return componentRepository.countAll(filter.map(ComponentFilter::getNameFilter)
+    public int countAll(ProjectKey projectKey, Optional<ComponentFilter> filter) {
+        Project project = projectService.find(projectKey);
+        return componentRepository.countAll(project, filter.map(ComponentFilter::getNameFilter)
             .orElse(null));
     }
 }

@@ -12,43 +12,53 @@ import com.buschmais.xo.neo4j.api.annotation.Cypher;
 import org.jqassistant.tooling.dashboard.service.application.CapabilityRepository;
 import org.jqassistant.tooling.dashboard.service.application.model.Capability;
 import org.jqassistant.tooling.dashboard.service.application.model.Component;
+import org.jqassistant.tooling.dashboard.service.application.model.Project;
 
 @Repository
 public interface XOCapabilityRepository {
 
     @ResultOf
     @Cypher("""
-        MERGE
-          (capability:Capability{type: $type, value: $value})
-        RETURN
-          capability
-        """)
-    Capability resolve(@Parameter("type") String type, @Parameter("value") String value);
-
-    @ResultOf
-    @Cypher("""
         MATCH
-          (capability:Capability{type: $type, value: $value})
-        RETURN
-          capability
-        """)
-    Capability find(@Parameter("type") String type, @Parameter("value") String value);
-
-    @ResultOf
-    @Cypher("""
-        MATCH
-          (capability:Capability)
+          (project:Project)
         WHERE
-          ($typeFilter is null or capability.type in $typeFilter)
+          id(project) = $project
+        MERGE
+          (project)-[:CONTAINS_CAPABILITY]->(capability:Capability{type: $type, value: $value})
+        RETURN
+          capability
+        """)
+    Capability resolve(@Parameter("project") Project project, @Parameter("type") String type, @Parameter("value") String value);
+
+    @ResultOf
+    @Cypher("""
+        MATCH
+          (project:Project)-[:CONTAINS_CAPABILITY]->(capability:Capability{type: $type, value: $value})
+        WHERE
+          id(project) = $project
+        RETURN
+          capability
+        """)
+    Capability find(@Parameter("project") Project project, @Parameter("type") String type, @Parameter("value") String value);
+
+    @ResultOf
+    @Cypher("""
+        MATCH
+          (project:Project)-[:CONTAINS_CAPABILITY]->(capability:Capability)
+        WHERE
+          id(project) = $project
+          and ($typeFilter is null or capability.type in $typeFilter)
           and ($valueFilter is null or toLower(capability.value) contains toLower($valueFilter))
         RETURN
           count(capability)
         """)
-    int countAll(@Parameter("typeFilter") Set<String> typeFilter, @Parameter("valueFilter") String valueFilter);
+    int countAll(@Parameter("project") Project project, @Parameter("typeFilter") Set<String> typeFilter, @Parameter("valueFilter") String valueFilter);
 
     @Cypher("""
         MATCH
-          (capability:Capability)
+          (project:Project)-[:CONTAINS_CAPABILITY]->(capability:Capability)
+        WHERE
+          id(project) = $project
         RETURN
           distinct capability.type as type
         ORDER BY
@@ -60,9 +70,11 @@ public interface XOCapabilityRepository {
 
     @Cypher("""
         MATCH
+          (project:Project)-[:CONTAINS_CAPABILITY]->(capability:Capability),
           (component)-[:HAS_VERSION]->(:Version)-[:CONTAINS_FILE]->(:File)-[:PROVIDES_CAPABILITY]->(capability:Capability)
         WHERE
-          ($typeFilter is null or capability.type in $typeFilter)
+          id(project) = $project
+          and ($typeFilter is null or capability.type in $typeFilter)
           and ($valueFilter is null or toLower(capability.value) contains toLower($valueFilter))
         WITH
           component, capability
@@ -86,8 +98,11 @@ public interface XOCapabilityRepository {
 
     @Cypher("""
         MATCH
+          (project:Project)-[:CONTAINS_CAPABILITY]->(capability:Capability),
           (component:Component)-[:HAS_VERSION]->(version)-[:CONTAINS_FILE]->(file:File),
           (file)-[:REQUIRES_CAPABILITY]->(capability:Capability{type: $type, value: $value})
+        WHERE
+          id(project) = $project
         WITH
           component, version, collect(file) as files
         RETURN
@@ -106,8 +121,11 @@ public interface XOCapabilityRepository {
 
     @Cypher("""
         MATCH
+          (project:Project)-[:CONTAINS_CAPABILITY]->(capability:Capability),
           (component:Component)-[:HAS_VERSION]->(version)-[:CONTAINS_FILE]->(file:File),
           (file)-[:PROVIDES_CAPABILITY]->(capability:Capability{type: $type, value: $value})
+        WHERE
+          id(project) = $project
         WITH
           component, version, collect(file) as files
         RETURN

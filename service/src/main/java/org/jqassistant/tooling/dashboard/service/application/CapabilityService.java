@@ -5,8 +5,7 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import lombok.RequiredArgsConstructor;
-import org.jqassistant.tooling.dashboard.service.application.model.Capability;
-import org.jqassistant.tooling.dashboard.service.application.model.CapabilityFilter;
+import org.jqassistant.tooling.dashboard.service.application.model.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,35 +14,43 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class CapabilityService {
 
+    private final ProjectService projectService;
+
     private final CapabilityRepository capabilityRepository;
 
-    public Capability resolve(String type, String value) {
-        return capabilityRepository.resolve(type, value);
+    public Capability resolve(Project project, String type, String value) {
+        return capabilityRepository.resolve(project, type, value);
     }
 
-    public Capability find(String capabilityType, String capabilityValue) {
-        return capabilityRepository.find(capabilityType, capabilityValue);
+    public Capability find(CapabilityKey capabilityKey) {
+        Project project = projectService.find(capabilityKey.getProjectKey());
+        return capabilityRepository.find(project, capabilityKey);
     }
 
-    public Stream<CapabilityRepository.CapabilitySummary> findAll(Optional<CapabilityFilter> filter, int offset, int limit) {
-        return capabilityRepository.findAll(filter, offset, limit);
+    public Stream<CapabilityRepository.CapabilitySummary> findAll(ProjectKey projectKey, Optional<CapabilityFilter> filter, int offset, int limit) {
+        Project project = projectService.find(projectKey);
+        return capabilityRepository.findAll(project, filter, offset, limit);
     }
 
-    public int countAll(Optional<CapabilityFilter> filter) {
-        return capabilityRepository.countAll(filter.map(CapabilityFilter::getTypeFilter)
+    public int countAll(ProjectKey projectKey, Optional<CapabilityFilter> filter) {
+        Project project = projectService.find(projectKey);
+        return capabilityRepository.countAll(project, filter.map(CapabilityFilter::getTypeFilter)
             .orElse(null), filter.map(CapabilityFilter::getValueFilter)
             .orElse(null));
     }
 
-    public List<String> getTypes() {
-        return capabilityRepository.getTypes();
+    public List<String> getTypes(ProjectKey projectKey) {
+        Project project = projectService.find(projectKey);
+        return capabilityRepository.getTypes(project);
     }
 
-    public Stream<CapabilityRepository.Dependencies> getRequiredByBy(Capability capability) {
-        return capabilityRepository.getRequiredBy(capability);
+    public Stream<CapabilityRepository.Dependencies> getRequiredByBy(CapabilityKey capabilityKey) {
+        Project project = projectService.find(capabilityKey.getProjectKey());
+        return capabilityRepository.getRequiredBy(project, capabilityKey);
     }
 
-    public Stream<CapabilityRepository.Dependencies> getProvidedBy(Capability capability) {
-        return capabilityRepository.getProvidedBy(capability);
+    public Stream<CapabilityRepository.Dependencies> getProvidedBy(CapabilityKey capabilityKey) {
+        Project project = projectService.find(capabilityKey.getProjectKey());
+        return capabilityRepository.getProvidedBy(project, capabilityKey);
     }
 }

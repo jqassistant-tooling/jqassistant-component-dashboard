@@ -8,9 +8,9 @@ import com.buschmais.xo.api.XOManager;
 import lombok.RequiredArgsConstructor;
 
 import static java.util.stream.StreamSupport.stream;
-import static lombok.AccessLevel.PROTECTED;
+import static lombok.AccessLevel.PACKAGE;
 
-@RequiredArgsConstructor(access = PROTECTED)
+@RequiredArgsConstructor(access = PACKAGE)
 public class AbstractXORepository<T> {
 
     protected final XOManager xoManager;

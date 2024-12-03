@@ -3,6 +3,7 @@ package org.jqassistant.tooling.dashboard.service.adapters.primary.api.rest.mapp
 import org.jqassistant.tooling.dashboard.api.dto.VersionDTO;
 import org.jqassistant.tooling.dashboard.service.application.VersionService;
 import org.jqassistant.tooling.dashboard.service.application.model.Component;
+import org.jqassistant.tooling.dashboard.service.application.model.Project;
 import org.jqassistant.tooling.dashboard.service.application.model.Version;
 import org.mapstruct.Context;
 import org.mapstruct.Mapper;
@@ -15,10 +16,10 @@ public abstract class VersionMapper {
     @Autowired
     private VersionService versionService;
 
-    public abstract Version toVersion(@Context Component component, VersionDTO dto);
+    public abstract Version toVersion(@Context Project project, @Context Component component, VersionDTO dto);
 
     @ObjectFactory
-    Version resolve(VersionDTO versionDTO, @Context Component component) {
+    Version resolve(@Context Component component, VersionDTO versionDTO) {
         return versionService.resolve(component, versionDTO.getVersion());
     }
 
