@@ -4,10 +4,12 @@
 
     <concept id="jqassistant-dashboard-jqassistant-plugin:ArtifactProvidesVersion">
         <providesConcept refId="jqassistant-dashboard:ComponentVersionContainsFile"/>
-        <description>Identify a jQAssistant plugin as component version containing files</description>
+        <description>Identify a jQAssistant plugin as component version containing files.</description>
         <cypher><![CDATA[
             MATCH
               (artifact:Artifact{type:"jar"})-[:CONTAINS]->(:File:Xml{fileName:"/META-INF/jqassistant-plugin.xml"})
+            WHERE NOT
+              artifact.classifier in ["sources", "javadoc", "tests", "test"]
             MERGE
               (component:Dashboard:Component{id: artifact.group + ":" + artifact.name})
             MERGE

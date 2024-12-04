@@ -1,6 +1,5 @@
 package org.jqassistant.tooling.dashboard.service.adapters.primary.ui.shared;
 
-import java.util.List;
 import java.util.Set;
 import java.util.function.BiConsumer;
 
@@ -20,8 +19,7 @@ import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.function.SerializableFunction;
 
-import static com.vaadin.flow.component.grid.GridVariant.LUMO_ROW_STRIPES;
-import static com.vaadin.flow.component.grid.GridVariant.LUMO_WRAP_CELL_CONTENT;
+import static com.vaadin.flow.component.grid.GridVariant.*;
 
 public class FilterableGrid<T, F> {
 
@@ -38,11 +36,9 @@ public class FilterableGrid<T, F> {
     private FilterableGrid(Class<T> type, CallbackDataProvider<T, F> callbackDataProvider, F filter) {
         this.filter = filter;
         this.grid = new Grid<>(type, false);
-        this.grid.setSizeFull();
-        this.grid.setAllRowsVisible(true);
         this.grid.getHeaderRows()
             .clear();
-        grid.addThemeVariants(LUMO_WRAP_CELL_CONTENT, LUMO_ROW_STRIPES);
+        grid.addThemeVariants(LUMO_WRAP_CELL_CONTENT, LUMO_ROW_STRIPES, LUMO_COMPACT, LUMO_NO_BORDER);
         ConfigurableFilterDataProvider<T, Void, F> filterDataProvider = callbackDataProvider.withConfigurableFilter();
         filterDataProvider.setFilter(filter);
         this.gridDataView = this.grid.setItems(filterDataProvider);
@@ -65,9 +61,8 @@ public class FilterableGrid<T, F> {
         return textField;
     }
 
-    public ComboBox comboBox(List<String> items, BiConsumer<F, String> updateFilterAction) {
+    public ComboBox<String> comboBox(BiConsumer<F, String> updateFilterAction) {
         ComboBox<String> comboBox = new ComboBox<>();
-        comboBox.setItems(items);
         comboBox.setClearButtonVisible(true);
         comboBox.setWidthFull();
         addValueChangeListener(comboBox, updateFilterAction);

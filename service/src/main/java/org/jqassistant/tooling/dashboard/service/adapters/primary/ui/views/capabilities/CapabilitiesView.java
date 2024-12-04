@@ -32,11 +32,11 @@ import static org.jqassistant.tooling.dashboard.service.adapters.primary.ui.view
 @Transactional
 public class CapabilitiesView extends VerticalLayout implements BeforeEnterObserver {
 
-    private final CapabilityService capabilityService;
+    private final transient CapabilityService capabilityService;
 
     private final TransactionTemplate transactionTemplate;
 
-    private ProjectKey projectKey;
+    private transient ProjectKey projectKey;
 
     private MultiSelectComboBox<String> typeFilterComboBox;
 
@@ -50,6 +50,8 @@ public class CapabilitiesView extends VerticalLayout implements BeforeEnterObser
 
     @PostConstruct
     void init() {
+        setSizeFull();
+
         CallbackDataProvider<CapabilitySummary, CapabilityFilter> callbackDataProvider = new CallbackDataProvider<>(
             query -> capabilityService.findAll(projectKey, query.getFilter(), query.getOffset(), query.getLimit()),
             query -> capabilityService.countAll(projectKey, query.getFilter()));

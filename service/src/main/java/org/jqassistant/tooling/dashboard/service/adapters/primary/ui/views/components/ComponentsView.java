@@ -28,9 +28,9 @@ import static org.jqassistant.tooling.dashboard.service.adapters.primary.ui.view
 @Transactional
 public class ComponentsView extends VerticalLayout implements BeforeEnterObserver {
 
-    private final ComponentService componentService;
+    private final transient ComponentService componentService;
 
-    private ProjectKey projectKey;
+    private transient ProjectKey projectKey;
 
     @Override
     public void beforeEnter(BeforeEnterEvent event) {
@@ -39,6 +39,8 @@ public class ComponentsView extends VerticalLayout implements BeforeEnterObserve
 
     @PostConstruct
     void init() {
+        setSizeFull();
+
         FilterableGrid<Component, ComponentFilter> filterableGrid = FilterableGrid.builder(Component.class,
             new CallbackDataProvider<Component, ComponentFilter>(query -> stream(
                 componentService.findAll(projectKey, query.getFilter(), query.getOffset(), query.getLimit())
