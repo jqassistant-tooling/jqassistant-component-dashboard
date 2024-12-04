@@ -98,47 +98,45 @@ public interface XOCapabilityRepository {
 
     @Cypher("""
         MATCH
-          (project:Project)-[:CONTAINS_CAPABILITY]->(capability:Capability),
-          (component:Component)-[:HAS_VERSION]->(version)-[:CONTAINS_FILE]->(file:File),
-          (file)-[:REQUIRES_CAPABILITY]->(capability:Capability{type: $type, value: $value})
+          (project:Project)-[:CONTAINS_CAPABILITY]->(capability:Capability{type: $type, value: $value}),
+          (component:Component)-[:HAS_VERSION]->(version)-[:CONTAINS_FILE]->(file:File)-[:REQUIRES_CAPABILITY]->(capability)
         WHERE
           id(project) = $project
         WITH
           component, version, collect(file) as files
         RETURN
-          component, {
+          component, collect({
             version: version,
             files: files
-          } as versions
+          }) as versions
         """)
     interface CapabilityRequiredBy extends CapabilityRepository.Dependencies {
 
         Component getComponent();
 
-        Map<String, Object> getVersions();
+        List<Map<String, Object>> getVersions();
 
     }
 
     @Cypher("""
         MATCH
-          (project:Project)-[:CONTAINS_CAPABILITY]->(capability:Capability),
-          (component:Component)-[:HAS_VERSION]->(version)-[:CONTAINS_FILE]->(file:File),
-          (file)-[:PROVIDES_CAPABILITY]->(capability:Capability{type: $type, value: $value})
+          (project:Project)-[:CONTAINS_CAPABILITY]->(capability:Capability{type: $type, value: $value}),
+          (component:Component)-[:HAS_VERSION]->(version)-[:CONTAINS_FILE]->(file:File)-[:PROVIDES_CAPABILITY]->(capability)
         WHERE
           id(project) = $project
         WITH
           component, version, collect(file) as files
         RETURN
-          component, {
+          component, collect({
             version: version,
             files: files
-          } as versions
+          }) as versions
         """)
     interface CapabilityProvidedBy extends CapabilityRepository.Dependencies {
 
         Component getComponent();
 
-        Map<String, Object> getVersions();
+        List<Map<String, Object>> getVersions();
 
     }
 

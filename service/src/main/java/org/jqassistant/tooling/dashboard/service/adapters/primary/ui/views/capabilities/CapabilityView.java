@@ -35,7 +35,7 @@ public class CapabilityView extends VerticalLayout implements BeforeEnterObserve
 
     public static final String PARAMETER_CAPABILITY_VALUE = "capabilityValue";
 
-    private final CapabilityService capabilityService;
+    private final transient CapabilityService capabilityService;
 
     private final TransactionTemplate transactionTemplate;
 
@@ -92,22 +92,23 @@ public class CapabilityView extends VerticalLayout implements BeforeEnterObserve
             componentNodeBuilder.value(component);
             componentNodeBuilder.label(component.getName());
 
-            Map<String, Object> versions = dependencies.getVersions();
-            TreeNode.TreeNodeBuilder<Version> versionNodeBuilder = TreeNode.builder();
-            Version version = (Version) versions.get("version");
-            versionNodeBuilder.value(version);
-            versionNodeBuilder.label(version.getVersion());
+            List<Map<String, Object>> versions = dependencies.getVersions();
+            for (Map<String, Object> versionEntry : versions) {
+                TreeNode.TreeNodeBuilder<Version> versionNodeBuilder = TreeNode.builder();
+                Version version = (Version) versionEntry.get("version");
+                versionNodeBuilder.value(version);
+                versionNodeBuilder.label(version.getVersion());
 
-            List<File> files = (List<File>) versions.get("files");
-            for (File file : files) {
-                TreeNode.TreeNodeBuilder<File> fileNodeBuilder = TreeNode.builder();
-                fileNodeBuilder.value(file);
-                fileNodeBuilder.label(file.getFileName());
-                TreeNode<File> fileTreeNode = fileNodeBuilder.build();
-                versionNodeBuilder.child(fileTreeNode);
+                List<File> files = (List<File>) versionEntry.get("files");
+                for (File file : files) {
+                    TreeNode.TreeNodeBuilder<File> fileNodeBuilder = TreeNode.builder();
+                    fileNodeBuilder.value(file);
+                    fileNodeBuilder.label(file.getFileName());
+                    versionNodeBuilder.child(fileNodeBuilder.build());
+                }
+
+                componentNodeBuilder.child(versionNodeBuilder.build());
             }
-            TreeNode<Version> versionTreeNode = versionNodeBuilder.build();
-            componentNodeBuilder.child(versionTreeNode);
             treeItems.add(componentNodeBuilder.build());
         }
         return treeItems;

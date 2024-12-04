@@ -38,7 +38,7 @@ public interface CapabilityRepository {
 
         Component getComponent();
 
-        Map<String, Object> getVersions();
+        List<Map<String, Object>> getVersions();
 
     }
 }
