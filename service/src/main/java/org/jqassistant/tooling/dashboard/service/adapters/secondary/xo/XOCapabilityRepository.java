@@ -59,33 +59,20 @@ public interface XOCapabilityRepository {
           (project:Project)-[:CONTAINS_CAPABILITY]->(capability:Capability)
         WHERE
           id(project) = $project
-        RETURN
-          distinct capability.type as type
-        ORDER BY
-          type
-        """)
-    interface Types {
-        String getType();
-    }
-
-    @Cypher("""
-        MATCH
-          (project:Project)-[:CONTAINS_CAPABILITY]->(capability:Capability),
-          (component)-[:HAS_VERSION]->(:Version)-[:CONTAINS_FILE]->(:File)-[:PROVIDES_CAPABILITY]->(capability:Capability)
-        WHERE
-          id(project) = $project
           and ($typeFilter is null or capability.type in $typeFilter)
           and ($valueFilter is null or toLower(capability.value) contains toLower($valueFilter))
         WITH
-          component, capability
+          capability
         ORDER BY
-          capability.type, capability.value, component.name
+          capability.type, capability.value
         SKIP
           $offset
-        RETURN
-          capability, collect(distinct component) as providedByComponents
         LIMIT
           $limit
+        OPTIONAL MATCH
+          (component)-[:HAS_VERSION]->(:Version)-[:CONTAINS_FILE]->(:File)-[:PROVIDES_CAPABILITY]->(capability:Capability)
+        RETURN
+          capability, collect(distinct component) as providedByComponents
         """)
     interface CapabilitySummary extends CapabilityRepository.CapabilitySummary {
 
@@ -94,6 +81,20 @@ public interface XOCapabilityRepository {
 
         @Override
         List<Component> getProvidedByComponents();
+    }
+
+    @Cypher("""
+        MATCH
+          (project:Project)-[:CONTAINS_CAPABILITY]->(capability:Capability)
+        WHERE
+          id(project) = $project
+        RETURN
+          distinct capability.type as type
+        ORDER BY
+          type
+        """)
+    interface Types {
+        String getType();
     }
 
     @Cypher("""
