@@ -5,6 +5,7 @@ import java.util.Map;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import com.buschmais.jqassistant.core.report.api.ReportContext;
 import com.buschmais.jqassistant.core.report.api.ReportException;
@@ -54,7 +55,7 @@ public class ComponentVersionReportPlugin implements ReportPlugin {
         }
         if (!result.getStatus()
             .equals(Status.SUCCESS)) {
-            log.warn("The concept '{}' did not return with status {}, report will not be published.", rule.getId(), result.getStatus());
+            log.warn("The concept '{}' did returned status {}, report will not be published.", rule.getId(), result.getStatus());
         } else {
             publishVersions(result);
         }
@@ -73,10 +74,12 @@ public class ComponentVersionReportPlugin implements ReportPlugin {
     private void publish(Component component, Version version, VersionDTO versionDTO) {
         WebTarget target = this.apiTarget.path(component.getId())
             .path(version.getVersion());
-        int status = target.request(MediaType.APPLICATION_JSON_TYPE)
-            .put(json(versionDTO))
-            .getStatus();
-        log.info("Component '{}' version '{}' published to '{}' (status={}).", component.getId(), version.getVersion(), target.getUri(), status);
+
+        try (Response put = target.request(MediaType.APPLICATION_JSON_TYPE)
+            .put(json(versionDTO))) {
+            log.info("Component '{}' version '{}' published to '{}' (status={}).", component.getId(), version.getVersion(), target.getUri(), put
+                .getStatus());
+        }
     }
 
     private static <T> Column<T> getColumn(Row row, String columnName) throws ReportException {
