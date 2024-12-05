@@ -41,26 +41,23 @@ public interface XOCapabilityRepository {
         """)
     Capability find(@Parameter("project") Project project, @Parameter("type") String type, @Parameter("value") String value);
 
-    @ResultOf
-    @Cypher("""
+    String CAPABILITY_FILTER = """
         MATCH
           (project:Project)-[:CONTAINS_CAPABILITY]->(capability:Capability)
         WHERE
           id(project) = $project
           and ($typeFilter is null or capability.type in $typeFilter)
           and ($valueFilter is null or toLower(capability.value) contains toLower($valueFilter))
+        """;
+
+    @ResultOf
+    @Cypher(CAPABILITY_FILTER + """
         RETURN
           count(capability)
         """)
     int countAll(@Parameter("project") Project project, @Parameter("typeFilter") Set<String> typeFilter, @Parameter("valueFilter") String valueFilter);
 
-    @Cypher("""
-        MATCH
-          (project:Project)-[:CONTAINS_CAPABILITY]->(capability:Capability)
-        WHERE
-          id(project) = $project
-          and ($typeFilter is null or capability.type in $typeFilter)
-          and ($valueFilter is null or toLower(capability.value) contains toLower($valueFilter))
+    @Cypher(CAPABILITY_FILTER + """
         WITH
           capability
         ORDER BY
