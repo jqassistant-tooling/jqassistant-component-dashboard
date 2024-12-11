@@ -29,7 +29,7 @@ public interface XOVersionRepository extends VersionRepository {
           v
         """)
     @Override
-    void remove(@Parameter("component") Component component, @Parameter("version") String version);
+    void remove(Component component, String version);
 
     @ResultOf
     @Cypher("""
@@ -43,5 +43,5 @@ public interface XOVersionRepository extends VersionRepository {
           v
         """)
     @Override
-    Version create(@Parameter("component") Component component, @Parameter("version") String version);
+    Version create(Component component, String version);
 }

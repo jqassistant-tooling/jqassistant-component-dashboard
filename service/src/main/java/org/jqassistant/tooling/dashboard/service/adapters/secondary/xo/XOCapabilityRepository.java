@@ -28,7 +28,7 @@ public interface XOCapabilityRepository {
         RETURN
           capability
         """)
-    Capability resolve(@Parameter("project") Project project, @Parameter("type") String type, @Parameter("value") String value);
+    Capability resolve(Project project, String type, String value);
 
     @ResultOf
     @Cypher("""
@@ -39,7 +39,7 @@ public interface XOCapabilityRepository {
         RETURN
           capability
         """)
-    Capability find(@Parameter("project") Project project, @Parameter("type") String type, @Parameter("value") String value);
+    Capability find(Project project, String type, String value);
 
     @ResultOf
     @Cypher("""
@@ -52,7 +52,7 @@ public interface XOCapabilityRepository {
         RETURN
           count(capability)
         """)
-    int countAll(@Parameter("project") Project project, @Parameter("typeFilter") Set<String> typeFilter, @Parameter("valueFilter") String valueFilter);
+    int countAll(Project project, Set<String> typeFilter, String valueFilter);
 
     @Cypher("""
         MATCH

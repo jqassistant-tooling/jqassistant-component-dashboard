@@ -21,7 +21,7 @@ public interface XOComponentRepository {
         RETURN
           component
         """)
-    Component resolve(@Parameter("project") String project, @Parameter("component") String componentId);
+    Component resolve(String project, String componentId);
 
     @ResultOf
     @Cypher("""
@@ -41,8 +41,7 @@ public interface XOComponentRepository {
         LIMIT
           $limit
         """)
-    ResultIterable<Component> findAll(@Parameter("project") Project project, @Parameter("nameFilter") String nameFilter, @Parameter("offset") int offset,
-        @Parameter("limit") int limit);
+    ResultIterable<Component> findAll(Project project, String nameFilter, int offset, int limit);
 
     @ResultOf
     @Cypher("""
@@ -54,5 +53,5 @@ public interface XOComponentRepository {
         RETURN
           count(component)
         """)
-    int countAll(@Parameter("project") Project project, @Parameter("nameFilter") String nameFilter);
+    int countAll(Project project, String nameFilter);
 }

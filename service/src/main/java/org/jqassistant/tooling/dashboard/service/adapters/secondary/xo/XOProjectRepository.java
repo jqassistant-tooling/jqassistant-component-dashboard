@@ -19,5 +19,5 @@ public interface XOProjectRepository {
         RETURN
           project
         """)
-    Project findProject(@Parameter("owner") String owner, @Parameter("project") String project);
+    Project findProject(String owner, String project);
 }
