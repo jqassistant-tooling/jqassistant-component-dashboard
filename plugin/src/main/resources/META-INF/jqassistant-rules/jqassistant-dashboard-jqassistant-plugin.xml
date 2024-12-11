@@ -8,22 +8,26 @@
         <cypher><![CDATA[
             MATCH
               (artifact:Artifact{type:"jar"})-[:CONTAINS]->(:File:Xml{fileName:"/META-INF/jqassistant-plugin.xml"})
-            WHERE NOT
-              artifact.classifier in ["sources", "javadoc", "tests", "test"]
-            MERGE
-              (component:Dashboard:Component{id: artifact.group + ":" + artifact.name})
-            MERGE
-              (component)-[:HAS_VERSION]->(version:Dashboard:Version{version:artifact.version})
-            MERGE
-              (artifact)-[:PROVIDES]->(version)
-            WITH
-              artifact, component, version
-            MATCH
-              (artifact:Artifact)-[:CONTAINS]->(file:File)
-            MERGE
-              (version)-[:CONTAINS_FILE]->(file)
-            SET
-              file:Dashboard
+            WHERE
+              artifact.classifier is null
+            CALL (*) {
+              MERGE
+                (component:Dashboard:Component{id: artifact.group + ":" + artifact.name})
+              MERGE
+                (component)-[:HAS_VERSION]->(version:Dashboard:Version{version:artifact.version})
+              MERGE
+                (artifact)-[:PROVIDES]->(version)
+              WITH
+                artifact, component, version
+              MATCH
+                (artifact:Artifact)-[:CONTAINS]->(file:File)
+              MERGE
+                (version)-[:CONTAINS_FILE]->(file)
+              SET
+                file:Dashboard
+              RETURN
+                component, version, file
+            } IN TRANSACTIONS
             RETURN
               component as Component, version as Version, file as File
             ORDER BY
@@ -42,10 +46,14 @@
               (label)-[:HAS]->(value:Value:Primitive{name:"value"})
             WITH
               component, version, file, coalesce(value.value, interface.name) as labelValue
-            MERGE
-              (capability:Dashboard:Capability{type:"Label", value:labelValue})
-            MERGE
-              (file)-[:PROVIDES_CAPABILITY]->(capability)
+            CALL (*) {
+              MERGE
+                (capability:Dashboard:Capability{type:"Label", value:labelValue})
+              MERGE
+                (file)-[:PROVIDES_CAPABILITY]->(capability)
+              RETURN
+                capability
+            } IN TRANSACTIONS
             RETURN
               component as Component, version as Version, file as File, capability as Capability
             ORDER BY
@@ -70,12 +78,16 @@
                 when "group" then "Group"
                 else "unknown"
               end as capabilityType, id.value as ruleId, description
-            MERGE
-              (capability:Dashboard:Capability{type:capabilityType, value:ruleId})
-            MERGE
-              (file)-[:PROVIDES_CAPABILITY]->(capability)
-            SET
-              capability.description=trim(description.value)
+            CALL (*) {
+              MERGE
+                (capability:Dashboard:Capability{type:capabilityType, value:ruleId})
+              MERGE
+                (file)-[:PROVIDES_CAPABILITY]->(capability)
+              SET
+                capability.description=trim(description.value)
+              RETURN
+                capability
+            } IN TRANSACTIONS
             RETURN
               component as Component, version as Version, file as File, capability as Capability
             ORDER BY
@@ -94,10 +106,14 @@
               (requiresConcept)-[:HAS_ATTRIBUTE]->(refId:Xml:Attribute{name:"refId"})
             WHERE
               rule.name in ["concept", "constraint"]
-            MERGE
-              (capability:Dashboard:Capability{type:"Concept", value:refId.value})
-            MERGE
-              (file)-[:REQUIRES_CAPABILITY]->(capability)
+            CALL (*) {
+              MERGE
+                (capability:Dashboard:Capability{type:"Concept", value:refId.value})
+              MERGE
+                (file)-[:REQUIRES_CAPABILITY]->(capability)
+              RETURN
+                capability
+            } IN TRANSACTIONS
             RETURN
               component as Component, version as Version, file as File, capability as Capability
             ORDER BY
@@ -121,10 +137,14 @@
                 when "includeGroup" then "Group"
                 else "unknown"
               end as capabilityType, refId.value as ruleId
-            MERGE
-              (capability:Dashboard:Capability{type:capabilityType, value:ruleId})
-            MERGE
-              (file)-[:REQUIRES_CAPABILITY]->(capability)
+            CALL (*) {
+              MERGE
+                (capability:Dashboard:Capability{type:capabilityType, value:ruleId})
+              MERGE
+                (file)-[:REQUIRES_CAPABILITY]->(capability)
+              RETURN
+                capability
+            } IN TRANSACTIONS
             RETURN
               component as Component, version as Version, file as File, capability as Capability
             ORDER BY

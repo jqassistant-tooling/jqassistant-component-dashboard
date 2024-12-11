@@ -41,18 +41,44 @@ public interface XOCapabilityRepository {
         """)
     Capability find(Project project, String type, String value);
 
-    @ResultOf
-    @Cypher("""
+    String CAPABILITY_FILTER = """
         MATCH
           (project:Project)-[:CONTAINS_CAPABILITY]->(capability:Capability)
         WHERE
           id(project) = $project
           and ($typeFilter is null or capability.type in $typeFilter)
           and ($valueFilter is null or toLower(capability.value) contains toLower($valueFilter))
+        """;
+
+    @ResultOf
+    @Cypher(CAPABILITY_FILTER + """
         RETURN
           count(capability)
         """)
     int countAll(Project project, Set<String> typeFilter, String valueFilter);
+
+    @Cypher(CAPABILITY_FILTER + """
+        WITH
+          capability
+        ORDER BY
+          capability.type, capability.value
+        SKIP
+          $offset
+        LIMIT
+          $limit
+        OPTIONAL MATCH
+          (component)-[:HAS_VERSION]->(:Version)-[:CONTAINS_FILE]->(:File)-[:PROVIDES_CAPABILITY]->(capability:Capability)
+        RETURN
+          capability, collect(distinct component) as providedByComponents
+        """)
+    interface CapabilitySummary extends CapabilityRepository.CapabilitySummary {
+
+        @Override
+        Capability getCapability();
+
+        @Override
+        List<Component> getProvidedByComponents();
+    }
 
     @Cypher("""
         MATCH
@@ -70,75 +96,45 @@ public interface XOCapabilityRepository {
 
     @Cypher("""
         MATCH
-          (project:Project)-[:CONTAINS_CAPABILITY]->(capability:Capability),
-          (component)-[:HAS_VERSION]->(:Version)-[:CONTAINS_FILE]->(:File)-[:PROVIDES_CAPABILITY]->(capability:Capability)
-        WHERE
-          id(project) = $project
-          and ($typeFilter is null or capability.type in $typeFilter)
-          and ($valueFilter is null or toLower(capability.value) contains toLower($valueFilter))
-        WITH
-          component, capability
-        ORDER BY
-          capability.type, capability.value, component.name
-        SKIP
-          $offset
-        RETURN
-          capability, collect(distinct component) as providedByComponents
-        LIMIT
-          $limit
-        """)
-    interface CapabilitySummary extends CapabilityRepository.CapabilitySummary {
-
-        @Override
-        Capability getCapability();
-
-        @Override
-        List<Component> getProvidedByComponents();
-    }
-
-    @Cypher("""
-        MATCH
-          (project:Project)-[:CONTAINS_CAPABILITY]->(capability:Capability),
-          (component:Component)-[:HAS_VERSION]->(version)-[:CONTAINS_FILE]->(file:File),
-          (file)-[:REQUIRES_CAPABILITY]->(capability:Capability{type: $type, value: $value})
+          (project:Project)-[:CONTAINS_CAPABILITY]->(capability:Capability{type: $type, value: $value}),
+          (component:Component)-[:HAS_VERSION]->(version)-[:CONTAINS_FILE]->(file:File)-[:REQUIRES_CAPABILITY]->(capability)
         WHERE
           id(project) = $project
         WITH
           component, version, collect(file) as files
         RETURN
-          component, {
+          component, collect({
             version: version,
             files: files
-          } as versions
+          }) as versions
         """)
     interface CapabilityRequiredBy extends CapabilityRepository.Dependencies {
 
         Component getComponent();
 
-        Map<String, Object> getVersions();
+        List<Map<String, Object>> getVersions();
 
     }
 
     @Cypher("""
         MATCH
-          (project:Project)-[:CONTAINS_CAPABILITY]->(capability:Capability),
-          (component:Component)-[:HAS_VERSION]->(version)-[:CONTAINS_FILE]->(file:File),
-          (file)-[:PROVIDES_CAPABILITY]->(capability:Capability{type: $type, value: $value})
+          (project:Project)-[:CONTAINS_CAPABILITY]->(capability:Capability{type: $type, value: $value}),
+          (component:Component)-[:HAS_VERSION]->(version)-[:CONTAINS_FILE]->(file:File)-[:PROVIDES_CAPABILITY]->(capability)
         WHERE
           id(project) = $project
         WITH
           component, version, collect(file) as files
         RETURN
-          component, {
+          component, collect({
             version: version,
             files: files
-          } as versions
+          }) as versions
         """)
     interface CapabilityProvidedBy extends CapabilityRepository.Dependencies {
 
         Component getComponent();
 
-        Map<String, Object> getVersions();
+        List<Map<String, Object>> getVersions();
 
     }
 
