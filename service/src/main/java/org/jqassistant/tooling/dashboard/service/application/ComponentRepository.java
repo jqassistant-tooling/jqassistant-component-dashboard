@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ComponentRepository {
 
-    Component resolve(String projectId, String componentId);
+    Component resolve(String project, String component);
 
     Stream<Component> findAll(Project project, String nameFilter, int offset, int limit);
 

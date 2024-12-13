@@ -21,7 +21,7 @@ public interface XOComponentRepository {
         RETURN
           component
         """)
-    Component resolve(String project, String componentId);
+    Component resolve(String project, String component);
 
     @ResultOf
     @Cypher("""
