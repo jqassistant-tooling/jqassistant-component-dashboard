@@ -1,5 +1,6 @@
 package org.jqassistant.tooling.dashboard.plugin.api.model;
 
+import java.time.ZonedDateTime;
 import java.util.List;
 
 import com.buschmais.xo.neo4j.api.annotation.Label;
@@ -14,6 +15,10 @@ public interface Version extends Dashboard {
     String getVersion();
 
     void setVersion(String version);
+
+    ZonedDateTime getUpdatedAt();
+
+    void setUpdatedAt(ZonedDateTime lastUpdatedAt);
 
     @HasVersion
     @Incoming

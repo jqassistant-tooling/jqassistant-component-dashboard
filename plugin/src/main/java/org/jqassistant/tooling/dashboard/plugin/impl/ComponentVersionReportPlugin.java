@@ -41,6 +41,7 @@ public class ComponentVersionReportPlugin implements ReportPlugin {
         String project = "plugins";
         this.apiTarget = ClientBuilder.newClient()
             .register(JacksonJsonProvider.class)
+            .register(ObjectMapperContextResolver.class)
             .target(url)
             .path(owner)
             .path(project);

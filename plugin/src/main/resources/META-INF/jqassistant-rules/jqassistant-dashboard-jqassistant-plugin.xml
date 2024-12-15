@@ -10,6 +10,8 @@
               (artifact:Artifact{type:"jar"})-[:CONTAINS]->(:File:Xml{fileName:"/META-INF/jqassistant-plugin.xml"})
             WHERE
               artifact.classifier is null
+            WITH
+              artifact, datetime({epochmillis:coalesce(artifact.lastModified, timestamp())}) as updatedAt
             CALL (*) {
               MERGE
                 (component:Dashboard:Component{id: artifact.group + ":" + artifact.name})
@@ -17,6 +19,8 @@
                 (component)-[:HAS_VERSION]->(version:Dashboard:Version{version:artifact.version})
               MERGE
                 (artifact)-[:PROVIDES]->(version)
+              SET
+                version.updatedAt = updatedAt
               WITH
                 artifact, component, version
               MATCH

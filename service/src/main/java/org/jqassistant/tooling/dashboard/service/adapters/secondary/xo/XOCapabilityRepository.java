@@ -102,6 +102,8 @@ public interface XOCapabilityRepository {
           id(project) = $project
         WITH
           component, version, collect(file) as files
+        ORDER BY
+          component.name, version.updatedAt desc
         RETURN
           component, collect({
             version: version,
@@ -124,6 +126,8 @@ public interface XOCapabilityRepository {
           id(project) = $project
         WITH
           component, version, collect(file) as files
+        ORDER BY
+          component.name, version.updatedAt desc
         RETURN
           component, collect({
             version: version,
