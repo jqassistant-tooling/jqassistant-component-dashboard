@@ -1,21 +1,32 @@
 package org.jqassistant.tooling.dashboard.service.adapters.primary.ui.config;
 
 import com.vaadin.flow.spring.security.VaadinWebSecurity;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.jqassistant.tooling.dashboard.service.adapters.primary.api.rest.auth.AuthenticationFilter;
+import org.jqassistant.tooling.dashboard.service.adapters.primary.api.rest.config.RestApiProperties;
 import org.jqassistant.tooling.dashboard.service.adapters.primary.ui.views.login.LoginView;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.provisioning.UserDetailsManager;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.util.matcher.RequestMatcher;
 
+@Slf4j
 @EnableWebSecurity
 @Configuration
+@RequiredArgsConstructor
 public class SecurityConfiguration extends VaadinWebSecurity {
+
+    private final RestApiProperties restApiProperties;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -33,8 +44,9 @@ public class SecurityConfiguration extends VaadinWebSecurity {
 
         // Configure your static resources with public access before calling
         // super.configure(HttpSecurity) as it adds final anyRequest matcher
-        http.authorizeHttpRequests(auth -> auth.requestMatchers(new AntPathRequestMatcher("/api/**"))
-            .anonymous()
+        RequestMatcher restApiRequestMatcher = new AntPathRequestMatcher("/api/**");
+        http.authorizeHttpRequests(auth -> auth.requestMatchers(restApiRequestMatcher)
+            .authenticated()
             .requestMatchers(antMatchers("/ui/**"))
             .permitAll());
 
@@ -44,13 +56,14 @@ public class SecurityConfiguration extends VaadinWebSecurity {
         // navigation access control mechanism:
         setLoginView(http, LoginView.class);
 
-        http.csrf(csrf -> csrf.disable());
-    }
-
-    @Override
-    public void configure(WebSecurity web) throws Exception {
-        // Customize your WebSecurity configuration.
-        super.configure(web);
+        HttpSecurity httpSecurity = http.csrf(AbstractHttpConfigurer::disable)
+            .sessionManagement(
+                httpSecuritySessionManagementConfigurer -> httpSecuritySessionManagementConfigurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+        if (restApiProperties.getAuthToken() == null) {
+            log.warn("No authentication token configured, REST-API will not be secured.");
+        } else {
+            httpSecurity.addFilterBefore(new AuthenticationFilter(restApiRequestMatcher, restApiProperties), BasicAuthenticationFilter.class);
+        }
     }
 
     /**

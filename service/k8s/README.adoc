@@ -19,7 +19,12 @@ microk8s enable dashboard
 microk8s kubectl describe secret -n kube-system microk8s-dashboard-token
 
 snap install kubectl --classic
-microk8s.kubectl config view --raw > ~/.kube/config
+
+sudo microk8s refresh-certs -e ca.crt
+microk8s config > ~/.kube/config
+
+helm install neo4j-dashboard-release neo4j/neo4j -f k8s/neo4j.values.yaml
+kubectl get secret neo4j-dashboard-auth -oyaml | yq -r '.data.NEO4J_AUTH' | base64 -d
 
 skaffold dev
 ----

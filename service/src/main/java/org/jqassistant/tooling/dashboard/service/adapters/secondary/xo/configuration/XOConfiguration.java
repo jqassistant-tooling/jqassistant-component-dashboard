@@ -3,7 +3,6 @@ package org.jqassistant.tooling.dashboard.service.adapters.secondary.xo.configur
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Properties;
 
@@ -23,31 +22,34 @@ import liquibase.database.jvm.JdbcConnection;
 import liquibase.ext.neo4j.database.jdbc.Neo4jDriver;
 import liquibase.resource.ClassLoaderResourceAccessor;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.jqassistant.tooling.dashboard.service.adapters.secondary.xo.*;
 import org.jqassistant.tooling.dashboard.service.application.model.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
+@Slf4j
 @Configuration
 @ComponentScan(basePackageClasses = { XOConfiguration.class, XOAutoConfiguration.class })
 @RequiredArgsConstructor
 public class XOConfiguration {
 
-    private final XOConfigurationProperties xoConfigurationProperties;
+    private final XONeo4jProperties xoNeo4jProperties;
 
     private XOManagerFactory xoManagerFactory;
 
     @PostConstruct
     void init() throws URISyntaxException {
+        log.info("Connecting to '{}@{}'.", xoNeo4jProperties.getUsername(), xoNeo4jProperties.getUrl());
         migrate();
         Properties properties = new Properties();
-        properties.setProperty(RemoteNeo4jXOProvider.Property.USERNAME.getKey(), xoConfigurationProperties.getUsername());
-        properties.setProperty(RemoteNeo4jXOProvider.Property.PASSWORD.getKey(), xoConfigurationProperties.getPassword());
+        properties.setProperty(RemoteNeo4jXOProvider.Property.USERNAME.getKey(), xoNeo4jProperties.getUsername());
+        properties.setProperty(RemoteNeo4jXOProvider.Property.PASSWORD.getKey(), xoNeo4jProperties.getPassword());
         properties.setProperty(RemoteNeo4jXOProvider.Property.ENCRYPTION.getKey(), "false");
         XOUnit xoUnit = XOUnit.builder()
             .provider(RemoteNeo4jXOProvider.class)
-            .uri(new URI(xoConfigurationProperties.getUrl()))
+            .uri(new URI(xoNeo4jProperties.getUrl()))
             .properties(properties)
             .types(List.of(Owner.class, //
                 Project.class, XOProjectRepository.class, //
@@ -86,10 +88,11 @@ public class XOConfiguration {
         }
     }
 
-    private Connection openConnection() throws SQLException {
+    private Connection openConnection() {
         Properties properties = new Properties();
-        properties.setProperty("user", "neo4j");
-        properties.setProperty("password", "<redacted>");
-        return new Neo4jDriver().connect("jdbc:neo4j:" + xoConfigurationProperties.getUrl(), properties);
+        properties.setProperty("user", xoNeo4jProperties.getUsername());
+        properties.setProperty("password", xoNeo4jProperties.getPassword());
+        properties.setProperty("encryption", "false");
+        return new Neo4jDriver().connect("jdbc:neo4j:" + xoNeo4jProperties.getUrl(), properties);
     }
 }

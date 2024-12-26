@@ -9,7 +9,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @Setter
 @ToString
 @ConfigurationProperties(prefix = "xo.neo4j")
-public class XOConfigurationProperties {
+public class XONeo4jProperties {
 
     private String url;
     private String username;

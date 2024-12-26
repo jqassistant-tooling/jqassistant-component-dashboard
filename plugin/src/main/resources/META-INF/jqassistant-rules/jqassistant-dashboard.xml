@@ -97,7 +97,7 @@
             RETURN
               component as Component, version as Version
             ORDER BY
-              component.id, version.version
+              component.id, version.updatedAt
         ]]></cypher>
         <report type="dashboard-component-version-report"/>
     </concept>

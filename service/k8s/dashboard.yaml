@@ -44,10 +44,21 @@ spec:
           image: localhost:32000/jqassistant-component-dashboard
           env:
             - name: XO_NEO4J_URL
-              value: neo4j://neo4j.default.svc.cluster.local:7687
+              value: neo4j://neo4j-dashboard-release.default.svc.cluster.local:7687
             - name: XO_NEO4J_USERNAME
-              value: neo4j
+              valueFrom:
+                secretKeyRef:
+                  name: dashboard-secrets
+                  key: NEO4j_USERNAME
             - name: XO_NEO4J_PASSWORD
-              value: neo4j-admin
+              valueFrom:
+                secretKeyRef:
+                  name: dashboard-secrets
+                  key: NEO4j_PASSWORD
+            - name: API_REST_AUTH_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: dashboard-secrets
+                  key: REST_API_AUTH_TOKEN
           ports:
             - containerPort: 8080

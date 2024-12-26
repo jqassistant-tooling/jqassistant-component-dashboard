@@ -1,5 +1,5 @@
 neo4j:
-  name: my-standalone
+  name: neo4j-dashboard
   resources:
     cpu: "0.5"
     memory: "2Gi"
