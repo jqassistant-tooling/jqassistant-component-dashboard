@@ -31,8 +31,11 @@ public class AuthenticationFilter extends GenericFilterBean {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain) throws IOException, ServletException {
         if (request instanceof HttpServletRequest httpServletRequest && requestMatcher.matches(httpServletRequest)) {
             String apiKey = httpServletRequest.getHeader(AUTH_TOKEN_HEADER_NAME);
+            if (apiKey == null) {
+                throw new BadCredentialsException("API key is missing.");
+            }
             if (apiKey == null || !apiKey.equals(restApiProperties.getAuthToken())) {
-                throw new BadCredentialsException("Invalid API Key");
+                throw new BadCredentialsException("API key is invalid.");
             }
             Authentication authentication = new ApiTokenAuthentication(apiKey, AuthorityUtils.NO_AUTHORITIES);
             SecurityContextHolder.getContext()

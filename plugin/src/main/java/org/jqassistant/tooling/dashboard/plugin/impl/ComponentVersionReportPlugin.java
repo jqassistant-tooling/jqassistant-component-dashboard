@@ -1,8 +1,13 @@
 package org.jqassistant.tooling.dashboard.plugin.impl;
 
+import java.security.GeneralSecurityException;
+import java.security.cert.X509Certificate;
 import java.util.Map;
-import java.util.Optional;
 
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
@@ -25,6 +30,7 @@ import org.jqassistant.tooling.dashboard.plugin.api.model.Component;
 import org.jqassistant.tooling.dashboard.plugin.api.model.Version;
 import org.jqassistant.tooling.dashboard.plugin.impl.mapper.VersionMapper;
 
+import static java.lang.Boolean.parseBoolean;
 import static javax.ws.rs.client.Entity.json;
 
 @Slf4j
@@ -34,6 +40,7 @@ public class ComponentVersionReportPlugin implements ReportPlugin {
     public static final String PROPERTY_DASHBOARD_OWNER = "dashboard.owner";
     public static final String PROPERTY_DASHBOARD_PROJECT = "dashboard.project";
     public static final String PROPERTY_DASHBOARD_API_KEY = "dashboard.api-key";
+    public static final String PROPERTY_DASHBOARD_SSL_VALIDATION = "dashboard.ssl-validation";
 
     private static final String CONCEPT_ID = "jqassistant-dashboard:ComponentVersionReport";
     private static final String COLUMN_COMPONENT = "Component";
@@ -41,43 +48,23 @@ public class ComponentVersionReportPlugin implements ReportPlugin {
 
     private static final String AUTH_TOKEN_HEADER_NAME = "X-API-KEY";
 
-    private Client client;
+    private String url;
 
-    private Optional<WebTarget> optionalApiTarget;
+    private String owner;
+
+    private String project;
 
     private String apiKey;
 
-    @Override
-    public void initialize() {
-        this.client = ClientBuilder.newClient()
-            .register(JacksonJsonProvider.class)
-            .register(ObjectMapperContextResolver.class);
-    }
-
-    @Override
-    public void destroy() {
-        if (client != null) {
-            client.close();
-        }
-    }
+    private boolean sslValidation;
 
     @Override
     public void configure(ReportContext reportContext, Map<String, Object> properties) {
-        String url = (String) properties.get(PROPERTY_DASHBOARD_URL);
-        String owner = (String) properties.get(PROPERTY_DASHBOARD_OWNER);
-        String project = (String) properties.get(PROPERTY_DASHBOARD_PROJECT);
+        this.url = (String) properties.get(PROPERTY_DASHBOARD_URL);
+        this.owner = (String) properties.get(PROPERTY_DASHBOARD_OWNER);
+        this.project = (String) properties.get(PROPERTY_DASHBOARD_PROJECT);
         this.apiKey = (String) properties.get(PROPERTY_DASHBOARD_API_KEY);
-        if (url == null || owner == null || project == null || this.apiKey == null) {
-            log.info("Dashboard URL, owner, project or API key not configured, skipping.");
-        } else {
-            log.info("Using dashboard at '{}' (owner='{}', project='{}').", url, owner, project);
-            this.optionalApiTarget = Optional.of(client.target(url)
-                .path("api")
-                .path("rest")
-                .path("v1")
-                .path(owner)
-                .path(project));
-        }
+        this.sslValidation = parseBoolean((String) properties.getOrDefault(PROPERTY_DASHBOARD_SSL_VALIDATION, "true"));
     }
 
     @Override
@@ -90,33 +77,79 @@ public class ComponentVersionReportPlugin implements ReportPlugin {
         if (!result.getStatus()
             .equals(Status.SUCCESS)) {
             log.warn("The concept '{}' did returned status {}, report will not be published.", rule.getId(), result.getStatus());
+        } else if (url == null || owner == null || project == null || this.apiKey == null) {
+            log.info("Dashboard URL, owner, project or API key not configured, skipping.");
         } else {
             publishVersions(result);
         }
     }
 
     private void publishVersions(Result<? extends ExecutableRule> result) throws ReportException {
-        for (Row row : result.getRows()) {
-            Column<Component> componentColumn = getColumn(row, COLUMN_COMPONENT);
-            Column<Version> versionColumn = getColumn(row, COLUMN_VERSION);
-            publish(versionColumn, componentColumn);
+        log.info("Publishing to dashboard at '{}' (owner='{}', project='{}').", url, owner, project);
+        ClientBuilder clientBuilder = ClientBuilder.newBuilder()
+            .register(JacksonJsonProvider.class)
+            .register(ObjectMapperContextResolver.class);
+        if (!sslValidation) {
+            log.warn("SSL validation is disabled.");
+            clientBuilder.sslContext(getNoopSSLContext());
+        }
+        Client client = clientBuilder.build();
+        try {
+            WebTarget apiTarget = client.target(url)
+                .path("api")
+                .path("rest")
+                .path("v1")
+                .path(owner)
+                .path(project);
+            for (Row row : result.getRows()) {
+                Column<Component> componentColumn = getColumn(row, COLUMN_COMPONENT);
+                Column<Version> versionColumn = getColumn(row, COLUMN_VERSION);
+                publish(versionColumn, componentColumn, apiTarget);
+            }
+        } finally {
+            client.close();
         }
     }
 
-    private void publish(Column<Version> versionColumn, Column<Component> componentColumn) {
+    private SSLContext getNoopSSLContext() throws ReportException {
+        HttpsURLConnection.setDefaultHostnameVerifier((hostname, session) -> true);
+        TrustManager[] noopTrustManager = new TrustManager[] { new X509TrustManager() {
+
+            @Override
+            public X509Certificate[] getAcceptedIssuers() {
+                return null;
+            }
+
+            @Override
+            public void checkClientTrusted(java.security.cert.X509Certificate[] certs, String authType) {
+            }
+
+            @Override
+            public void checkServerTrusted(java.security.cert.X509Certificate[] certs, String authType) {
+            }
+        } };
+        SSLContext sc;
+        try {
+            sc = SSLContext.getInstance("ssl");
+            sc.init(null, noopTrustManager, null);
+        } catch (GeneralSecurityException e) {
+            throw new ReportException("Cannot initialize NOOP SSL context", e);
+        }
+        return sc;
+    }
+
+    private void publish(Column<Version> versionColumn, Column<Component> componentColumn, WebTarget apiTarget) {
         Version version = versionColumn.getValue();
         VersionDTO versionDTO = VersionMapper.MAPPER.toDTO(version);
-        optionalApiTarget.ifPresent(apiTarget -> {
-            Component component = componentColumn.getValue();
-            WebTarget versionTarget = apiTarget.path(component.getId())
-                .path(version.getVersion());
-            try (Response put = versionTarget.request(MediaType.APPLICATION_JSON_TYPE)
-                .header(AUTH_TOKEN_HEADER_NAME, apiKey)
-                .put(json(versionDTO))) {
-                log.info("Component '{}' version '{}' published to '{}' (status={}).", component.getId(), version.getVersion(), versionTarget.getUri(),
-                    put.getStatus());
-            }
-        });
+        Component component = componentColumn.getValue();
+        WebTarget versionTarget = apiTarget.path(component.getId())
+            .path(version.getVersion());
+        try (Response put = versionTarget.request(MediaType.APPLICATION_JSON_TYPE)
+            .header(AUTH_TOKEN_HEADER_NAME, apiKey)
+            .put(json(versionDTO))) {
+            log.info("Component '{}' version '{}' published to '{}' (status={}).", component.getId(), version.getVersion(), versionTarget.getUri(),
+                put.getStatus());
+        }
     }
 
     private static <T> Column<T> getColumn(Row row, String columnName) throws ReportException {
