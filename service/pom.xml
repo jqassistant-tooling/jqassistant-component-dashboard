@@ -18,6 +18,9 @@
         <jib-maven-plugin.version>3.4.4</jib-maven-plugin.version>
         <xo.version>2.5.0</xo.version>
         <liquibase.version>4.30.0</liquibase.version>
+        <dashboard.image.registry>localhost:32000</dashboard.image.registry>
+        <dashboard.image.tag>${dashboard.image.registry}/jqassistant-component-dashboard</dashboard.image.tag>
+        <dashboard.image.allowInsecureRegistries>true</dashboard.image.allowInsecureRegistries>
     </properties>
 
     <repositories>
@@ -180,9 +183,9 @@
                 <artifactId>jib-maven-plugin</artifactId>
                 <version>${jib-maven-plugin.version}</version>
                 <configuration>
-                    <allowInsecureRegistries>true</allowInsecureRegistries>
+                    <allowInsecureRegistries>${dashboard.image.allowInsecureRegistries}</allowInsecureRegistries>
                     <to>
-                        <image>jqassistant-plugin-dashboard</image>
+                        <image>${dashboard.image.tag}</image>
                     </to>
                 </configuration>
             </plugin>
@@ -193,6 +196,10 @@
         <profile>
             <!-- Production mode is activated using -Pproduction -->
             <id>production</id>
+            <properties>
+                <dashboard.image.registry>${dashboard.image.registry.production}</dashboard.image.registry>
+                <dashboard.image.allowInsecureRegistries>false</dashboard.image.allowInsecureRegistries>
+            </properties>
             <dependencies>
                 <!-- Exclude development dependencies from production -->
                 <dependency>
