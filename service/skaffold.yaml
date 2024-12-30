@@ -8,7 +8,10 @@ build:
       jib:
         args: [-Pproduction]
         project: org.jqassistant.tooling.dashboard:jqassistant-dashboard-service
-manifests:
-  rawYaml:
-    - k8s/dashboard.yaml
-    - k8s/dashboard-secrets.yaml
+deploy:
+  helm:
+    releases:
+      - name: dashboard-release
+        chartPath: src/main/helm/jqassistant-component-dashboard
+        valuesFiles:
+          - src/test/helm/microk8s/dashboard-values.yaml
