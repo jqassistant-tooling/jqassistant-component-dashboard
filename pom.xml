@@ -15,6 +15,12 @@
     <packaging>pom</packaging>
     <version>1.0.0-SNAPSHOT</version>
 
+    <properties>
+        <!-- SonarQube -->
+        <sonar.organization>jqassistant-tooling</sonar.organization>
+        <sonar.projectKey>jqassistant-tooling_jqassistant-component-dashboard</sonar.projectKey>
+    </properties>
+
     <dependencyManagement>
         <dependencies>
             <dependency>
