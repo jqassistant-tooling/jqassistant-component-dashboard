@@ -141,6 +141,23 @@
 
     <build>
         <defaultGoal>spring-boot:run</defaultGoal>
+
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>com.google.cloud.tools</groupId>
+                    <artifactId>jib-maven-plugin</artifactId>
+                    <version>${jib-maven-plugin.version}</version>
+                    <configuration>
+                        <allowInsecureRegistries>${dashboard.image.allowInsecureRegistries}</allowInsecureRegistries>
+                        <to>
+                            <image>${dashboard.image.tag}</image>
+                        </to>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -177,26 +194,6 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
-            <plugin>
-                <groupId>com.google.cloud.tools</groupId>
-                <artifactId>jib-maven-plugin</artifactId>
-                <version>${jib-maven-plugin.version}</version>
-                <executions>
-                    <execution>
-                        <id>deploy</id>
-                        <phase>deploy</phase>
-                        <goals>
-                            <goal>build</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <allowInsecureRegistries>${dashboard.image.allowInsecureRegistries}</allowInsecureRegistries>
-                    <to>
-                        <image>${dashboard.image.tag}</image>
-                    </to>
-                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -237,6 +234,26 @@
                                     <goal>build-frontend</goal>
                                 </goals>
                                 <phase>compile</phase>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>build-image</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.google.cloud.tools</groupId>
+                        <artifactId>jib-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>deploy</id>
+                                <phase>deploy</phase>
+                                <goals>
+                                    <goal>build</goal>
+                                </goals>
                             </execution>
                         </executions>
                     </plugin>

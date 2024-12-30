@@ -14,7 +14,7 @@
 +
 [source,bash]
 ----
-mvn deploy -Pproduction -Ddashboard.image.registry=<registry>
+mvn deploy -Pproduction,build-image -Ddashboard.image.registry=<registry>
 ----
 - The property `dashboard.image.registry` has a default value of `localhost:32000` for MicroK8S
 
@@ -82,7 +82,7 @@ volumes:
 [source,bash]
 ----
 helm repo add neo4j https://helm.neo4j.com/neo4j
-helm install neo4j-release neo4j/neo4j --namespace dashboard -f neo4j.values.yaml
+helm install neo4j-release neo4j/neo4j --namespace dashboard -f neo4j-values.yaml
 ----
 
 === Install Dashboard
