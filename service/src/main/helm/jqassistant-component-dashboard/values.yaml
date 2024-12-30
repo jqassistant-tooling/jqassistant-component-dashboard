@@ -1,0 +1,22 @@
+replicaCount: 1
+
+image:
+  repository: jqassistant-component-dashboard
+  tag: ""
+  pullPolicy: IfNotPresent
+
+imagePullSecrets: []
+
+service:
+  type: ClusterIP
+  port: 8080
+  neo4j:
+    url:
+  secrets:
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+  hosts: []
+  tls: []

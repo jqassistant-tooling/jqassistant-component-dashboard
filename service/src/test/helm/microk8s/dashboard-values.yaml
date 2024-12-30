@@ -1,0 +1,25 @@
+replicaCount: 1
+
+image:
+  repository: localhost:32000/jqassistant-component-dashboard
+  tag: latest
+  pullPolicy: Always
+
+imagePullSecrets: []
+
+service:
+  type: ClusterIP
+  port: 8080
+  neo4j:
+    url: neo4j://neo4j-dashboard-release.default.svc.cluster.local:7687
+  secrets: jqassistant-component-dashboard-secrets
+
+ingress:
+  enabled: true
+  hosts:
+    - host: localhost
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
+

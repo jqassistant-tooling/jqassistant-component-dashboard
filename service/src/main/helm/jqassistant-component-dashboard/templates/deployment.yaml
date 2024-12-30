@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "jqassistant-component-dashboard.fullname" . }}
+  labels:
+    {{- include "jqassistant-component-dashboard.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "jqassistant-component-dashboard.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "jqassistant-component-dashboard.labels" . | nindent 8 }}
+        {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: XO_NEO4J_URL
+              value: {{ .Values.service.neo4j.url }}
+            - name: XO_NEO4J_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.service.secrets }}
+                  key: NEO4j_USERNAME
+            - name: XO_NEO4J_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.service.secrets }}
+                  key: NEO4j_PASSWORD
+            - name: API_REST_AUTH_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.service.secrets }}
+                  key: API_REST_AUTH_TOKEN
+          ports:
+            - containerPort: 8080
+          resources:
+            limits:
+              cpu: "1"
+              memory: "0.5Gi"
+            requests:
+              cpu: "1"
+              memory: "0.5Gi"

@@ -182,11 +182,27 @@
                 <groupId>com.google.cloud.tools</groupId>
                 <artifactId>jib-maven-plugin</artifactId>
                 <version>${jib-maven-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>deploy</id>
+                        <phase>deploy</phase>
+                        <goals>
+                            <goal>build</goal>
+                        </goals>
+                    </execution>
+                </executions>
                 <configuration>
                     <allowInsecureRegistries>${dashboard.image.allowInsecureRegistries}</allowInsecureRegistries>
                     <to>
                         <image>${dashboard.image.tag}</image>
                     </to>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <configuration>
+                    <skip>true</skip>
                 </configuration>
             </plugin>
         </plugins>
@@ -196,10 +212,6 @@
         <profile>
             <!-- Production mode is activated using -Pproduction -->
             <id>production</id>
-            <properties>
-                <dashboard.image.registry>${dashboard.image.registry.production}</dashboard.image.registry>
-                <dashboard.image.allowInsecureRegistries>false</dashboard.image.allowInsecureRegistries>
-            </properties>
             <dependencies>
                 <!-- Exclude development dependencies from production -->
                 <dependency>

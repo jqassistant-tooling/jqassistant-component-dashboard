@@ -1,0 +1,12 @@
+neo4j:
+  name: neo4j-dashboard
+  resources:
+    cpu: "1"
+    memory: "2Gi"
+  password: "dashboard-admin"
+volumes:
+  data:
+    mode: defaultStorageClass
+    defaultStorageClass:
+      requests:
+        storage: 2Gi

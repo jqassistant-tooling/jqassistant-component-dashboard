@@ -1,0 +1,189 @@
+= Dashboard Service
+
+== Prerequisites
+
+- Java 17 and Apache Maven
+- Kubernetes cluster (e.g. <<MicroK8S>>) with image registry and Ingress controller
+- kubectl & helm
+
+== Installation
+
+=== Maven
+
+- Build and deploy the image to the registry
++
+[source,bash]
+----
+mvn deploy -Pproduction -Ddashboard.image.registry=<registry>
+----
+- The property `dashboard.image.registry` has a default value of `localhost:32000` for MicroK8S
+
+
+=== Install Nginx Ingress w/ TLS
+
+- Deploy Ninx and the certificate manager
++
+[source,bash]
+----
+helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+helm repo add jetstack https://charts.jetstack.io
+
+helm repo update
+
+helm -n ingress-nginx install ingress-nginx ingress-nginx/ingress-nginx --create-namespace
+helm install cert-manager jetstack/cert-manager --namespace cert-manager --create-namespace --set installCRDs=true
+----
+- Create a file `.issuer.yaml`
++
+.issuer.yaml
+[source,yaml]
+----
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: letsencrypt-prod
+spec:
+  acme:
+    server: https://acme-v02.api.letsencrypt.org/directory
+    email: dirk.mahler@buschmais.com
+    privateKeySecretRef:
+      name: letsencrypt-prod
+    solvers:
+      - http01:
+          ingress:
+            class: nginx
+----
+
+=== Install Neo4j
+
+- Create a file `neo4j-values.yaml`
++
+.neo4j-values.yaml
+[source,yaml]
+----
+neo4j:
+  name: neo4j-dashboard
+  resources:
+    cpu: "1"
+    memory: "2Gi"
+  password: ""
+  services:
+    neo4j:
+      enabled: false
+volumes:
+  data:
+    mode: defaultStorageClass
+    defaultStorageClass:
+      requests:
+        storage: 5Gi
+----
+- Add the Neo4j Helm repository and deploy a Neo4j release
++
+[source,bash]
+----
+helm repo add neo4j https://helm.neo4j.com/neo4j
+helm install neo4j-release neo4j/neo4j --namespace dashboard -f neo4j.values.yaml
+----
+
+=== Install Dashboard
+
+- Create a file `dashboard-secrets.yaml` using the generated password from the step before and an API token to be used for the REST API
++
+.dashboard-secrets.yaml
+[source,yaml]
+----
+apiVersion: v1
+kind: Secret
+metadata:
+  name: jqassistant-component-dashboard-secrets
+stringData:
+  NEO4j_USERNAME: "neo4j"
+  NEO4j_PASSWORD: "<generated password>"    # Neo4j password
+  API_REST_AUTH_TOKEN: "<secret_api_token>" # REST API token
+type: Opaque
+----
+- Deploy the secrets
++
+[source,bash]
+----
+kubectl deploy -f dashboard-secrets.yaml
+----
+- Create a file `dashboard-values.yaml`
++
+.dashboard-values.yaml
+[source,yaml]
+----
+replicaCount: 1
+
+image:
+  repository: <registry>/dashboard/jqassistant-component-dashboard
+  tag: latest
+  pullPolicy: Always
+
+imagePullSecrets:
+  - name: regcred # Credentials to be used for accessing the image registry
+
+service:
+  type: ClusterIP
+  port: 8080
+  neo4j:
+    url: neo4j://neo4j-release.dashboard.svc.cluster.local:7687 # The Neo4j service URL (displayed after installation of the Neo4j release using Helm)
+  secrets: jqassistant-component-dashboard-secrets
+
+ingress:
+  enabled: true
+  className: "nginx"
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+  hosts:
+    - host: <DNS name>
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - hosts:
+        - <DNS name>
+      secretName: jqassistant-component-dashboard-tls
+----
+- Deploy the dashboard
++
+[source,bash]
+----
+helm install dashboard-release ../../service/src/main/helm/jqassistant-component-dashboard/ -f dashboard-values.yaml
+----
+
+=== MicroK8S
+
+- Ubuntu 24.10
+- Install podman & microk8s
+- Install skaffold (see https://skaffold.dev/docs/install/#standalone-binary)
+- Add an entry in `/etc/containers/registries.conf.d/` to allow an insecure registry:
++
+./etc/containers/registries.conf.d/localhost.conf
+----
+[[registry]]
+location = "localhost:32000"
+insecure = true
+----
+- Add the following entry to `~/.profile`:
++
+[source,bash]
+----
+export DOCKER_HOST="DOCKER_HOST=unix://$XDG_RUNTIME_DIR/podman/podman.sock"
+----
+- Enable MicroK8S service:
++
+[source,bash]
+----
+sudo microk8s enable registry
+sudo microk8s enable dashboard
+sudo microk8s enable storage
+sudo microk8s kubectl describe secret -n kube-system microk8s-dashboard-token
+
+snap install kubectl --classic
+
+sudo microk8s refresh-certs -e ca.crt
+sudo microk8s config > ~/.kube/config
+
+skaffold dev
+----
