@@ -152,7 +152,7 @@ ingress:
 helm install dashboard-release ../../service/src/main/helm/jqassistant-component-dashboard/ -f dashboard-values.yaml
 ----
 
-=== MicroK8S
+=== MicroK8S & Skaffold
 
 - Ubuntu 24.10
 - Install podman & microk8s
