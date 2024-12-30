@@ -8,8 +8,6 @@ image:
 imagePullSecrets: []
 
 service:
-  type: ClusterIP
-  port: 8080
   neo4j:
     url: neo4j://neo4j-dashboard-release.default.svc.cluster.local:7687
   secrets: jqassistant-component-dashboard-secrets
