@@ -1,0 +1,4 @@
+= jQAssistant Component Dashboard
+
+This is the prototype of the jQAssistant Component Dashboard.
+
