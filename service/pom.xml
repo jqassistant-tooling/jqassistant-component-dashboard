@@ -19,7 +19,7 @@
         <xo.version>2.5.0</xo.version>
         <liquibase.version>4.30.0</liquibase.version>
         <dashboard.image.registry>localhost:32000</dashboard.image.registry>
-        <dashboard.image.tag>${dashboard.image.registry}/jqassistant-component-dashboard</dashboard.image.tag>
+        <dashboard.image.repository>jqassistant-component-dashboard</dashboard.image.repository>
         <dashboard.image.allowInsecureRegistries>true</dashboard.image.allowInsecureRegistries>
     </properties>
 
@@ -151,7 +151,7 @@
                     <configuration>
                         <allowInsecureRegistries>${dashboard.image.allowInsecureRegistries}</allowInsecureRegistries>
                         <to>
-                            <image>${dashboard.image.tag}</image>
+                            <image>${dashboard.image.registry}/${dashboard.image.repository}}</image>
                         </to>
                     </configuration>
                 </plugin>
