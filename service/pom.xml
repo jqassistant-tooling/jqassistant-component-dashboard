@@ -151,7 +151,7 @@
                     <configuration>
                         <allowInsecureRegistries>${dashboard.image.allowInsecureRegistries}</allowInsecureRegistries>
                         <to>
-                            <image>${dashboard.image.registry}/${dashboard.image.repository}}</image>
+                            <image>${dashboard.image.registry}/${dashboard.image.repository}</image>
                         </to>
                     </configuration>
                 </plugin>
