@@ -3,7 +3,7 @@ neo4j:
   resources:
     cpu: "1"
     memory: "2Gi"
-  password: "dashboard-admin"
+  password: "dashboard-user"
 volumes:
   data:
     mode: defaultStorageClass
