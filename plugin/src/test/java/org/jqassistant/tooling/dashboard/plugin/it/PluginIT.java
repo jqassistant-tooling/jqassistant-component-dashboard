@@ -57,7 +57,7 @@ class PluginIT extends AbstractJavaPluginIT {
 
     @Test
     void ArtifactProvidesVersion() throws RuleException {
-        Result<Concept> result = applyConcept("jqassistant-dashboard-jqassistant-plugin:ArtifactProvidesVersion");
+        Result<Concept> result = applyConcept("jqassistant-dashboard-jqassistant-plugins:ArtifactProvidesVersion");
         assertThat(result.getStatus()).isEqualTo(SUCCESS);
     }
 
@@ -65,7 +65,7 @@ class PluginIT extends AbstractJavaPluginIT {
     void pluginProvidesLabel() throws RuleException {
         scanClasses(ARTIFACT_ID, TestLanguage.class, TestType.class);
 
-        Result<Concept> result = applyConcept("jqassistant-dashboard-jqassistant-plugin:PluginProvidesLabel");
+        Result<Concept> result = applyConcept("jqassistant-dashboard-jqassistant-plugins:PluginProvidesLabel");
 
         store.beginTransaction();
         assertThat(result.getStatus()).isEqualTo(SUCCESS);
@@ -86,7 +86,7 @@ class PluginIT extends AbstractJavaPluginIT {
     @Test
     void pluginProvidesRule() throws RuleException {
         scanClassPathResources(NONE, ARTIFACT_ID, "/META-INF/jqassistant-rules/test.xml");
-        Result<Concept> result = applyConcept("jqassistant-dashboard-jqassistant-plugin:PluginProvidesRule");
+        Result<Concept> result = applyConcept("jqassistant-dashboard-jqassistant-plugins:PluginProvidesRule");
 
         store.beginTransaction();
         assertThat(result.getStatus()).isEqualTo(SUCCESS);
@@ -97,7 +97,7 @@ class PluginIT extends AbstractJavaPluginIT {
     @Test
     void ruleRequiresConcept() throws RuleException {
         scanClassPathResources(NONE, ARTIFACT_ID, "/META-INF/jqassistant-rules/test.xml");
-        Result<Concept> result = applyConcept("jqassistant-dashboard-jqassistant-plugin:RuleRequiresConcept");
+        Result<Concept> result = applyConcept("jqassistant-dashboard-jqassistant-plugins:RuleRequiresConcept");
 
         store.beginTransaction();
         assertThat(result.getStatus()).isEqualTo(SUCCESS);
@@ -108,7 +108,7 @@ class PluginIT extends AbstractJavaPluginIT {
     @Test
     void groupIncludesRule() throws RuleException {
         scanClassPathResources(NONE, ARTIFACT_ID, "/META-INF/jqassistant-rules/test.xml");
-        Result<Concept> result = applyConcept("jqassistant-dashboard-jqassistant-plugin:GroupIncludesRule");
+        Result<Concept> result = applyConcept("jqassistant-dashboard-jqassistant-plugins:GroupIncludesRule");
 
         store.beginTransaction();
         assertThat(result.getStatus()).isEqualTo(SUCCESS);
