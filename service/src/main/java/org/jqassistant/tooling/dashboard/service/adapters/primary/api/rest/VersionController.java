@@ -8,6 +8,7 @@ import org.jqassistant.tooling.dashboard.service.application.ComponentService;
 import org.jqassistant.tooling.dashboard.service.application.ProjectService;
 import org.jqassistant.tooling.dashboard.service.application.VersionService;
 import org.jqassistant.tooling.dashboard.service.application.model.Component;
+import org.jqassistant.tooling.dashboard.service.application.model.Project;
 import org.jqassistant.tooling.dashboard.service.application.model.ProjectKey;
 import org.jqassistant.tooling.dashboard.service.application.model.Version;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,13 +30,18 @@ public class VersionController {
     private final VersionMapper versionMapper;
 
     @PutMapping
-    public void putVersion(@PathVariable(name = "owner") String ownerId, @PathVariable(name = "project") String projectId,
+    public void createOrUpdate(@PathVariable(name = "owner") String ownerId, @PathVariable(name = "project") String projectId,
         @PathVariable(name = "component") String componentId, @PathVariable(name = "version") String versionId, @RequestBody VersionDTO versionDTO) {
         ProjectKey projectKey = new ProjectKey(ownerId, projectId);
+        createOrUpdate(projectKey, componentId, versionId, versionDTO);
+    }
+
+    private void createOrUpdate(ProjectKey projectKey, String componentId, String versionId, VersionDTO versionDTO) {
+        Project project = projectService.find(projectKey);
         Component component = componentService.resolve(projectKey, componentId);
         versionService.remove(component, versionId);
-        Version version = versionMapper.toVersion(projectService.find(projectKey), component, versionDTO);
-        log.info("Updated project '{}' component '{}' with version '{}'", projectId, component.getName(), version.getVersion());
+        Version version = versionMapper.toVersion(project, component, versionDTO);
+        log.info("Updated project '{}' component '{}' with version '{}'", projectKey, component.getName(), version.getVersion());
     }
 
 }
