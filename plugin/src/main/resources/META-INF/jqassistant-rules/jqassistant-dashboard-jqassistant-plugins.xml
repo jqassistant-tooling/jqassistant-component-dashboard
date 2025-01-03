@@ -2,7 +2,7 @@
                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    xsi:schemaLocation="http://schema.jqassistant.org/rule/v2.2 https://jqassistant.github.io/jqassistant/current/schema/jqassistant-rule-v2.2.xsd">
 
-    <concept id="jqassistant-dashboard-jqassistant-plugin:ArtifactProvidesVersion">
+    <concept id="jqassistant-dashboard-jqassistant-plugins:ArtifactProvidesVersion">
         <providesConcept refId="jqassistant-dashboard:ComponentVersionContainsFile"/>
         <description>Identify a jQAssistant plugin as component version containing files.</description>
         <cypher><![CDATA[
@@ -39,9 +39,9 @@
         ]]></cypher>
     </concept>
 
-    <concept id="jqassistant-dashboard-jqassistant-plugin:PluginProvidesLabel">
+    <concept id="jqassistant-dashboard-jqassistant-plugins:PluginProvidesLabel">
         <providesConcept refId="jqassistant-dashboard:FileProvidesCapability"/>
-        <requiresConcept refId="jqassistant-dashboard-jqassistant-plugin:ArtifactProvidesVersion"/>
+        <requiresConcept refId="jqassistant-dashboard-jqassistant-plugins:ArtifactProvidesVersion"/>
         <cypher><![CDATA[
             MATCH
               (component:Dashboard:Component)-[:HAS_VERSION]->(version:Dashboard:Version)<-[:PROVIDES]-(artifact:Artifact),
@@ -65,9 +65,9 @@
         ]]></cypher>
     </concept>
 
-    <concept id="jqassistant-dashboard-jqassistant-plugin:PluginProvidesRule">
+    <concept id="jqassistant-dashboard-jqassistant-plugins:PluginProvidesRule">
         <providesConcept refId="jqassistant-dashboard:FileProvidesCapability"/>
-        <requiresConcept refId="jqassistant-dashboard-jqassistant-plugin:ArtifactProvidesVersion"/>
+        <requiresConcept refId="jqassistant-dashboard-jqassistant-plugins:ArtifactProvidesVersion"/>
         <cypher><![CDATA[
             MATCH
               (component:Dashboard:Component)-[:HAS_VERSION]->(version:Dashboard:Version)<-[:PROVIDES]-(artifact:Artifact),
@@ -99,9 +99,9 @@
         ]]></cypher>
     </concept>
 
-    <concept id="jqassistant-dashboard-jqassistant-plugin:RuleRequiresConcept">
+    <concept id="jqassistant-dashboard-jqassistant-plugins:RuleRequiresConcept">
         <providesConcept refId="jqassistant-dashboard:FileRequiresCapability"/>
-        <requiresConcept refId="jqassistant-dashboard-jqassistant-plugin:ArtifactProvidesVersion"/>
+        <requiresConcept refId="jqassistant-dashboard-jqassistant-plugins:ArtifactProvidesVersion"/>
         <cypher><![CDATA[
             MATCH
               (component:Dashboard:Component)-[:HAS_VERSION]->(version:Dashboard:Version)<-[:PROVIDES]-(artifact:Artifact),
@@ -125,9 +125,9 @@
         ]]></cypher>
     </concept>
 
-    <concept id="jqassistant-dashboard-jqassistant-plugin:GroupIncludesRule">
+    <concept id="jqassistant-dashboard-jqassistant-plugins:GroupIncludesRule">
         <providesConcept refId="jqassistant-dashboard:FileRequiresCapability"/>
-        <requiresConcept refId="jqassistant-dashboard-jqassistant-plugin:ArtifactProvidesVersion"/>
+        <requiresConcept refId="jqassistant-dashboard-jqassistant-plugins:ArtifactProvidesVersion"/>
         <cypher><![CDATA[
             MATCH
               (component:Dashboard:Component)-[:HAS_VERSION]->(version:Dashboard:Version)<-[:PROVIDES]-(artifact:Artifact),
