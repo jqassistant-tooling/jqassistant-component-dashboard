@@ -1,0 +1,32 @@
+jqassistant:
+  plugins:
+    - group-id: org.jqassistant.plugin
+      artifact-id: jqassistant-m2repo-plugin
+      version: 2.1.0-SNAPSHOT
+    - group-id: org.jqassistant.tooling.dashboard
+      artifact-id: jqassistant-dashboard-plugin
+      version: ${project.version}
+  scan:
+    reset: false
+    include:
+      urls:
+        - maven:repository::https://repo1.maven.org/maven2
+    properties:
+      m2repo:
+        directory: ../../.cache/m2
+        artifacts:
+          scan: true
+        filter:
+          includes: "*:*-maven-plugin:jar,*:maven-*-plugin:jar"
+          excludes: "*:*:*:sources,*:*:*:javadoc,*:*:*:tests"
+  analyze:
+    execute-applied-concepts: true
+    concepts:
+     - jqassistant-dashboard:ComponentVersionReport
+    report:
+      properties:
+        dashboard:
+          url: ${jqassistant.dashboard.url}
+          api-key: ${jqassistant.dashboard.api-key}
+          owner: "apache-maven"
+          project: "maven-plugins"

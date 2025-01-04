@@ -37,6 +37,7 @@
         <module>api</module>
         <module>plugin</module>
         <module>service</module>
+        <module>projects</module>
     </modules>
 
 </project>
