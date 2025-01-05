@@ -16,6 +16,10 @@
     <profiles>
         <profile>
             <id>update-dashboard</id>
+            <properties>
+                <jqassistant.dashboard.url>http://localhost</jqassistant.dashboard.url>
+                <jqassistant.dashboard.api-key>secret_api_token</jqassistant.dashboard.api-key>
+            </properties>
             <build>
                 <plugins>
                     <plugin>
