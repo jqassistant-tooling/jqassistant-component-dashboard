@@ -18,6 +18,11 @@ public interface Component extends NameTemplate {
     @HasVersion
     List<Version> getVersions();
 
+    @Relation("HAS_LATEST_VERSION")
+    Version getLatestVersion();
+
+    void setLatestVersion(Version version);
+
     @Relation("HAS_VERSION")
     @interface HasVersion {
     }

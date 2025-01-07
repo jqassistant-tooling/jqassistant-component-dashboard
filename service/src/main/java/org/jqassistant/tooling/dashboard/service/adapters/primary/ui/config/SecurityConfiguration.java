@@ -60,7 +60,7 @@ public class SecurityConfiguration extends VaadinWebSecurity {
             .sessionManagement(
                 httpSecuritySessionManagementConfigurer -> httpSecuritySessionManagementConfigurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         if (restApiProperties.getAuthToken() == null) {
-            log.warn("No authentication token configured, REST-API will not be secured.");
+            log.warn("No authentication token configured, REST-API will not be available.");
         } else {
             httpSecurity.addFilterBefore(new AuthenticationFilter(restApiRequestMatcher, restApiProperties), BasicAuthenticationFilter.class);
         }
