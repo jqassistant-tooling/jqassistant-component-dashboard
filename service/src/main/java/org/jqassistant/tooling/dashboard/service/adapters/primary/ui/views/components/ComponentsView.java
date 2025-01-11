@@ -11,8 +11,8 @@ import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.jqassistant.tooling.dashboard.service.adapters.primary.ui.shared.DashboardLayout;
 import org.jqassistant.tooling.dashboard.service.adapters.primary.ui.shared.FilterableGrid;
+import org.jqassistant.tooling.dashboard.service.application.ComponentRepository.ComponentSummary;
 import org.jqassistant.tooling.dashboard.service.application.ComponentService;
-import org.jqassistant.tooling.dashboard.service.application.model.Component;
 import org.jqassistant.tooling.dashboard.service.application.model.ComponentFilter;
 import org.jqassistant.tooling.dashboard.service.application.model.ProjectKey;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,19 +41,24 @@ public class ComponentsView extends VerticalLayout implements BeforeEnterObserve
     void init() {
         setSizeFull();
 
-        FilterableGrid<Component, ComponentFilter> filterableGrid = FilterableGrid.builder(Component.class,
-            new CallbackDataProvider<Component, ComponentFilter>(query -> stream(
+        FilterableGrid<ComponentSummary, ComponentFilter> filterableGrid = FilterableGrid.builder(ComponentSummary.class,
+            new CallbackDataProvider<ComponentSummary, ComponentFilter>(query -> stream(
                 componentService.findAll(projectKey, query.getFilter(), query.getOffset(), query.getLimit())
                     .spliterator(), false), query -> componentService.countAll(projectKey, query.getFilter())), new ComponentFilter());
 
         // Name
         com.vaadin.flow.component.Component nameFilterTextBox = filterableGrid.text(ComponentFilter::setNameFilter);
-        filterableGrid.withColumn("Name", nameFilterTextBox, component -> new Span(component.getName()));
+        filterableGrid.withColumn("Name", nameFilterTextBox, componentSummary -> new Span(componentSummary.getComponent()
+            .getName()));
+        // Latest Version
+        filterableGrid.withColumn("Latest Version", new Span(), componentSummary -> new Span(componentSummary.getLatestVersion()
+            .getVersion()));
 
-        Grid<Component> grid = filterableGrid.build();
+        Grid<ComponentSummary> grid = filterableGrid.build();
         grid.addItemClickListener(event -> UI.getCurrent()
             .navigate(ComponentView.class, new RouteParam(PARAMETER_OWNER, this.projectKey.getOwner()),
                 new RouteParam(PARAMETER_PROJECT, this.projectKey.getProject()), new RouteParam(PARAMETER_COMPONENT, event.getItem()
+                    .getComponent()
                     .getName())));
         this.add(grid);
     }

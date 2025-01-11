@@ -4,6 +4,7 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import lombok.RequiredArgsConstructor;
+import org.jqassistant.tooling.dashboard.service.application.ComponentRepository.ComponentSummary;
 import org.jqassistant.tooling.dashboard.service.application.model.Component;
 import org.jqassistant.tooling.dashboard.service.application.model.ComponentFilter;
 import org.jqassistant.tooling.dashboard.service.application.model.Project;
@@ -25,7 +26,7 @@ public class ComponentService {
         return componentRepository.resolve(project.getName(), component);
     }
 
-    public Stream<Component> findAll(ProjectKey projectKey, Optional<ComponentFilter> filter, int offset, int limit) {
+    public Stream<ComponentSummary> findAll(ProjectKey projectKey, Optional<ComponentFilter> filter, int offset, int limit) {
         Project project = projectService.find(projectKey);
         return componentRepository.findAll(project, filter.map(ComponentFilter::getNameFilter)
             .orElse(null), offset, limit);

@@ -39,15 +39,15 @@ public class CapabilityView extends VerticalLayout implements BeforeEnterObserve
 
     private final TransactionTemplate transactionTemplate;
 
-    private H2 title = new H2();
+    private final H2 title = new H2();
 
-    private Span description = new Span();
+    private final Span description = new Span();
 
-    private TreeGrid<TreeNode> providedBy = new TreeGrid<>();
+    private final TreeGrid<TreeNode> providedBy = new TreeGrid<>();
 
-    private TreeGrid<TreeNode> requiredBy = new TreeGrid<>();
+    private final TreeGrid<TreeNode> requiredBy = new TreeGrid<>();
 
-    public static CapabilityKey getCapabilityKey(BeforeEnterEvent beforeEnterEvent) {
+    private static CapabilityKey getCapabilityKey(BeforeEnterEvent beforeEnterEvent) {
         ProjectKey projectKey = getProjectKey(beforeEnterEvent);
         RouteParameters routeParameters = beforeEnterEvent.getRouteParameters();
         String capabilityType = routeParameters.get(PARAMETER_CAPABILITY_TYPE)

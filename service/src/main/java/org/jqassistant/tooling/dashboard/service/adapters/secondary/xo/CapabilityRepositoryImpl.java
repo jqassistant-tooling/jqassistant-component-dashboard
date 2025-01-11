@@ -34,16 +34,15 @@ public class CapabilityRepositoryImpl extends AbstractXORepository<XOCapabilityR
 
     @Override
     public Stream<CapabilitySummary> findAll(Project project, Optional<CapabilityFilter> filter, int offset, int limit) {
-        Query.Result<? extends CapabilityRepository.CapabilitySummary> result = xoManager.createQuery(XOCapabilityRepository.CapabilitySummary.class)
+        return toStream(xoManager.createQuery(XOCapabilityRepository.XOCapabilitySummary.class)
             .withParameter("project", project)
-            .withParameter("typeFilter", filter.map(f -> f.getTypeFilter())
+            .withParameter("typeFilter", filter.map(CapabilityFilter::getTypeFilter)
                 .orElse(null))
-            .withParameter("valueFilter", filter.map(f -> f.getValueFilter())
+            .withParameter("valueFilter", filter.map(CapabilityFilter::getValueFilter)
                 .orElse(null))
             .withParameter("offset", offset)
             .withParameter("limit", limit)
-            .execute();
-        return toStream(result).map(summary -> summary);
+            .execute()).map(capabilitySummary -> capabilitySummary);
     }
 
     @Override

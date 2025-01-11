@@ -1,13 +1,13 @@
 package org.jqassistant.tooling.dashboard.service.adapters.secondary.xo;
 
-import com.buschmais.xo.api.ResultIterable;
 import com.buschmais.xo.api.annotation.Repository;
 import com.buschmais.xo.api.annotation.ResultOf;
-import com.buschmais.xo.api.annotation.ResultOf.Parameter;
 import com.buschmais.xo.neo4j.api.annotation.Cypher;
 
+import org.jqassistant.tooling.dashboard.service.application.ComponentRepository;
 import org.jqassistant.tooling.dashboard.service.application.model.Component;
 import org.jqassistant.tooling.dashboard.service.application.model.Project;
+import org.jqassistant.tooling.dashboard.service.application.model.Version;
 
 @Repository
 public interface XOComponentRepository {
@@ -23,33 +23,37 @@ public interface XOComponentRepository {
         """)
     Component resolve(String project, String component);
 
-    @ResultOf
-    @Cypher("""
+    String COMPONENT_FILTER = """
         MATCH
-          (project:Project)-[:CONTAINS_COMPONENT]->(component:Component)
+          (project:Project)-[:CONTAINS_COMPONENT]->(component:Component)-[:HAS_LATEST_VERSION]->(latestVersion:Version)
         WHERE
           id(project) = $project
           and ($nameFilter is null or toLower(component.name) contains toLower($nameFilter))
+        """;
+
+    @Cypher(COMPONENT_FILTER + """
         WITH
-          component
+          component, latestVersion
         ORDER BY
           component.name
         SKIP
           $offset
         RETURN
-          component
+          component, latestVersion
         LIMIT
           $limit
         """)
-    ResultIterable<Component> findAll(Project project, String nameFilter, int offset, int limit);
+    interface XOComponentSummary extends ComponentRepository.ComponentSummary {
+
+        @Override
+        Component getComponent();
+
+        @Override
+        Version getLatestVersion();
+    }
 
     @ResultOf
-    @Cypher("""
-        MATCH
-          (project:Project)-[:CONTAINS_COMPONENT]->(component:Component)
-        WHERE
-          id(project) = $project
-          and ($nameFilter is null or toLower(component.name) contains toLower($nameFilter))
+    @Cypher(COMPONENT_FILTER + """
         RETURN
           count(component)
         """)

@@ -6,7 +6,6 @@ import java.util.Set;
 
 import com.buschmais.xo.api.annotation.Repository;
 import com.buschmais.xo.api.annotation.ResultOf;
-import com.buschmais.xo.api.annotation.ResultOf.Parameter;
 import com.buschmais.xo.neo4j.api.annotation.Cypher;
 
 import org.jqassistant.tooling.dashboard.service.application.CapabilityRepository;
@@ -71,7 +70,7 @@ public interface XOCapabilityRepository {
         RETURN
           capability, collect(distinct component) as providedByComponents
         """)
-    interface CapabilitySummary extends CapabilityRepository.CapabilitySummary {
+    interface XOCapabilitySummary extends CapabilityRepository.CapabilitySummary {
 
         @Override
         Capability getCapability();

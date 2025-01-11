@@ -22,12 +22,18 @@ public class ComponentRepositoryImpl extends AbstractXORepository<XOComponentRep
     }
 
     @Override
-    public Stream<Component> findAll(Project project, String nameFilter, int offset, int limit) {
-        return toStream(getXORepository().findAll(project, nameFilter, offset, limit));
+    public Stream<ComponentSummary> findAll(Project project, String nameFilter, int offset, int limit) {
+        return toStream(xoManager.createQuery(XOComponentRepository.XOComponentSummary.class)
+            .withParameter("project", project)
+            .withParameter("nameFilter", nameFilter)
+            .withParameter("offset", offset)
+            .withParameter("limit", limit)
+            .execute()).map(componentSummary -> componentSummary);
     }
 
     @Override
     public int countAll(Project project, String nameFilter) {
         return getXORepository().countAll(project, nameFilter);
     }
+
 }
