@@ -15,10 +15,9 @@ jqassistant:
       m2repo:
         directory: ../../.cache/m2
         artifacts:
-          scan: true
+          scan: false
         filter:
-          includes: "*:*-maven-plugin:jar,*:maven-*-plugin:jar"
-          excludes: "*:*:*:sources,*:*:*:javadoc,*:*:*:tests"
+          includes: "*:*:maven-plugin"
   analyze:
     execute-applied-concepts: true
     concepts:
