@@ -1,5 +1,6 @@
 package org.jqassistant.tooling.dashboard.service.adapters.primary.ui.views.components;
 
+import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Span;
@@ -47,9 +48,13 @@ public class ComponentsView extends VerticalLayout implements BeforeEnterObserve
                     .spliterator(), false), query -> componentService.countAll(projectKey, query.getFilter())), new ComponentFilter());
 
         // Name
-        com.vaadin.flow.component.Component nameFilterTextBox = filterableGrid.text(ComponentFilter::setNameFilter);
+        Component nameFilterTextBox = filterableGrid.text(ComponentFilter::setNameFilter);
         filterableGrid.withColumn("Name", nameFilterTextBox, componentSummary -> new Span(componentSummary.getLatestVersion()
             .getName()));
+        // Description
+        Component descriptionFilterTextBox = filterableGrid.text(ComponentFilter::setNameFilter);
+        filterableGrid.withColumn("Description", descriptionFilterTextBox, componentSummary -> new Span(componentSummary.getLatestVersion()
+            .getDescription()));
         // Latest Version
         filterableGrid.withColumn("Latest Version", new Span(), componentSummary -> new Span(componentSummary.getLatestVersion()
             .getVersion()));
