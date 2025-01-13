@@ -28,7 +28,7 @@ public interface XOComponentRepository {
           (project:Project)-[:CONTAINS_COMPONENT]->(component:Component)-[:HAS_LATEST_VERSION]->(latestVersion:Version)
         WHERE
           id(project) = $project
-          and ($nameFilter is null or toLower(component.name) contains toLower($nameFilter))
+          and ($nameFilter is null or toLower(latestVersion.name) contains toLower($nameFilter))
         """;
 
     @Cypher(COMPONENT_FILTER + """
@@ -38,8 +38,10 @@ public interface XOComponentRepository {
           component.name
         SKIP
           $offset
+        MATCH
+          (component)-[:HAS_VERSION]->(version:Version)
         RETURN
-          component, latestVersion
+          component, latestVersion, count(version) as versionCount
         LIMIT
           $limit
         """)
@@ -50,6 +52,8 @@ public interface XOComponentRepository {
 
         @Override
         Version getLatestVersion();
+
+        Long getVersionCount();
     }
 
     @ResultOf

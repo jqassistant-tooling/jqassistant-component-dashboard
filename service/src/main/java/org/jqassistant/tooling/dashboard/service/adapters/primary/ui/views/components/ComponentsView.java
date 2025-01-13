@@ -53,6 +53,8 @@ public class ComponentsView extends VerticalLayout implements BeforeEnterObserve
         // Latest Version
         filterableGrid.withColumn("Latest Version", new Span(), componentSummary -> new Span(componentSummary.getLatestVersion()
             .getVersion()));
+        // Versions
+        filterableGrid.withColumn("# Versions", new Span(), componentSummary -> new Span(Long.toString(componentSummary.getVersionCount())));
 
         Grid<ComponentSummary> grid = filterableGrid.build();
         grid.addItemClickListener(event -> UI.getCurrent()

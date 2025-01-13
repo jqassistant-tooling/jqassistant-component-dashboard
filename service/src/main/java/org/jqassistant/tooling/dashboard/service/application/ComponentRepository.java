@@ -22,5 +22,6 @@ public interface ComponentRepository {
 
         Version getLatestVersion();
 
+        Long getVersionCount();
     }
 }
