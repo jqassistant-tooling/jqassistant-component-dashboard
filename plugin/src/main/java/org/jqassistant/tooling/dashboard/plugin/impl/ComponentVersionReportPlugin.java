@@ -1,5 +1,6 @@
 package org.jqassistant.tooling.dashboard.plugin.impl;
 
+import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.security.cert.X509Certificate;
 import java.util.Map;
@@ -31,6 +32,8 @@ import org.jqassistant.tooling.dashboard.plugin.api.model.Version;
 import org.jqassistant.tooling.dashboard.plugin.impl.mapper.VersionMapper;
 
 import static java.lang.Boolean.parseBoolean;
+import static java.net.URLEncoder.encode;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static javax.ws.rs.client.Entity.json;
 
 @Slf4j
@@ -142,8 +145,8 @@ public class ComponentVersionReportPlugin implements ReportPlugin {
         Version version = versionColumn.getValue();
         VersionDTO versionDTO = VersionMapper.MAPPER.toDTO(version);
         Component component = componentColumn.getValue();
-        WebTarget versionTarget = apiTarget.path(component.getId())
-            .path(version.getVersion());
+        WebTarget versionTarget = apiTarget.path(encode(component.getId(), UTF_8))
+            .path(encode(version.getVersion(), UTF_8));
         try (Response put = versionTarget.request(MediaType.APPLICATION_JSON_TYPE)
             .header(AUTH_TOKEN_HEADER_NAME, apiKey)
             .put(json(versionDTO))) {
