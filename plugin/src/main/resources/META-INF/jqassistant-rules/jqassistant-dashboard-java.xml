@@ -1,0 +1,45 @@
+<jqassistant-rules xmlns="http://schema.jqassistant.org/rule/v2.2"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://schema.jqassistant.org/rule/v2.2 https://jqassistant.github.io/jqassistant/current/schema/jqassistant-rule-v2.2.xsd">
+
+    <concept id="jqassistant-dashboard-java:ArtifactProvidesVersion">
+        <providesConcept refId="jqassistant-dashboard:ComponentVersionContainsFile"/>
+        <description>Identify a Java Artifact as Dashboard component version containing files.</description>
+        <!-- TODO: merge on Component{id:} should be executed on indexed attribute -->
+        <cypher><![CDATA[
+            MATCH
+              (pom:Effective:Pom:Xml)-[:DESCRIBES]->(artifact:Artifact:Dashboard)
+            WITH
+              pom, artifact, datetime({epochmillis:coalesce(artifact.lastModified, timestamp())}) as updatedAt
+            CALL (*) {
+              MERGE
+                (component:Dashboard:Component{id: artifact.group + ":" + artifact.name})
+              MERGE
+                (component)-[:HAS_VERSION]->(version:Dashboard:Version{version:artifact.version})
+              MERGE
+                (artifact)-[:PROVIDES]->(version)
+              SET
+                version.updatedAt = updatedAt
+              SET
+                version.name = coalesce(pom.name, pom.artifactId)
+              SET
+                version.description = pom.description
+              WITH
+                artifact, component, version
+              MATCH
+                (artifact:Artifact)-[:CONTAINS]->(file:File)
+              MERGE
+                (version)-[:CONTAINS_FILE]->(file)
+              SET
+                file:Dashboard
+              RETURN
+                component, version, file
+            } IN TRANSACTIONS
+            RETURN
+              component as Component, version as Version, file as File
+            ORDER BY
+              component.id, component.version, file.fileName
+        ]]></cypher>
+    </concept>
+</jqassistant-rules>
+

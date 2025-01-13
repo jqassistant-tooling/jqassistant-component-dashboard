@@ -10,7 +10,7 @@ import com.buschmais.xo.neo4j.api.annotation.Relation.Incoming;
 import org.jqassistant.tooling.dashboard.service.application.model.Component.HasVersion;
 
 @Label
-public interface Version {
+public interface Version extends NameTemplate, DescriptionTemplate {
 
     String getVersion();
 

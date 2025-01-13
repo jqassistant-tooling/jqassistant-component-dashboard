@@ -48,7 +48,7 @@ public class ComponentsView extends VerticalLayout implements BeforeEnterObserve
 
         // Name
         com.vaadin.flow.component.Component nameFilterTextBox = filterableGrid.text(ComponentFilter::setNameFilter);
-        filterableGrid.withColumn("Name", nameFilterTextBox, componentSummary -> new Span(componentSummary.getComponent()
+        filterableGrid.withColumn("Name", nameFilterTextBox, componentSummary -> new Span(componentSummary.getLatestVersion()
             .getName()));
         // Latest Version
         filterableGrid.withColumn("Latest Version", new Span(), componentSummary -> new Span(componentSummary.getLatestVersion()

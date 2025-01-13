@@ -16,6 +16,14 @@ public interface Version extends Dashboard {
 
     void setVersion(String version);
 
+    String getName();
+
+    void setName(String name);
+
+    String getDescription();
+
+    void setDescription(String description);
+
     ZonedDateTime getUpdatedAt();
 
     void setUpdatedAt(ZonedDateTime lastUpdatedAt);

@@ -13,13 +13,14 @@
     <artifactId>projects</artifactId>
     <packaging>pom</packaging>
 
+    <properties>
+        <jqassistant.dashboard.url>http://localhost:8080</jqassistant.dashboard.url>
+        <jqassistant.dashboard.api-key>secret_api_token</jqassistant.dashboard.api-key>
+    </properties>
+
     <profiles>
         <profile>
             <id>update-dashboard</id>
-            <properties>
-                <jqassistant.dashboard.url>http://localhost</jqassistant.dashboard.url>
-                <jqassistant.dashboard.api-key>secret_api_token</jqassistant.dashboard.api-key>
-            </properties>
             <build>
                 <plugins>
                     <plugin>

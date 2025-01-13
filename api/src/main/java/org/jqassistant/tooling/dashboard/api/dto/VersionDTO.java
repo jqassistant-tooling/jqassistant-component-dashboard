@@ -14,6 +14,10 @@ public class VersionDTO {
 
     String version;
 
+    String name;
+
+    String description;
+
     ZonedDateTime updatedAt;
 
     List<FileDTO> containsFiles;
