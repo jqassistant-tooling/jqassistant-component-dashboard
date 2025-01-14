@@ -10,7 +10,7 @@ import com.vaadin.flow.component.combobox.MultiSelectComboBox;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.HeaderRow;
 import com.vaadin.flow.component.grid.dataview.GridDataView;
-import com.vaadin.flow.component.html.NativeLabel;
+import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.provider.CallbackDataProvider;
@@ -45,15 +45,20 @@ public class FilterableGrid<T, F> {
         this.headerRow = this.grid.appendHeaderRow();
     }
 
-    public Grid.Column<T> withColumn(String header, Component columnHeader, SerializableFunction<T, Component> rendererFunction) {
+    public Grid.Column<T> withColumn(String header, SerializableFunction<T, Component> rendererFunction) {
+        return withColumn(new Div(header), rendererFunction);
+    }
+
+    public Grid.Column<T> withColumn(Component columnHeader, SerializableFunction<T, Component> rendererFunction) {
         Grid.Column<T> column = grid.addColumn(new ComponentRenderer<>(rendererFunction));
         headerRow.getCell(column)
-            .setComponent(new VerticalLayout(new NativeLabel(header), columnHeader));
+            .setComponent(new VerticalLayout(columnHeader));
         return column;
     }
 
-    public TextField text(BiConsumer<F, String> updateFilterAction) {
+    public TextField text(String name, BiConsumer<F, String> updateFilterAction) {
         TextField textField = new TextField();
+        textField.setPlaceholder(name);
         textField.setValueChangeMode(ValueChangeMode.EAGER);
         textField.setClearButtonVisible(true);
         textField.setWidthFull();
@@ -69,8 +74,9 @@ public class FilterableGrid<T, F> {
         return comboBox;
     }
 
-    public MultiSelectComboBox<String> multiselectComboBox(BiConsumer<F, Set<String>> updateFilterAction) {
+    public MultiSelectComboBox<String> multiselectComboBox(String name, BiConsumer<F, Set<String>> updateFilterAction) {
         MultiSelectComboBox<String> multiSelectComboBox = new MultiSelectComboBox<>();
+        multiSelectComboBox.setPlaceholder(name);
         multiSelectComboBox.setClearButtonVisible(true);
         multiSelectComboBox.setWidthFull();
         addValueChangeListener(multiSelectComboBox, updateFilterAction);

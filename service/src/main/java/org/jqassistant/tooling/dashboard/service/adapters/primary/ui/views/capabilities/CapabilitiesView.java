@@ -59,22 +59,22 @@ public class CapabilitiesView extends VerticalLayout implements BeforeEnterObser
             new CapabilityFilter());
 
         // Type
-        this.typeFilterComboBox = filterableGrid.multiselectComboBox(
+        this.typeFilterComboBox = filterableGrid.multiselectComboBox("Type",
             (capabilityFilter, typeFilter) -> capabilityFilter.setTypeFilter(typeFilter.isEmpty() ? null : typeFilter));
-        filterableGrid.withColumn("Type", typeFilterComboBox, summary -> new Span(summary.getCapability()
+        filterableGrid.withColumn(typeFilterComboBox, summary -> new Span(summary.getCapability()
             .getType()));
 
         // Value
-        Component valueFilterTextComponent = filterableGrid.text(CapabilityFilter::setValueFilter);
-        filterableGrid.withColumn("Value", valueFilterTextComponent, capabilitySummary -> new Span(capabilitySummary.getCapability()
+        Component valueFilterTextComponent = filterableGrid.text("Value", CapabilityFilter::setValueFilter);
+        filterableGrid.withColumn(valueFilterTextComponent, capabilitySummary -> new Span(capabilitySummary.getCapability()
             .getValue()));
 
         // Description
-        filterableGrid.withColumn("Description", new Span(), capabilitySummary -> new Span(capabilitySummary.getCapability()
+        filterableGrid.withColumn(new Span(), capabilitySummary -> new Span(capabilitySummary.getCapability()
             .getDescription()));
 
         // Provided By
-        filterableGrid.withColumn("Provided By", new Span(), capabilitySummary -> {
+        filterableGrid.withColumn(new Span(), capabilitySummary -> {
             VerticalLayout verticalLayout = new VerticalLayout();
             capabilitySummary.getProvidedByComponents()
                 .stream()

@@ -48,18 +48,18 @@ public class ComponentsView extends VerticalLayout implements BeforeEnterObserve
                     .spliterator(), false), query -> componentService.countAll(projectKey, query.getFilter())), new ComponentFilter());
 
         // Name
-        Component nameFilterTextBox = filterableGrid.text(ComponentFilter::setNameFilter);
-        filterableGrid.withColumn("Name", nameFilterTextBox, componentSummary -> new Span(componentSummary.getLatestVersion()
+        Component nameFilterTextBox = filterableGrid.text("Name", ComponentFilter::setNameFilter);
+        filterableGrid.withColumn(nameFilterTextBox, componentSummary -> new Span(componentSummary.getLatestVersion()
             .getName()));
         // Description
-        Component descriptionFilterTextBox = filterableGrid.text(ComponentFilter::setNameFilter);
-        filterableGrid.withColumn("Description", descriptionFilterTextBox, componentSummary -> new Span(componentSummary.getLatestVersion()
+        Component descriptionFilterTextBox = filterableGrid.text("Description", ComponentFilter::setNameFilter);
+        filterableGrid.withColumn(descriptionFilterTextBox, componentSummary -> new Span(componentSummary.getLatestVersion()
             .getDescription()));
         // Latest Version
-        filterableGrid.withColumn("Latest Version", new Span(), componentSummary -> new Span(componentSummary.getLatestVersion()
+        filterableGrid.withColumn("Latest Version", componentSummary -> new Span(componentSummary.getLatestVersion()
             .getVersion()));
-        // Versions
-        filterableGrid.withColumn("# Versions", new Span(), componentSummary -> new Span(Long.toString(componentSummary.getVersionCount())));
+        // Version #
+        filterableGrid.withColumn("Version #", componentSummary -> new Span(Long.toString(componentSummary.getVersionCount())));
 
         Grid<ComponentSummary> grid = filterableGrid.build();
         grid.addItemClickListener(event -> UI.getCurrent()
