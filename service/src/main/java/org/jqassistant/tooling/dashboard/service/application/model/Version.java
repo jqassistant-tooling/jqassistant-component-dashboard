@@ -16,6 +16,10 @@ public interface Version extends NameTemplate, DescriptionTemplate {
 
     void setVersion(String version);
 
+    String getUrl();
+
+    void setUrl(String url);
+
     ZonedDateTime getUpdatedAt();
 
     void setUpdatedAt(ZonedDateTime updatedAt);

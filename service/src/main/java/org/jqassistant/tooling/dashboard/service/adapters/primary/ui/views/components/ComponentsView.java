@@ -56,6 +56,9 @@ public class ComponentsView extends VerticalLayout implements BeforeEnterObserve
         Component descriptionFilterTextBox = filterableGrid.text("Description", ComponentFilter::setNameFilter);
         filterableGrid.withColumn(descriptionFilterTextBox, componentSummary -> new Span(componentSummary.getLatestVersion()
             .getDescription()));
+        // URL
+        filterableGrid.withColumn("Homepage", componentSummary -> new Span(componentSummary.getLatestVersion()
+            .getUrl()));
         // Latest Version
         filterableGrid.withColumn("Latest Version", componentSummary -> new Span(componentSummary.getLatestVersion()
             .getVersion()));

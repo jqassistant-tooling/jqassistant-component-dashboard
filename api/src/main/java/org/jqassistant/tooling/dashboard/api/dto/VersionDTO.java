@@ -18,6 +18,8 @@ public class VersionDTO {
 
     String description;
 
+    String url;
+
     ZonedDateTime updatedAt;
 
     List<FileDTO> containsFiles;

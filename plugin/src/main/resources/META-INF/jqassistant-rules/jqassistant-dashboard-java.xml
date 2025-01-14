@@ -24,6 +24,8 @@
                 version.name = coalesce(pom.name, pom.artifactId)
               SET
                 version.description = pom.description
+              SET
+                version.url = pom.url
               WITH
                 artifact, component, version
               MATCH

@@ -24,6 +24,10 @@ public interface Version extends Dashboard {
 
     void setDescription(String description);
 
+    String getUrl();
+
+    void setUrl(String url);
+
     ZonedDateTime getUpdatedAt();
 
     void setUpdatedAt(ZonedDateTime lastUpdatedAt);
