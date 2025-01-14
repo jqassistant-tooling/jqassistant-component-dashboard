@@ -18,6 +18,7 @@ import org.jqassistant.tooling.dashboard.service.application.model.ComponentFilt
 import org.jqassistant.tooling.dashboard.service.application.model.ProjectKey;
 import org.springframework.transaction.annotation.Transactional;
 
+import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE_TIME;
 import static java.util.stream.StreamSupport.stream;
 import static org.jqassistant.tooling.dashboard.service.adapters.primary.ui.views.components.ComponentView.PARAMETER_COMPONENT;
 import static org.jqassistant.tooling.dashboard.service.adapters.primary.ui.views.projects.ProjectView.*;
@@ -58,6 +59,10 @@ public class ComponentsView extends VerticalLayout implements BeforeEnterObserve
         // Latest Version
         filterableGrid.withColumn("Latest Version", componentSummary -> new Span(componentSummary.getLatestVersion()
             .getVersion()));
+        // Latest Version
+        filterableGrid.withColumn("Updated", componentSummary -> new Span(componentSummary.getLatestVersion()
+            .getUpdatedAt()
+            .format(ISO_LOCAL_DATE_TIME)));
         // Version #
         filterableGrid.withColumn("Version #", componentSummary -> new Span(Long.toString(componentSummary.getVersionCount())));
 
