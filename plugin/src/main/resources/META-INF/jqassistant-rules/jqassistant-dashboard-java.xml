@@ -9,6 +9,8 @@
         <cypher><![CDATA[
             MATCH
               (pom:Effective:Pom:Xml)-[:DESCRIBES]->(artifact:Artifact:Dashboard)
+            WHERE NOT
+              (artifact)-[:PROVIDES]->(:Dashboard:Version)
             WITH
               pom, artifact, datetime({epochmillis:coalesce(artifact.lastModified, timestamp())}) as updatedAt
             CALL (*) {
