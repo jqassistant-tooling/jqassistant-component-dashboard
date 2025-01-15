@@ -7,35 +7,13 @@
         <description>Identify a jQAssistant plugin as component version containing files.</description>
         <cypher><![CDATA[
             MATCH
-              (artifact:Artifact{type:"jar"})-[:CONTAINS]->(:File:Xml{fileName:"/META-INF/jqassistant-plugin.xml"})
-            WHERE
-              artifact.classifier is null
-            WITH
-              artifact, datetime({epochmillis:coalesce(artifact.lastModified, timestamp())}) as updatedAt
-            CALL (*) {
-              MERGE
-                (component:Dashboard:Component{id: artifact.group + ":" + artifact.name})
-              MERGE
-                (component)-[:HAS_VERSION]->(version:Dashboard:Version{version:artifact.version})
-              MERGE
-                (artifact)-[:PROVIDES]->(version)
-              SET
-                version.updatedAt = updatedAt
-              WITH
-                artifact, component, version
-              MATCH
-                (artifact:Artifact)-[:CONTAINS]->(file:File)
-              MERGE
-                (version)-[:CONTAINS_FILE]->(file)
-              SET
-                file:Dashboard
-              RETURN
-                component, version, file
-            } IN TRANSACTIONS
+              (pom:Effective:Pom:Xml)-[:DESCRIBES]->(artifact:Artifact{type:"jar"})-[:CONTAINS]->(:File:Xml{fileName:"/META-INF/jqassistant-plugin.xml"})
+            SET
+              artifact:Dashboard
             RETURN
-              component as Component, version as Version, file as File
+              artifact as Artifact
             ORDER BY
-              component.id, component.version, file.fileName
+              pom.fqn
         ]]></cypher>
     </concept>
 

@@ -8,8 +8,8 @@
         Test Descriptor for the jQAssistant Dashboard Plugin
     </description>
     <model>
-        <class>org.jqassistant.tooling.dashboard.plugin.it.model.TestLanguage</class>
-        <class>org.jqassistant.tooling.dashboard.plugin.it.model.TestType</class>
+        <class>org.jqassistant.tooling.dashboard.projects.jqassistant.plugins.it.model.TestLanguage</class>
+        <class>org.jqassistant.tooling.dashboard.projects.jqassistant.plugins.it.model.TestType</class>
     </model>
     <rules>
         <resource>test.xml</resource>

@@ -18,6 +18,11 @@
         <jqassistant.dashboard.api-key>secret_api_token</jqassistant.dashboard.api-key>
     </properties>
 
+    <modules>
+        <module>jqassistant-plugins</module>
+        <module>maven-plugins</module>
+    </modules>
+
     <profiles>
         <profile>
             <id>update-dashboard</id>
@@ -50,11 +55,6 @@
                     </plugin>
                 </plugins>
             </build>
-
-            <modules>
-                <module>jqassistant-plugins</module>
-                <module>maven-plugins</module>
-            </modules>
         </profile>
     </profiles>
 </project>
