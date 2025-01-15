@@ -29,6 +29,7 @@ public interface XOComponentRepository {
         WHERE
           id(project) = $project
           and ($nameFilter is null or toLower(latestVersion.name) contains toLower($nameFilter))
+          and ($descriptionFilter is null or toLower(latestVersion.description) contains toLower($descriptionFilter))
         """;
 
     @Cypher(COMPONENT_FILTER + """
@@ -61,5 +62,5 @@ public interface XOComponentRepository {
         RETURN
           count(component)
         """)
-    int countAll(Project project, String nameFilter);
+    int countAll(Project project, String nameFilter, String descriptionFilter);
 }

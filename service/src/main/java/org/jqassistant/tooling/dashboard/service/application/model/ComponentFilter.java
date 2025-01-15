@@ -11,4 +11,6 @@ public class ComponentFilter {
 
     private String nameFilter;
 
+    private String descriptionFilter;
+
 }

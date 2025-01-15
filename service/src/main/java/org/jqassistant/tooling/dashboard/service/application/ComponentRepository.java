@@ -12,9 +12,9 @@ public interface ComponentRepository {
 
     Component resolve(String project, String component);
 
-    Stream<ComponentSummary> findAll(Project project, String nameFilter, int offset, int limit);
+    Stream<ComponentSummary> findAll(Project project, String nameFilter, String descriptionFilter, int offset, int limit);
 
-    int countAll(Project project, String nameFilter);
+    int countAll(Project project, String nameFilter, String descriptionFilter);
 
     interface ComponentSummary {
 

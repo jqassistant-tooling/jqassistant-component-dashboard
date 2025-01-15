@@ -1,7 +1,10 @@
 package org.jqassistant.tooling.dashboard.service.adapters.primary.ui.shared;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasValue;
@@ -28,6 +31,7 @@ public class FilterableGrid<T, F> {
     private final GridDataView<T> gridDataView;
     private final Grid<T> grid;
     private final HeaderRow headerRow;
+    private List<Consumer<F>> filterListeners = new ArrayList<>();
 
     public static <T, F> FilterableGrid<T, F> builder(Class<T> type, CallbackDataProvider<T, F> callbackDataProvider, F filter) {
         return new FilterableGrid<>(type, callbackDataProvider, filter);
@@ -87,10 +91,18 @@ public class FilterableGrid<T, F> {
         hasValue.addValueChangeListener(valueChangeEvent -> {
             updateFilterAction.accept(filter, valueChangeEvent.getValue());
             gridDataView.refreshAll();
+            for (Consumer<F> filterListener : filterListeners) {
+                filterListener.accept(filter);
+            }
         });
+    }
+
+    public void addFilterListener(Consumer<F> filterListener) {
+        filterListeners.add(filterListener);
     }
 
     public Grid<T> build() {
         return grid;
     }
+
 }

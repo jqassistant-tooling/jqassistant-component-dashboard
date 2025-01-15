@@ -29,12 +29,14 @@ public class ComponentService {
     public Stream<ComponentSummary> findAll(ProjectKey projectKey, Optional<ComponentFilter> filter, int offset, int limit) {
         Project project = projectService.find(projectKey);
         return componentRepository.findAll(project, filter.map(ComponentFilter::getNameFilter)
+            .orElse(null), filter.map(ComponentFilter::getDescriptionFilter)
             .orElse(null), offset, limit);
     }
 
     public int countAll(ProjectKey projectKey, Optional<ComponentFilter> filter) {
         Project project = projectService.find(projectKey);
         return componentRepository.countAll(project, filter.map(ComponentFilter::getNameFilter)
+            .orElse(null), filter.map(ComponentFilter::getDescriptionFilter)
             .orElse(null));
     }
 }
