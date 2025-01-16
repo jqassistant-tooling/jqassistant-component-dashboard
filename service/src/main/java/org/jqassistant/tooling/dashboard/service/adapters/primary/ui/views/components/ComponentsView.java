@@ -13,15 +13,16 @@ import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.jqassistant.tooling.dashboard.service.adapters.primary.ui.shared.DashboardLayout;
 import org.jqassistant.tooling.dashboard.service.adapters.primary.ui.shared.FilterableGrid;
+import org.jqassistant.tooling.dashboard.service.adapters.primary.ui.shared.QueryParamsHelper;
 import org.jqassistant.tooling.dashboard.service.application.ComponentRepository.ComponentSummary;
 import org.jqassistant.tooling.dashboard.service.application.ComponentService;
 import org.jqassistant.tooling.dashboard.service.application.model.ComponentFilter;
 import org.jqassistant.tooling.dashboard.service.application.model.ProjectKey;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE_TIME;
 import static java.util.stream.StreamSupport.stream;
+import static org.apache.commons.lang3.StringUtils.abbreviate;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.jqassistant.tooling.dashboard.service.adapters.primary.ui.views.components.ComponentView.PARAMETER_COMPONENT;
 import static org.jqassistant.tooling.dashboard.service.adapters.primary.ui.views.projects.ProjectView.*;
@@ -33,14 +34,14 @@ import static org.jqassistant.tooling.dashboard.service.adapters.primary.ui.view
 @Transactional
 public class ComponentsView extends VerticalLayout implements BeforeEnterObserver {
 
-    public static final String QUERY_PARAM_NAME = "nameFilter";
-    public static final String QUERY_PARAM_DESCRIPTION = "descriptionFilter";
+    public static final String QUERY_PARAM_NAME_FILTER = "nameFilter";
+    public static final String QUERY_PARAM_DESCRIPTION_FILTER = "descriptionFilter";
 
     private final transient ComponentService componentService;
 
     private transient ProjectKey projectKey;
 
-    private Location location;
+    private QueryParamsHelper<ComponentFilter> queryParamsHelper;
 
     private ComponentFilter componentFilter = new ComponentFilter();
 
@@ -48,18 +49,12 @@ public class ComponentsView extends VerticalLayout implements BeforeEnterObserve
 
     @Override
     public void beforeEnter(BeforeEnterEvent event) {
-        this.location = event.getLocation();
-        this.projectKey = getProjectKey(event);
-        QueryParameters queryParameters = event.getLocation()
-            .getQueryParameters();
-        queryParameters.getSingleParameter(QUERY_PARAM_NAME)
-            .ifPresent(nameFilter -> {
-                componentFilter.setNameFilter(nameFilter);
-            });
-        queryParameters.getSingleParameter(QUERY_PARAM_DESCRIPTION)
-            .ifPresent(descriptionFilter -> {
-                componentFilter.setDescriptionFilter(descriptionFilter);
-            });
+        this.projectKey = getProjectKey(event.getRouteParameters());
+        this.queryParamsHelper = new QueryParamsHelper<>(event.getLocation(), componentFilter).withSingleParameter(QUERY_PARAM_NAME_FILTER, nameFilter -> {
+            componentFilter.setNameFilter(nameFilter);
+        }).withSingleParameter(QUERY_PARAM_DESCRIPTION_FILTER, descriptionFilter -> {
+            componentFilter.setDescriptionFilter(descriptionFilter);
+        });
         filterBinder.readBean(componentFilter);
     }
 
@@ -74,12 +69,22 @@ public class ComponentsView extends VerticalLayout implements BeforeEnterObserve
 
         // Name
         TextField nameFilterTextBox = filterableGrid.text("Name", ComponentFilter::setNameFilter);
-        filterableGrid.withColumn(nameFilterTextBox, componentSummary -> new Span(componentSummary.getLatestVersion()
-            .getName()));
+        filterableGrid.withColumn(nameFilterTextBox, componentSummary -> {
+            Span span = new Span(componentSummary.getLatestVersion()
+                .getName());
+            span.setTitle(componentSummary.getComponent().getName());
+            return span;
+        });
         // Description
         TextField descriptionFilterTextBox = filterableGrid.text("Description", ComponentFilter::setDescriptionFilter);
-        filterableGrid.withColumn(descriptionFilterTextBox, componentSummary -> new Span(componentSummary.getLatestVersion()
-            .getDescription()));
+        filterableGrid.withColumn(descriptionFilterTextBox, componentSummary -> {
+            String description = componentSummary.getLatestVersion().getDescription();
+            Span span = new Span(abbreviate(description, "...", 256));
+            if (description != null) {
+                span.setTitle(description);
+            }
+            return span;
+        });
 
         // URL
         filterableGrid.withColumn("Homepage", componentSummary -> new Span(componentSummary.getLatestVersion()
@@ -92,7 +97,7 @@ public class ComponentsView extends VerticalLayout implements BeforeEnterObserve
             .getUpdatedAt()
             .format(ISO_LOCAL_DATE_TIME)));
         // Version #
-        filterableGrid.withColumn("Version #", componentSummary -> new Span(Long.toString(componentSummary.getVersionCount())));
+        filterableGrid.withColumn("Available Versions", componentSummary -> new Span(Long.toString(componentSummary.getVersionCount())));
 
         filterBinder.forField(nameFilterTextBox)
             .bind(filter -> filter.getNameFilter(), ComponentFilter::setNameFilter);
@@ -112,20 +117,13 @@ public class ComponentsView extends VerticalLayout implements BeforeEnterObserve
     }
 
     private void updateQueryParameters() {
-        UriComponentsBuilder uriBuilder = UriComponentsBuilder.newInstance()
-            .path(location.getPath());
-        if (isNotBlank(componentFilter.getNameFilter())) {
-            uriBuilder.queryParam("name", componentFilter.getNameFilter());
-        }
-        if (isNotBlank(componentFilter.getDescriptionFilter())) {
-            uriBuilder.queryParam("description", componentFilter.getDescriptionFilter());
-        }
-        getUI().ifPresent(ui ->
-            ui.getPage()
-                .getHistory()
-                .replaceState(null, uriBuilder.encode()
-                    .build()
-                    .toString()));
+        queryParamsHelper.update(getUI(), uriBuilder -> {
+            if (isNotBlank(componentFilter.getNameFilter())) {
+                uriBuilder.queryParam(QUERY_PARAM_NAME_FILTER, componentFilter.getNameFilter());
+            }
+            if (isNotBlank(componentFilter.getDescriptionFilter())) {
+                uriBuilder.queryParam(QUERY_PARAM_DESCRIPTION_FILTER, componentFilter.getDescriptionFilter());
+            }
+        });
     }
-
 }

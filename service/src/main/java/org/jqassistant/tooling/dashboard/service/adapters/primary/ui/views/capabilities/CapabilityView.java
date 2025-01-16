@@ -48,7 +48,7 @@ public class CapabilityView extends VerticalLayout implements BeforeEnterObserve
     private final TreeGrid<TreeNode> requiredBy = new TreeGrid<>();
 
     private static CapabilityKey getCapabilityKey(BeforeEnterEvent beforeEnterEvent) {
-        ProjectKey projectKey = getProjectKey(beforeEnterEvent);
+        ProjectKey projectKey = getProjectKey(beforeEnterEvent.getRouteParameters());
         RouteParameters routeParameters = beforeEnterEvent.getRouteParameters();
         String capabilityType = routeParameters.get(PARAMETER_CAPABILITY_TYPE)
             .orElseThrow();

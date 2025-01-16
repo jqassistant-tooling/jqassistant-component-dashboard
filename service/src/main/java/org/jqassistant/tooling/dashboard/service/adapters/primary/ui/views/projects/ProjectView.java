@@ -21,10 +21,9 @@ public class ProjectView extends VerticalLayout implements BeforeEnterObserver {
 
     public static final String PARAMETER_PROJECT = "project";
 
-    private final AuthenticationContext authenticationContext;
+    private final transient AuthenticationContext authenticationContext;
 
-    public static ProjectKey getProjectKey(BeforeEnterEvent beforeEnterEvent) {
-        RouteParameters routeParameters = beforeEnterEvent.getRouteParameters();
+    public static ProjectKey getProjectKey(RouteParameters routeParameters) {
         String owner = routeParameters.get(PARAMETER_OWNER)
             .orElseThrow();
         String project = routeParameters.get(PARAMETER_PROJECT)

@@ -43,7 +43,7 @@ public class CapabilitiesView extends VerticalLayout implements BeforeEnterObser
     @Override
     public void beforeEnter(BeforeEnterEvent event) {
         transactionTemplate.executeWithoutResult(tx -> {
-            this.projectKey = getProjectKey(event);
+            this.projectKey = getProjectKey(event.getRouteParameters());
             this.typeFilterComboBox.setItems(capabilityService.getTypes(projectKey));
         });
     }
