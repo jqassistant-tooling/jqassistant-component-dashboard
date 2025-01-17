@@ -41,18 +41,18 @@ public class ComponentsView extends VerticalLayout implements BeforeEnterObserve
 
     private transient ProjectKey projectKey;
 
-    private QueryParamsHelper<ComponentFilter> queryParamsHelper;
+    private final ComponentFilter componentFilter = new ComponentFilter();
 
-    private ComponentFilter componentFilter = new ComponentFilter();
+    private QueryParamsHelper queryParamsHelper;
 
     private Binder<ComponentFilter> filterBinder = new Binder<>(ComponentFilter.class);
 
     @Override
     public void beforeEnter(BeforeEnterEvent event) {
         this.projectKey = getProjectKey(event.getRouteParameters());
-        this.queryParamsHelper = new QueryParamsHelper<>(event.getLocation(), componentFilter).withSingleParameter(QUERY_PARAM_NAME_FILTER, nameFilter -> {
+        this.queryParamsHelper = new QueryParamsHelper(event.getLocation()).withParameter(QUERY_PARAM_NAME_FILTER, nameFilter -> {
             componentFilter.setNameFilter(nameFilter);
-        }).withSingleParameter(QUERY_PARAM_DESCRIPTION_FILTER, descriptionFilter -> {
+        }).withParameter(QUERY_PARAM_DESCRIPTION_FILTER, descriptionFilter -> {
             componentFilter.setDescriptionFilter(descriptionFilter);
         });
         filterBinder.readBean(componentFilter);
@@ -104,8 +104,16 @@ public class ComponentsView extends VerticalLayout implements BeforeEnterObserve
         filterBinder.forField(descriptionFilterTextBox)
             .bind(filter -> filter.getDescriptionFilter(), ComponentFilter::setNameFilter);
         filterableGrid.addFilterListener(filter -> {
-            updateQueryParameters();
+            queryParamsHelper.update(getUI(), uriBuilder -> {
+                if (isNotBlank(componentFilter.getNameFilter())) {
+                    uriBuilder.queryParam(QUERY_PARAM_NAME_FILTER, componentFilter.getNameFilter());
+                }
+                if (isNotBlank(componentFilter.getDescriptionFilter())) {
+                    uriBuilder.queryParam(QUERY_PARAM_DESCRIPTION_FILTER, componentFilter.getDescriptionFilter());
+                }
+            });
         });
+
         Grid<ComponentSummary> grid = filterableGrid.build();
 
         grid.addItemClickListener(event -> UI.getCurrent()
@@ -116,14 +124,4 @@ public class ComponentsView extends VerticalLayout implements BeforeEnterObserve
         this.add(grid);
     }
 
-    private void updateQueryParameters() {
-        queryParamsHelper.update(getUI(), uriBuilder -> {
-            if (isNotBlank(componentFilter.getNameFilter())) {
-                uriBuilder.queryParam(QUERY_PARAM_NAME_FILTER, componentFilter.getNameFilter());
-            }
-            if (isNotBlank(componentFilter.getDescriptionFilter())) {
-                uriBuilder.queryParam(QUERY_PARAM_DESCRIPTION_FILTER, componentFilter.getDescriptionFilter());
-            }
-        });
-    }
 }

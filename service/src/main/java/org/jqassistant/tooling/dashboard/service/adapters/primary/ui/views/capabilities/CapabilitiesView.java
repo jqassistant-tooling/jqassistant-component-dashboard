@@ -1,11 +1,12 @@
 package org.jqassistant.tooling.dashboard.service.adapters.primary.ui.views.capabilities;
 
-import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.combobox.MultiSelectComboBox;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.provider.CallbackDataProvider;
 import com.vaadin.flow.router.*;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
@@ -13,6 +14,7 @@ import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.jqassistant.tooling.dashboard.service.adapters.primary.ui.shared.DashboardLayout;
 import org.jqassistant.tooling.dashboard.service.adapters.primary.ui.shared.FilterableGrid;
+import org.jqassistant.tooling.dashboard.service.adapters.primary.ui.shared.QueryParamsHelper;
 import org.jqassistant.tooling.dashboard.service.application.CapabilityRepository.CapabilitySummary;
 import org.jqassistant.tooling.dashboard.service.application.CapabilityService;
 import org.jqassistant.tooling.dashboard.service.application.model.Capability;
@@ -21,6 +23,9 @@ import org.jqassistant.tooling.dashboard.service.application.model.ProjectKey;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import static java.util.Set.copyOf;
+import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.jqassistant.tooling.dashboard.service.adapters.primary.ui.views.capabilities.CapabilityView.PARAMETER_CAPABILITY_TYPE;
 import static org.jqassistant.tooling.dashboard.service.adapters.primary.ui.views.capabilities.CapabilityView.PARAMETER_CAPABILITY_VALUE;
 import static org.jqassistant.tooling.dashboard.service.adapters.primary.ui.views.projects.ProjectView.*;
@@ -32,11 +37,19 @@ import static org.jqassistant.tooling.dashboard.service.adapters.primary.ui.view
 @Transactional
 public class CapabilitiesView extends VerticalLayout implements BeforeEnterObserver {
 
+    public static final String QUERY_PARAM_TYPE_FILTER = "typeFilter";
+    public static final String QUERY_PARAM_VALUE_FILTER = "valueFilter";
     private final transient CapabilityService capabilityService;
 
     private final TransactionTemplate transactionTemplate;
 
     private transient ProjectKey projectKey;
+
+    private final CapabilityFilter capabilityFilter = new CapabilityFilter();
+
+    private QueryParamsHelper queryParamsHelper;
+
+    private Binder<CapabilityFilter> filterBinder = new Binder<>(CapabilityFilter.class);
 
     private MultiSelectComboBox<String> typeFilterComboBox;
 
@@ -46,6 +59,10 @@ public class CapabilitiesView extends VerticalLayout implements BeforeEnterObser
             this.projectKey = getProjectKey(event.getRouteParameters());
             this.typeFilterComboBox.setItems(capabilityService.getTypes(projectKey));
         });
+        queryParamsHelper = new QueryParamsHelper(event.getLocation())
+            .withParameters(QUERY_PARAM_TYPE_FILTER, typeFilter -> capabilityFilter.setTypeFilter(copyOf(typeFilter)))
+            .withParameter(QUERY_PARAM_VALUE_FILTER, valueFilter -> capabilityFilter.setValueFilter(valueFilter));
+        filterBinder.readBean(capabilityFilter);
     }
 
     @PostConstruct
@@ -56,7 +73,7 @@ public class CapabilitiesView extends VerticalLayout implements BeforeEnterObser
             query -> capabilityService.findAll(projectKey, query.getFilter(), query.getOffset(), query.getLimit()),
             query -> capabilityService.countAll(projectKey, query.getFilter()));
         FilterableGrid<CapabilitySummary, CapabilityFilter> filterableGrid = FilterableGrid.builder(CapabilitySummary.class, callbackDataProvider,
-            new CapabilityFilter());
+            capabilityFilter);
 
         // Type
         this.typeFilterComboBox = filterableGrid.multiselectComboBox("Type",
@@ -65,8 +82,8 @@ public class CapabilitiesView extends VerticalLayout implements BeforeEnterObser
             .getType()));
 
         // Value
-        Component valueFilterTextComponent = filterableGrid.text("Value", CapabilityFilter::setValueFilter);
-        filterableGrid.withColumn(valueFilterTextComponent, capabilitySummary -> new Span(capabilitySummary.getCapability()
+        TextField valueFilterTextField = filterableGrid.text("Value", CapabilityFilter::setValueFilter);
+        filterableGrid.withColumn(valueFilterTextField, capabilitySummary -> new Span(capabilitySummary.getCapability()
             .getValue()));
 
         // Description
@@ -83,7 +100,23 @@ public class CapabilitiesView extends VerticalLayout implements BeforeEnterObser
             return verticalLayout;
         });
 
+        filterBinder.forField(typeFilterComboBox)
+            .bind(filter -> filter.getTypeFilter(), CapabilityFilter::setTypeFilter);
+        filterBinder.forField(valueFilterTextField)
+            .bind(filter -> filter.getValueFilter(), CapabilityFilter::setValueFilter);
+        filterableGrid.addFilterListener(filter -> {
+            queryParamsHelper.update(getUI(), uriBuilder -> {
+                if (isNotEmpty(capabilityFilter.getTypeFilter())) {
+                    uriBuilder.queryParam(QUERY_PARAM_TYPE_FILTER, capabilityFilter.getTypeFilter());
+                }
+                if (isNotBlank(capabilityFilter.getValueFilter())) {
+                    uriBuilder.queryParam(QUERY_PARAM_VALUE_FILTER, capabilityFilter.getValueFilter());
+                }
+            });
+        });
+
         Grid<CapabilitySummary> grid = filterableGrid.build();
+
         grid.addItemClickListener(event -> {
             Capability capability = event.getItem()
                 .getCapability();
