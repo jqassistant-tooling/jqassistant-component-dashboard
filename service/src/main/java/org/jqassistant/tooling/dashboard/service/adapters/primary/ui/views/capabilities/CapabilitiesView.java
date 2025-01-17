@@ -28,7 +28,7 @@ import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.jqassistant.tooling.dashboard.service.adapters.primary.ui.views.capabilities.CapabilityView.PARAMETER_CAPABILITY_TYPE;
 import static org.jqassistant.tooling.dashboard.service.adapters.primary.ui.views.capabilities.CapabilityView.PARAMETER_CAPABILITY_VALUE;
-import static org.jqassistant.tooling.dashboard.service.adapters.primary.ui.views.projects.ProjectView.*;
+import static org.jqassistant.tooling.dashboard.service.adapters.primary.ui.views.projects.ProjectKeyHelper.*;
 
 @RoutePrefix("ui")
 @Route(value = ":owner/:project/capabilities", layout = DashboardLayout.class)

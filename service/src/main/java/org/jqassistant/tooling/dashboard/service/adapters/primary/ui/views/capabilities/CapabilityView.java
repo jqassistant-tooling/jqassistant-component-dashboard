@@ -1,10 +1,5 @@
 package org.jqassistant.tooling.dashboard.service.adapters.primary.ui.views.capabilities;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Stream;
-
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.html.Span;
@@ -22,7 +17,12 @@ import org.jqassistant.tooling.dashboard.service.application.model.*;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import static org.jqassistant.tooling.dashboard.service.adapters.primary.ui.views.projects.ProjectView.getProjectKey;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Stream;
+
+import static org.jqassistant.tooling.dashboard.service.adapters.primary.ui.views.projects.ProjectKeyHelper.getProjectKey;
 
 @RoutePrefix("ui")
 @Route(value = ":owner/:project/capabilities/:capabilityType/:capabilityValue", layout = DashboardLayout.class)

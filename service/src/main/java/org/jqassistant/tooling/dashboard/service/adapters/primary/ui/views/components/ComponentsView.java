@@ -25,7 +25,7 @@ import static java.util.stream.StreamSupport.stream;
 import static org.apache.commons.lang3.StringUtils.abbreviate;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.jqassistant.tooling.dashboard.service.adapters.primary.ui.views.components.ComponentView.PARAMETER_COMPONENT;
-import static org.jqassistant.tooling.dashboard.service.adapters.primary.ui.views.projects.ProjectView.*;
+import static org.jqassistant.tooling.dashboard.service.adapters.primary.ui.views.projects.ProjectKeyHelper.*;
 
 @RoutePrefix("ui")
 @Route(value = ":owner/:project/components", layout = DashboardLayout.class)
