@@ -3,8 +3,10 @@ package org.jqassistant.tooling.dashboard.service.adapters.primary.ui.shared;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.router.Location;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -42,6 +44,15 @@ public class QueryParamsHelper {
                     .build()
                     .toString());
         });
+    }
+
+
+    public static String join(List<String> value) {
+        return String.join(",", value);
+    }
+
+    public static List<String> split(String value) {
+        return Arrays.stream(StringUtils.split(value)).toList();
     }
 
 }

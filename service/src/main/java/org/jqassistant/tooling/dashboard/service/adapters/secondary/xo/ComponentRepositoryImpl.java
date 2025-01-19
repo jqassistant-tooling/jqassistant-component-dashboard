@@ -1,13 +1,13 @@
 package org.jqassistant.tooling.dashboard.service.adapters.secondary.xo;
 
-import java.util.stream.Stream;
-
 import com.buschmais.xo.api.XOManager;
-
 import org.jqassistant.tooling.dashboard.service.application.ComponentRepository;
 import org.jqassistant.tooling.dashboard.service.application.model.Component;
 import org.jqassistant.tooling.dashboard.service.application.model.Project;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
+import java.util.stream.Stream;
 
 @Repository
 public class ComponentRepositoryImpl extends AbstractXORepository<XOComponentRepository> implements ComponentRepository {
@@ -22,7 +22,7 @@ public class ComponentRepositoryImpl extends AbstractXORepository<XOComponentRep
     }
 
     @Override
-    public Stream<ComponentSummary> findAll(Project project, String nameFilter, String descriptionFilter, int offset, int limit) {
+    public Stream<ComponentSummary> findAll(Project project, List<String> nameFilter, List<String> descriptionFilter, int offset, int limit) {
         return toStream(xoManager.createQuery(XOComponentRepository.XOComponentSummary.class)
             .withParameter("project", project)
             .withParameter("nameFilter", nameFilter)
@@ -33,8 +33,8 @@ public class ComponentRepositoryImpl extends AbstractXORepository<XOComponentRep
     }
 
     @Override
-    public int countAll(Project project, String nameFilter, String descriptionFilter) {
-        return getXORepository().countAll(project, nameFilter,descriptionFilter);
+    public int countAll(Project project, List<String> nameFilter, List<String> descriptionFilter) {
+        return getXORepository().countAll(project, nameFilter, descriptionFilter);
     }
 
 }

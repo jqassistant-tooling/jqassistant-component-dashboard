@@ -3,11 +3,12 @@ package org.jqassistant.tooling.dashboard.service.adapters.secondary.xo;
 import com.buschmais.xo.api.annotation.Repository;
 import com.buschmais.xo.api.annotation.ResultOf;
 import com.buschmais.xo.neo4j.api.annotation.Cypher;
-
 import org.jqassistant.tooling.dashboard.service.application.ComponentRepository;
 import org.jqassistant.tooling.dashboard.service.application.model.Component;
 import org.jqassistant.tooling.dashboard.service.application.model.Project;
 import org.jqassistant.tooling.dashboard.service.application.model.Version;
+
+import java.util.List;
 
 @Repository
 public interface XOComponentRepository {
@@ -28,8 +29,8 @@ public interface XOComponentRepository {
           (project:Project)-[:CONTAINS_COMPONENT]->(component:Component)-[:HAS_LATEST_VERSION]->(latestVersion:Version)
         WHERE
           id(project) = $project
-          and ($nameFilter is null or toLower(latestVersion.name) contains toLower($nameFilter))
-          and ($descriptionFilter is null or toLower(latestVersion.description) contains toLower($descriptionFilter))
+          and (isEmpty($nameFilter) or all(token in $nameFilter where toLower(latestVersion.name) contains toLower(token)))
+          and (isEmpty($descriptionFilter) or all(token in $descriptionFilter where toLower(latestVersion.description) contains toLower(token)))
         """;
 
     @Cypher(COMPONENT_FILTER + """
@@ -62,5 +63,5 @@ public interface XOComponentRepository {
         RETURN
           count(component)
         """)
-    int countAll(Project project, String nameFilter, String descriptionFilter);
+    int countAll(Project project, List<String> nameFilter, List<String> descriptionFilter);
 }
