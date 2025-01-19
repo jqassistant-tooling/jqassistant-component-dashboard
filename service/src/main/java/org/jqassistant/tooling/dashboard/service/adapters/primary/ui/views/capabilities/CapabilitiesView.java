@@ -48,9 +48,9 @@ public class CapabilitiesView extends VerticalLayout implements BeforeEnterObser
 
     private final transient CapabilityFilter capabilityFilter = new CapabilityFilter();
 
-    private transient QueryParamsHelper queryParamsHelper;
-
     private final Binder<CapabilityFilter> filterBinder = new Binder<>(CapabilityFilter.class);
+
+    private transient QueryParamsHelper queryParamsHelper;
 
     private MultiSelectComboBox<String> typeFilterComboBox;
 

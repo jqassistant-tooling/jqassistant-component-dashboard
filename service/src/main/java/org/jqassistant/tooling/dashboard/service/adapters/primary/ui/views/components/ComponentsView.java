@@ -1,13 +1,16 @@
 package org.jqassistant.tooling.dashboard.service.adapters.primary.ui.views.components;
 
-import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.provider.CallbackDataProvider;
-import com.vaadin.flow.router.*;
+import com.vaadin.flow.router.BeforeEnterEvent;
+import com.vaadin.flow.router.BeforeEnterObserver;
+import com.vaadin.flow.router.Route;
+import com.vaadin.flow.router.RoutePrefix;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -26,8 +29,7 @@ import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 import static org.apache.commons.lang3.StringUtils.abbreviate;
 import static org.jqassistant.tooling.dashboard.service.adapters.primary.ui.shared.QueryParamsHelper.join;
 import static org.jqassistant.tooling.dashboard.service.adapters.primary.ui.shared.QueryParamsHelper.split;
-import static org.jqassistant.tooling.dashboard.service.adapters.primary.ui.views.components.ComponentView.PARAMETER_COMPONENT;
-import static org.jqassistant.tooling.dashboard.service.adapters.primary.ui.views.projects.ProjectKeyHelper.*;
+import static org.jqassistant.tooling.dashboard.service.adapters.primary.ui.views.projects.ProjectKeyHelper.getProjectKey;
 
 @RoutePrefix("ui")
 @Route(value = ":owner/:project/components", layout = DashboardLayout.class)
@@ -45,18 +47,14 @@ public class ComponentsView extends VerticalLayout implements BeforeEnterObserve
 
     private final ComponentFilter componentFilter = new ComponentFilter();
 
-    private QueryParamsHelper queryParamsHelper;
+    private final Binder<ComponentFilter> filterBinder = new Binder<>(ComponentFilter.class);
 
-    private Binder<ComponentFilter> filterBinder = new Binder<>(ComponentFilter.class);
+    private transient QueryParamsHelper queryParamsHelper;
 
     @Override
     public void beforeEnter(BeforeEnterEvent event) {
         this.projectKey = getProjectKey(event.getRouteParameters());
-        this.queryParamsHelper = new QueryParamsHelper(event.getLocation()).withParameters(QUERY_PARAM_NAME_FILTER, nameFilter -> {
-            componentFilter.setNameFilter(nameFilter);
-        }).withParameters(QUERY_PARAM_DESCRIPTION_FILTER, descriptionFilter -> {
-            componentFilter.setDescriptionFilter(descriptionFilter);
-        });
+        this.queryParamsHelper = new QueryParamsHelper(event.getLocation()).withParameters(QUERY_PARAM_NAME_FILTER, componentFilter::setNameFilter).withParameters(QUERY_PARAM_DESCRIPTION_FILTER, componentFilter::setDescriptionFilter);
         filterBinder.readBean(componentFilter);
     }
 
@@ -89,8 +87,9 @@ public class ComponentsView extends VerticalLayout implements BeforeEnterObserve
         });
 
         // URL
-        filterableGrid.withColumn("Homepage", componentSummary -> new Span(componentSummary.getLatestVersion()
-            .getUrl()));
+        filterableGrid.withColumn("Homepage", componentSummary -> new Span(new Anchor(componentSummary.getLatestVersion()
+            .getUrl(), componentSummary.getLatestVersion()
+            .getUrl())));
         // Latest Version
         filterableGrid.withColumn("Latest Version", componentSummary -> new Span(componentSummary.getLatestVersion()
             .getVersion()));
@@ -105,24 +104,24 @@ public class ComponentsView extends VerticalLayout implements BeforeEnterObserve
             .bind(componentFilter -> join(componentFilter.getNameFilter()), (componentFilter, nameFilter) -> componentFilter.setNameFilter(split(nameFilter)));
         filterBinder.forField(descriptionFilterTextBox)
             .bind(componentFilter -> join(componentFilter.getDescriptionFilter()), (componentFilter, descriptionFilter) -> componentFilter.setDescriptionFilter(split(descriptionFilter)));
-        filterableGrid.addFilterListener(filter -> {
-            queryParamsHelper.update(getUI(), uriBuilder -> {
-                if (isNotEmpty(componentFilter.getNameFilter())) {
-                    uriBuilder.queryParam(QUERY_PARAM_NAME_FILTER, componentFilter.getNameFilter());
-                }
-                if (isNotEmpty(componentFilter.getDescriptionFilter())) {
-                    uriBuilder.queryParam(QUERY_PARAM_DESCRIPTION_FILTER, componentFilter.getDescriptionFilter());
-                }
-            });
-        });
+        filterableGrid.addFilterListener(filter -> queryParamsHelper.update(getUI(), uriBuilder -> {
+            if (isNotEmpty(componentFilter.getNameFilter())) {
+                uriBuilder.queryParam(QUERY_PARAM_NAME_FILTER, componentFilter.getNameFilter());
+            }
+            if (isNotEmpty(componentFilter.getDescriptionFilter())) {
+                uriBuilder.queryParam(QUERY_PARAM_DESCRIPTION_FILTER, componentFilter.getDescriptionFilter());
+            }
+        }));
 
         Grid<ComponentSummary> grid = filterableGrid.build();
 
+        /*
         grid.addItemClickListener(event -> UI.getCurrent()
             .navigate(ComponentView.class, new RouteParam(PARAMETER_OWNER, this.projectKey.getOwner()),
                 new RouteParam(PARAMETER_PROJECT, this.projectKey.getProject()), new RouteParam(PARAMETER_COMPONENT, event.getItem()
                     .getComponent()
                     .getName())));
+         */
         this.add(grid);
     }
 
