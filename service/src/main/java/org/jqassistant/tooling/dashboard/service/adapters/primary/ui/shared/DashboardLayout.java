@@ -2,9 +2,7 @@ package org.jqassistant.tooling.dashboard.service.adapters.primary.ui.shared;
 
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.applayout.AppLayout;
-import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.html.H1;
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.RouteParameters;
@@ -27,27 +25,25 @@ public class DashboardLayout extends AppLayout implements BeforeEnterObserver {
 
     @PostConstruct
     void init() {
-        H1 logo = new H1(APPLICATION_NAME_SHORT);
+        H3 logo = new H3(APPLICATION_NAME_SHORT);
         logo.addClassName("logo");
-        HorizontalLayout header;
+
+/*        HorizontalLayout header;
         if (getAuthenticatedUser() != null) {
             Button logout = new Button("Logout", click -> logout());
             header = new HorizontalLayout(logo, logout);
         } else {
             Button login = new Button("Login", click -> login());
             header = new HorizontalLayout(logo, login);
-        }
+        }*/
 
         // Other page components omitted.
 
-        addToNavbar(header);
+        addToNavbar(logo);
     }
 
     private void login() {
-        getUI().ifPresent(ui -> {
-            ui.navigate(LoginView.class)
-                .ifPresent(loginView -> loginView.setRouteParameters(target, routeParameters));
-        });
+        getUI().flatMap(ui -> ui.navigate(LoginView.class)).ifPresent(loginView -> loginView.setRouteParameters(target, routeParameters));
     }
 
     private void logout() {
