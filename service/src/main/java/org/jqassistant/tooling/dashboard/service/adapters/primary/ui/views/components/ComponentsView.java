@@ -43,13 +43,13 @@ public class ComponentsView extends VerticalLayout implements BeforeEnterObserve
 
     private final transient ComponentService componentService;
 
-    private transient ProjectKey projectKey;
-
-    private final ComponentFilter componentFilter = new ComponentFilter();
+    private final transient ComponentFilter componentFilter = new ComponentFilter();
 
     private final Binder<ComponentFilter> filterBinder = new Binder<>(ComponentFilter.class);
 
     private transient QueryParamsHelper queryParamsHelper;
+
+    private transient ProjectKey projectKey;
 
     @Override
     public void beforeEnter(BeforeEnterEvent event) {
