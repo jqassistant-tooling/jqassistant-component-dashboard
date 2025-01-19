@@ -25,7 +25,8 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import static java.util.Set.copyOf;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
+import static org.jqassistant.tooling.dashboard.service.adapters.primary.ui.shared.QueryParamsHelper.join;
+import static org.jqassistant.tooling.dashboard.service.adapters.primary.ui.shared.QueryParamsHelper.split;
 import static org.jqassistant.tooling.dashboard.service.adapters.primary.ui.views.capabilities.CapabilityView.PARAMETER_CAPABILITY_TYPE;
 import static org.jqassistant.tooling.dashboard.service.adapters.primary.ui.views.capabilities.CapabilityView.PARAMETER_CAPABILITY_VALUE;
 import static org.jqassistant.tooling.dashboard.service.adapters.primary.ui.views.projects.ProjectKeyHelper.*;
@@ -45,11 +46,11 @@ public class CapabilitiesView extends VerticalLayout implements BeforeEnterObser
 
     private transient ProjectKey projectKey;
 
-    private final CapabilityFilter capabilityFilter = new CapabilityFilter();
+    private final transient CapabilityFilter capabilityFilter = new CapabilityFilter();
 
-    private QueryParamsHelper queryParamsHelper;
+    private transient QueryParamsHelper queryParamsHelper;
 
-    private Binder<CapabilityFilter> filterBinder = new Binder<>(CapabilityFilter.class);
+    private final Binder<CapabilityFilter> filterBinder = new Binder<>(CapabilityFilter.class);
 
     private MultiSelectComboBox<String> typeFilterComboBox;
 
@@ -61,7 +62,7 @@ public class CapabilitiesView extends VerticalLayout implements BeforeEnterObser
         });
         queryParamsHelper = new QueryParamsHelper(event.getLocation())
             .withParameters(QUERY_PARAM_TYPE_FILTER, typeFilter -> capabilityFilter.setTypeFilter(copyOf(typeFilter)))
-            .withParameter(QUERY_PARAM_VALUE_FILTER, valueFilter -> capabilityFilter.setValueFilter(valueFilter));
+            .withParameter(QUERY_PARAM_VALUE_FILTER, valueFilter -> capabilityFilter.setValueFilter(split(valueFilter)));
         filterBinder.readBean(capabilityFilter);
     }
 
@@ -82,7 +83,7 @@ public class CapabilitiesView extends VerticalLayout implements BeforeEnterObser
             .getType()));
 
         // Value
-        TextField valueFilterTextField = filterableGrid.text("Value", CapabilityFilter::setValueFilter);
+        TextField valueFilterTextField = filterableGrid.text("Value", (capabilityFilter, valueFilter) -> capabilityFilter.setValueFilter(split(valueFilter)));
         filterableGrid.withColumn(valueFilterTextField, capabilitySummary -> new Span(capabilitySummary.getCapability()
             .getValue()));
 
@@ -101,19 +102,17 @@ public class CapabilitiesView extends VerticalLayout implements BeforeEnterObser
         });
 
         filterBinder.forField(typeFilterComboBox)
-            .bind(filter -> filter.getTypeFilter(), CapabilityFilter::setTypeFilter);
+            .bind(CapabilityFilter::getTypeFilter, CapabilityFilter::setTypeFilter);
         filterBinder.forField(valueFilterTextField)
-            .bind(filter -> filter.getValueFilter(), CapabilityFilter::setValueFilter);
-        filterableGrid.addFilterListener(filter -> {
-            queryParamsHelper.update(getUI(), uriBuilder -> {
-                if (isNotEmpty(capabilityFilter.getTypeFilter())) {
-                    uriBuilder.queryParam(QUERY_PARAM_TYPE_FILTER, capabilityFilter.getTypeFilter());
-                }
-                if (isNotBlank(capabilityFilter.getValueFilter())) {
-                    uriBuilder.queryParam(QUERY_PARAM_VALUE_FILTER, capabilityFilter.getValueFilter());
-                }
-            });
-        });
+            .bind(filter -> join(filter.getValueFilter()), (capabilityFilter, valueFilter) -> capabilityFilter.setValueFilter(split(valueFilter)));
+        filterableGrid.addFilterListener(filter -> queryParamsHelper.update(getUI(), uriBuilder -> {
+            if (isNotEmpty(capabilityFilter.getTypeFilter())) {
+                uriBuilder.queryParam(QUERY_PARAM_TYPE_FILTER, capabilityFilter.getTypeFilter());
+            }
+            if (isNotEmpty(capabilityFilter.getValueFilter())) {
+                uriBuilder.queryParam(QUERY_PARAM_VALUE_FILTER, capabilityFilter.getValueFilter());
+            }
+        }));
 
         Grid<CapabilitySummary> grid = filterableGrid.build();
 

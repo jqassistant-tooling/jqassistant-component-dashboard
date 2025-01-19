@@ -45,8 +45,8 @@ public interface XOCapabilityRepository {
           (project:Project)-[:CONTAINS_CAPABILITY]->(capability:Capability)
         WHERE
           id(project) = $project
-          and ($typeFilter is null or capability.type in $typeFilter)
-          and ($valueFilter is null or toLower(capability.value) contains toLower($valueFilter))
+          and ($typeFilter is null or isEmpty($typeFilter) or capability.type in $typeFilter)
+          and (isEmpty($valueFilter) or all(token in $valueFilter where toLower(capability.value) contains toLower(token)))
         """;
 
     @ResultOf
@@ -54,7 +54,7 @@ public interface XOCapabilityRepository {
         RETURN
           count(capability)
         """)
-    int countAll(Project project, Set<String> typeFilter, String valueFilter);
+    int countAll(Project project, Set<String> typeFilter, List<String> valueFilter);
 
     @Cypher(CAPABILITY_FILTER + """
         WITH

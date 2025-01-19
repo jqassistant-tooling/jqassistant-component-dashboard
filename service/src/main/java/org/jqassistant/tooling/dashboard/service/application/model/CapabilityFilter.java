@@ -4,15 +4,19 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.util.List;
 import java.util.Set;
+
+import static java.util.Collections.emptyList;
+import static java.util.Collections.emptySet;
 
 @Getter
 @Setter
 @ToString
 public class CapabilityFilter {
 
-    private Set<String> typeFilter;
+    private Set<String> typeFilter = emptySet();
 
-    private String valueFilter;
+    private List<String> valueFilter = emptyList();
 
 }

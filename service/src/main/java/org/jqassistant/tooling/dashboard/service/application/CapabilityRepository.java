@@ -28,7 +28,7 @@ public interface CapabilityRepository {
 
     }
 
-    int countAll(Project project, Set<String> typeFilter, String valueFilter);
+    int countAll(Project project, Set<String> typeFilter, List<String> valueFilter);
 
     Stream<Dependencies> getRequiredBy(Project project, CapabilityKey capabilityKey);
 

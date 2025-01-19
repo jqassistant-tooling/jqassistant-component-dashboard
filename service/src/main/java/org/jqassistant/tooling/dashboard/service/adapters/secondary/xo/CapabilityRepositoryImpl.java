@@ -46,7 +46,7 @@ public class CapabilityRepositoryImpl extends AbstractXORepository<XOCapabilityR
     }
 
     @Override
-    public int countAll(Project project, Set<String> typeFilter, String valueFilter) {
+    public int countAll(Project project, Set<String> typeFilter, List<String> valueFilter) {
         return getXORepository().countAll(project, typeFilter, valueFilter);
     }
 
