@@ -87,9 +87,15 @@ public class ComponentsView extends VerticalLayout implements BeforeEnterObserve
         });
 
         // URL
-        filterableGrid.withColumn("Homepage", componentSummary -> new Span(new Anchor(componentSummary.getLatestVersion()
-            .getUrl(), componentSummary.getLatestVersion()
-            .getUrl())));
+        filterableGrid.withColumn("Homepage", componentSummary -> {
+            String url = componentSummary.getLatestVersion()
+                .getUrl();
+            if (url != null) {
+                return new Anchor(url, url);
+            } else {
+                return new Span();
+            }
+        });
         // Latest Version
         filterableGrid.withColumn("Latest Version", componentSummary -> new Span(componentSummary.getLatestVersion()
             .getVersion()));
