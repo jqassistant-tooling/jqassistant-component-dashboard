@@ -110,7 +110,7 @@ public class CapabilitiesView extends VerticalLayout implements BeforeEnterObser
                 uriBuilder.queryParam(QUERY_PARAM_TYPE_FILTER, capabilityFilter.getTypeFilter());
             }
             if (isNotEmpty(capabilityFilter.getValueFilter())) {
-                uriBuilder.queryParam(QUERY_PARAM_VALUE_FILTER, capabilityFilter.getValueFilter());
+                uriBuilder.queryParam(QUERY_PARAM_VALUE_FILTER, join(capabilityFilter.getValueFilter()));
             }
         }));
 

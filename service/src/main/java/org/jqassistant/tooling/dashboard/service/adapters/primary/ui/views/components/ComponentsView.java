@@ -112,10 +112,10 @@ public class ComponentsView extends VerticalLayout implements BeforeEnterObserve
             .bind(componentFilter -> join(componentFilter.getDescriptionFilter()), (componentFilter, descriptionFilter) -> componentFilter.setDescriptionFilter(split(descriptionFilter)));
         filterableGrid.addFilterListener(filter -> queryParamsHelper.update(getUI(), uriBuilder -> {
             if (isNotEmpty(componentFilter.getNameFilter())) {
-                uriBuilder.queryParam(QUERY_PARAM_NAME_FILTER, componentFilter.getNameFilter());
+                uriBuilder.queryParam(QUERY_PARAM_NAME_FILTER, join(componentFilter.getNameFilter()));
             }
             if (isNotEmpty(componentFilter.getDescriptionFilter())) {
-                uriBuilder.queryParam(QUERY_PARAM_DESCRIPTION_FILTER, componentFilter.getDescriptionFilter());
+                uriBuilder.queryParam(QUERY_PARAM_DESCRIPTION_FILTER, join(componentFilter.getDescriptionFilter()));
             }
         }));
 

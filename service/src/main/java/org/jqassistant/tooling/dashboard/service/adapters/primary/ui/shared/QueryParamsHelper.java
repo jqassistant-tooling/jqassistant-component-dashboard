@@ -6,11 +6,11 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 
+import static java.util.Arrays.stream;
 import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
 
 @RequiredArgsConstructor
@@ -20,9 +20,7 @@ public class QueryParamsHelper {
 
     public QueryParamsHelper withParameter(String parameterName, Consumer<String> consumer) {
         location.getQueryParameters().getSingleParameter(parameterName)
-            .ifPresent(value -> {
-                consumer.accept(value);
-            });
+            .ifPresent(consumer::accept);
         return this;
     }
 
@@ -48,11 +46,11 @@ public class QueryParamsHelper {
 
 
     public static String join(List<String> value) {
-        return String.join(",", value);
+        return String.join(" ", value);
     }
 
     public static List<String> split(String value) {
-        return Arrays.stream(StringUtils.split(value)).toList();
+        return stream(StringUtils.split(value)).toList();
     }
 
 }
