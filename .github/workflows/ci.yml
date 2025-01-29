@@ -41,5 +41,11 @@ jobs:
       - uses: s4u/maven-settings-action@v3.1.0
         with:
           sonatypeSnapshots: true
+          servers: |
+            [{
+              "id": "${{ secrets.REGISTRY_URL }}",
+              "username": "",
+              "password": "${{ secrets.GITHUB_TOKEN }}"
+            }]
       - name: build-image
         run: mvn clean compile jib:build -f service/pom.xml -Ddashboard.image.registry=${{ secrets.REGISTRY_URL }} -Ddashboard.image.repository=${{ secrets.REPOSITORY_NAME }} -Pproduction
