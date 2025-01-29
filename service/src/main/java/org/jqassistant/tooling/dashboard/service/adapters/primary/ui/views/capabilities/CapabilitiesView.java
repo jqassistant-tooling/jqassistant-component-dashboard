@@ -60,8 +60,8 @@ public class CapabilitiesView extends VerticalLayout implements BeforeEnterObser
             this.projectKey = getProjectKey(event.getRouteParameters());
             this.typeFilterComboBox.setItems(capabilityService.getTypes(projectKey));
         });
-        queryParamsHelper = new QueryParamsHelper(event.getLocation())
-            .withParameters(QUERY_PARAM_TYPE_FILTER, typeFilter -> capabilityFilter.setTypeFilter(copyOf(typeFilter)))
+        queryParamsHelper = new QueryParamsHelper(event.getLocation()).withParameters(QUERY_PARAM_TYPE_FILTER,
+                typeFilter -> capabilityFilter.setTypeFilter(copyOf(typeFilter)))
             .withParameter(QUERY_PARAM_VALUE_FILTER, valueFilter -> capabilityFilter.setValueFilter(split(valueFilter)));
         filterBinder.readBean(capabilityFilter);
     }
@@ -78,12 +78,12 @@ public class CapabilitiesView extends VerticalLayout implements BeforeEnterObser
 
         // Type
         this.typeFilterComboBox = filterableGrid.multiselectComboBox("Type",
-            (capabilityFilter, typeFilter) -> capabilityFilter.setTypeFilter(typeFilter.isEmpty() ? null : typeFilter));
+            (filter, typeFilter) -> filter.setTypeFilter(typeFilter.isEmpty() ? null : typeFilter));
         filterableGrid.withColumn(typeFilterComboBox, summary -> new Span(summary.getCapability()
             .getType()));
 
         // Value
-        TextField valueFilterTextField = filterableGrid.text("Value", (capabilityFilter, valueFilter) -> capabilityFilter.setValueFilter(split(valueFilter)));
+        TextField valueFilterTextField = filterableGrid.text("Value", (filter, valueFilter) -> filter.setValueFilter(split(valueFilter)));
         filterableGrid.withColumn(valueFilterTextField, capabilitySummary -> new Span(capabilitySummary.getCapability()
             .getValue()));
 
@@ -104,7 +104,7 @@ public class CapabilitiesView extends VerticalLayout implements BeforeEnterObser
         filterBinder.forField(typeFilterComboBox)
             .bind(CapabilityFilter::getTypeFilter, CapabilityFilter::setTypeFilter);
         filterBinder.forField(valueFilterTextField)
-            .bind(filter -> join(filter.getValueFilter()), (capabilityFilter, valueFilter) -> capabilityFilter.setValueFilter(split(valueFilter)));
+            .bind(filter -> join(filter.getValueFilter()), (filter, valueFilter) -> filter.setValueFilter(split(valueFilter)));
         filterableGrid.addFilterListener(filter -> queryParamsHelper.update(getUI(), uriBuilder -> {
             if (isNotEmpty(capabilityFilter.getTypeFilter())) {
                 uriBuilder.queryParam(QUERY_PARAM_TYPE_FILTER, capabilityFilter.getTypeFilter());
