@@ -43,8 +43,8 @@ jobs:
           sonatypeSnapshots: true
           servers: |
             [{
-              "id": "${{ secrets.REGISTRY_URL }}",
-              "username": "${{ secrets.REGISTRY_USERNAME }}",
+              "id": "${{ env.REGISTRY }}",
+              "username": "${{ github.actor }}",
               "password": "${{ secrets.GITHUB_TOKEN }}"
             }]
       - name: build-image
