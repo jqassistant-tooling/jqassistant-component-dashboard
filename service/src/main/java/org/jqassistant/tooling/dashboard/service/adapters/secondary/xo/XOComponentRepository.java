@@ -1,14 +1,15 @@
 package org.jqassistant.tooling.dashboard.service.adapters.secondary.xo;
 
+import java.util.List;
+
+import com.buschmais.xo.api.Query.Result;
 import com.buschmais.xo.api.annotation.Repository;
 import com.buschmais.xo.api.annotation.ResultOf;
 import com.buschmais.xo.neo4j.api.annotation.Cypher;
+
 import org.jqassistant.tooling.dashboard.service.application.ComponentRepository;
 import org.jqassistant.tooling.dashboard.service.application.model.Component;
 import org.jqassistant.tooling.dashboard.service.application.model.Project;
-import org.jqassistant.tooling.dashboard.service.application.model.Version;
-
-import java.util.List;
 
 @Repository
 public interface XOComponentRepository {
@@ -33,6 +34,23 @@ public interface XOComponentRepository {
           and (isEmpty($descriptionFilter) or all(token in $descriptionFilter where toLower(latestVersion.description) contains toLower(token)))
         """;
 
+    @ResultOf
+    @Cypher("""
+        MATCH
+          (project:Project)-[:CONTAINS_COMPONENT]->(component:Component)-[:HAS_LATEST_VERSION]->(latestVersion:Version)
+        WHERE
+          id(project) = $project
+          and component.name = $componentId
+        WITH
+          component, latestVersion
+        MATCH
+          (component)-[:HAS_VERSION]->(version:Version)
+        RETURN
+          component, latestVersion, count(version) as versionCount
+        """)
+    ComponentRepository.ComponentSummary find(Project project, String componentId);
+
+    @ResultOf
     @Cypher(COMPONENT_FILTER + """
         WITH
           component, latestVersion
@@ -47,16 +65,7 @@ public interface XOComponentRepository {
         LIMIT
           $limit
         """)
-    interface XOComponentSummary extends ComponentRepository.ComponentSummary {
-
-        @Override
-        Component getComponent();
-
-        @Override
-        Version getLatestVersion();
-
-        Long getVersionCount();
-    }
+    Result<ComponentRepository.ComponentSummary> findAll(Project project, List<String> nameFilter, List<String> descriptionFilter, int offset, int limit);
 
     @ResultOf
     @Cypher(COMPONENT_FILTER + """

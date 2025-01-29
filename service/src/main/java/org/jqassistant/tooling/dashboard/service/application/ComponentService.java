@@ -39,4 +39,9 @@ public class ComponentService {
             .orElse(null), filter.map(ComponentFilter::getDescriptionFilter)
             .orElse(null));
     }
+
+    public ComponentSummary find(ProjectKey projectKey, String componentId) {
+        Project project = projectService.find(projectKey);
+        return componentRepository.find(project, componentId);
+    }
 }

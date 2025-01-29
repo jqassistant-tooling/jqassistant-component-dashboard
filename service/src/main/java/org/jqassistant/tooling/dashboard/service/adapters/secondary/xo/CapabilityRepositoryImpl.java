@@ -5,7 +5,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 
-import com.buschmais.xo.api.Query;
 import com.buschmais.xo.api.XOManager;
 
 import org.jqassistant.tooling.dashboard.service.application.CapabilityRepository;
@@ -34,15 +33,9 @@ public class CapabilityRepositoryImpl extends AbstractXORepository<XOCapabilityR
 
     @Override
     public Stream<CapabilitySummary> findAll(Project project, Optional<CapabilityFilter> filter, int offset, int limit) {
-        return toStream(xoManager.createQuery(XOCapabilityRepository.XOCapabilitySummary.class)
-            .withParameter("project", project)
-            .withParameter("typeFilter", filter.map(CapabilityFilter::getTypeFilter)
-                .orElse(null))
-            .withParameter("valueFilter", filter.map(CapabilityFilter::getValueFilter)
-                .orElse(null))
-            .withParameter("offset", offset)
-            .withParameter("limit", limit)
-            .execute()).map(capabilitySummary -> capabilitySummary);
+        return toStream(getXORepository().findAll(project, filter.map(CapabilityFilter::getTypeFilter)
+            .orElse(null), filter.map(CapabilityFilter::getValueFilter)
+            .orElse(null), offset, limit));
     }
 
     @Override
@@ -52,30 +45,16 @@ public class CapabilityRepositoryImpl extends AbstractXORepository<XOCapabilityR
 
     @Override
     public List<String> getTypes(Project project) {
-        Query.Result<XOCapabilityRepository.Types> result = xoManager.createQuery(XOCapabilityRepository.Types.class)
-            .withParameter("project", project)
-            .execute();
-        return toStream(result).map(XOCapabilityRepository.Types::getType)
-            .toList();
+        return toStream(getXORepository().getTypes(project)).toList();
     }
 
     @Override
     public Stream<Dependencies> getRequiredBy(Project project, CapabilityKey capabilityKey) {
-        Query.Result<XOCapabilityRepository.CapabilityRequiredBy> result = xoManager.createQuery(XOCapabilityRepository.CapabilityRequiredBy.class)
-            .withParameter("project", project)
-            .withParameter("type", capabilityKey.getType())
-            .withParameter("value", capabilityKey.getValue())
-            .execute();
-        return toStream(result).map(capabilityRequiredBy -> capabilityRequiredBy);
+        return toStream(getXORepository().getRequiredBy(project, capabilityKey.getType(), capabilityKey.getValue()));
     }
 
     @Override
     public Stream<Dependencies> getProvidedBy(Project project, CapabilityKey capabilityKey) {
-        Query.Result<XOCapabilityRepository.CapabilityProvidedBy> result = xoManager.createQuery(XOCapabilityRepository.CapabilityProvidedBy.class)
-            .withParameter("project", project)
-            .withParameter("type", capabilityKey.getType())
-            .withParameter("value", capabilityKey.getValue())
-            .execute();
-        return toStream(result).map(capabilityRequiredBy -> capabilityRequiredBy);
+        return toStream(getXORepository().getProvidedBy(project, capabilityKey.getType(), capabilityKey.getValue()));
     }
 }

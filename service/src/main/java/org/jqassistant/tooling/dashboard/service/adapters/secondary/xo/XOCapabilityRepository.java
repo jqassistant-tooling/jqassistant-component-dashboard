@@ -1,16 +1,15 @@
 package org.jqassistant.tooling.dashboard.service.adapters.secondary.xo;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
+import com.buschmais.xo.api.Query.Result;
 import com.buschmais.xo.api.annotation.Repository;
 import com.buschmais.xo.api.annotation.ResultOf;
 import com.buschmais.xo.neo4j.api.annotation.Cypher;
 
 import org.jqassistant.tooling.dashboard.service.application.CapabilityRepository;
 import org.jqassistant.tooling.dashboard.service.application.model.Capability;
-import org.jqassistant.tooling.dashboard.service.application.model.Component;
 import org.jqassistant.tooling.dashboard.service.application.model.Project;
 
 @Repository
@@ -56,6 +55,7 @@ public interface XOCapabilityRepository {
         """)
     int countAll(Project project, Set<String> typeFilter, List<String> valueFilter);
 
+    @ResultOf
     @Cypher(CAPABILITY_FILTER + """
         WITH
           capability
@@ -70,15 +70,9 @@ public interface XOCapabilityRepository {
         RETURN
           capability, collect(distinct component) as providedByComponents
         """)
-    interface XOCapabilitySummary extends CapabilityRepository.CapabilitySummary {
+    Result<CapabilityRepository.CapabilitySummary> findAll(Project project, Set<String> typeFilter, List<String> valueFilter, int offset, int limit);
 
-        @Override
-        Capability getCapability();
-
-        @Override
-        List<Component> getProvidedByComponents();
-    }
-
+    @ResultOf
     @Cypher("""
         MATCH
           (project:Project)-[:CONTAINS_CAPABILITY]->(capability:Capability)
@@ -89,10 +83,9 @@ public interface XOCapabilityRepository {
         ORDER BY
           type
         """)
-    interface Types {
-        String getType();
-    }
+    Result<String> getTypes(Project project);
 
+    @ResultOf
     @Cypher("""
         MATCH
           (project:Project)-[:CONTAINS_CAPABILITY]->(capability:Capability{type: $type, value: $value}),
@@ -109,14 +102,9 @@ public interface XOCapabilityRepository {
             files: files
           }) as versions
         """)
-    interface CapabilityRequiredBy extends CapabilityRepository.Dependencies {
+    Result<CapabilityRepository.Dependencies> getRequiredBy(Project project, String type, String value);
 
-        Component getComponent();
-
-        List<Map<String, Object>> getVersions();
-
-    }
-
+    @ResultOf
     @Cypher("""
         MATCH
           (project:Project)-[:CONTAINS_CAPABILITY]->(capability:Capability{type: $type, value: $value}),
@@ -133,12 +121,6 @@ public interface XOCapabilityRepository {
             files: files
           }) as versions
         """)
-    interface CapabilityProvidedBy extends CapabilityRepository.Dependencies {
-
-        Component getComponent();
-
-        List<Map<String, Object>> getVersions();
-
-    }
+    Result<CapabilityRepository.Dependencies> getProvidedBy(Project project, String type, String value);
 
 }

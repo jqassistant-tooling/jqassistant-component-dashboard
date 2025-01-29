@@ -1,5 +1,9 @@
 package org.jqassistant.tooling.dashboard.service.adapters.primary.ui.views.capabilities;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Stream;
+
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.html.Span;
@@ -16,11 +20,6 @@ import org.jqassistant.tooling.dashboard.service.application.CapabilityService;
 import org.jqassistant.tooling.dashboard.service.application.model.*;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Stream;
 
 import static org.jqassistant.tooling.dashboard.service.adapters.primary.ui.views.projects.ProjectKeyHelper.getProjectKey;
 
@@ -83,23 +82,23 @@ public class CapabilityView extends VerticalLayout implements BeforeEnterObserve
         });
     }
 
-    private static List<TreeNode> getTreeNodes(Stream<CapabilityRepository.Dependencies> requiredBy) {
+    private static List<TreeNode> getTreeNodes(Stream<CapabilityRepository.Dependencies> dependenciesStream) {
         List<TreeNode> treeItems = new ArrayList<>();
-        for (CapabilityRepository.Dependencies dependencies : requiredBy.toList()) {
+        for (CapabilityRepository.Dependencies dependencies : dependenciesStream.toList()) {
             TreeNode.TreeNodeBuilder<Component> componentNodeBuilder = TreeNode.builder();
 
             Component component = dependencies.getComponent();
             componentNodeBuilder.value(component);
             componentNodeBuilder.label(component.getName());
 
-            List<Map<String, Object>> versions = dependencies.getVersions();
-            for (Map<String, Object> versionEntry : versions) {
+            List<CapabilityRepository.Dependencies.VersionDependency> versions = dependencies.getVersions();
+            for (CapabilityRepository.Dependencies.VersionDependency versionDependency : versions) {
                 TreeNode.TreeNodeBuilder<Version> versionNodeBuilder = TreeNode.builder();
-                Version version = (Version) versionEntry.get("version");
+                Version version = versionDependency.getVersion();
                 versionNodeBuilder.value(version);
                 versionNodeBuilder.label(version.getVersion());
 
-                List<File> files = (List<File>) versionEntry.get("files");
+                List<File> files = versionDependency.getFiles();
                 for (File file : files) {
                     TreeNode.TreeNodeBuilder<File> fileNodeBuilder = TreeNode.builder();
                     fileNodeBuilder.value(file);

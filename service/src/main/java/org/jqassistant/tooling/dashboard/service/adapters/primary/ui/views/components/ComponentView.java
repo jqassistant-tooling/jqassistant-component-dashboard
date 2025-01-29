@@ -11,6 +11,7 @@ import com.vaadin.flow.server.auth.AnonymousAllowed;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.jqassistant.tooling.dashboard.service.adapters.primary.ui.shared.DashboardLayout;
+import org.jqassistant.tooling.dashboard.service.application.ComponentRepository;
 import org.jqassistant.tooling.dashboard.service.application.ComponentService;
 import org.jqassistant.tooling.dashboard.service.application.model.ProjectKey;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,7 +28,7 @@ public class ComponentView extends VerticalLayout implements BeforeEnterObserver
 
     public static final String PARAMETER_COMPONENT = "component";
 
-    private final ComponentService componentService;
+    private final transient ComponentService componentService;
 
     private final TransactionTemplate transactionTemplate;
 
@@ -37,7 +38,7 @@ public class ComponentView extends VerticalLayout implements BeforeEnterObserver
 
     private final Span description = new Span();
 
-    private ProjectKey projectKey;
+    private transient ProjectKey projectKey;
 
     @PostConstruct
     void init() {
@@ -46,8 +47,12 @@ public class ComponentView extends VerticalLayout implements BeforeEnterObserver
 
     @Override
     public void beforeEnter(BeforeEnterEvent event) {
-        transactionTemplate.executeWithoutResult(status -> {
+        transactionTemplate.executeWithoutResult(tx -> {
             projectKey = getProjectKey(event.getRouteParameters());
+            String componentId = event.getRouteParameters()
+                .get(PARAMETER_COMPONENT)
+                .orElseThrow();
+            ComponentRepository.ComponentSummary componentSummary = componentService.find(projectKey, componentId);
         });
     }
 }
