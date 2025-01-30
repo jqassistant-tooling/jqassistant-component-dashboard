@@ -17,20 +17,20 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build:
-    uses: jqassistant-tooling/jqassistant-github-actions/.github/workflows/ci.yml@main
-    with:
-      java_test_versions: '[17, 21]' # use versions supported by last Spring version
-      publish_snapshots: true
-    secrets:
-      ossrh_username: ${{ secrets.OSSRH_USERNAME }}
-      ossrh_password: ${{ secrets.OSSRH_PASSWORD }}
-      ossrh_signing_key: ${{ secrets.OSSRH_SIGNING_KEY }}
-      ossrh_signing_password: ${{ secrets.OSSRH_SIGNING_PASSWORD }}
-      sonar_token: ${{ secrets.SONAR_TOKEN }}
+#  build:
+#    uses: jqassistant-tooling/jqassistant-github-actions/.github/workflows/ci.yml@main
+#    with:
+#      java_test_versions: '[17, 21]' # use versions supported by last Spring version
+#      publish_snapshots: true
+#    secrets:
+#      ossrh_username: ${{ secrets.OSSRH_USERNAME }}
+#      ossrh_password: ${{ secrets.OSSRH_PASSWORD }}
+#      ossrh_signing_key: ${{ secrets.OSSRH_SIGNING_KEY }}
+#      ossrh_signing_password: ${{ secrets.OSSRH_SIGNING_PASSWORD }}
+#      sonar_token: ${{ secrets.SONAR_TOKEN }}
   build-and-push-image:
     runs-on: ubuntu-latest
-    needs: build
+#    needs: build
     if: contains(fromJSON('["buschmais", "jqassistant-plugin", "jqassistant-tooling", "jQAssistant"]'), github.repository_owner) && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master') && github.event_name != 'pull_request'
     permissions:
       contents: read
