@@ -14,6 +14,7 @@ import com.vaadin.flow.server.auth.AnonymousAllowed;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.jqassistant.tooling.dashboard.service.adapters.primary.ui.shared.DashboardLayout;
+import org.jqassistant.tooling.dashboard.service.adapters.primary.ui.shared.RouteParametersHelper;
 import org.jqassistant.tooling.dashboard.service.adapters.primary.ui.shared.TreeNode;
 import org.jqassistant.tooling.dashboard.service.application.CapabilityRepository;
 import org.jqassistant.tooling.dashboard.service.application.CapabilityService;
@@ -49,10 +50,8 @@ public class CapabilityView extends VerticalLayout implements BeforeEnterObserve
     private static CapabilityKey getCapabilityKey(BeforeEnterEvent beforeEnterEvent) {
         ProjectKey projectKey = getProjectKey(beforeEnterEvent.getRouteParameters());
         RouteParameters routeParameters = beforeEnterEvent.getRouteParameters();
-        String capabilityType = routeParameters.get(PARAMETER_CAPABILITY_TYPE)
-            .orElseThrow();
-        String capabilityValue = routeParameters.get(PARAMETER_CAPABILITY_VALUE)
-            .orElseThrow();
+        String capabilityType = RouteParametersHelper.get(routeParameters, PARAMETER_CAPABILITY_TYPE);
+        String capabilityValue = RouteParametersHelper.get(routeParameters, PARAMETER_CAPABILITY_VALUE);
         return new CapabilityKey(projectKey, capabilityType, capabilityValue);
     }
 

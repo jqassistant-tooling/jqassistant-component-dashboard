@@ -11,6 +11,7 @@ import com.vaadin.flow.server.auth.AnonymousAllowed;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.jqassistant.tooling.dashboard.service.adapters.primary.ui.shared.DashboardLayout;
+import org.jqassistant.tooling.dashboard.service.adapters.primary.ui.shared.RouteParametersHelper;
 import org.jqassistant.tooling.dashboard.service.application.ComponentRepository;
 import org.jqassistant.tooling.dashboard.service.application.ComponentService;
 import org.jqassistant.tooling.dashboard.service.application.model.ProjectKey;
@@ -49,9 +50,7 @@ public class ComponentView extends VerticalLayout implements BeforeEnterObserver
     public void beforeEnter(BeforeEnterEvent event) {
         transactionTemplate.executeWithoutResult(tx -> {
             projectKey = getProjectKey(event.getRouteParameters());
-            String componentId = event.getRouteParameters()
-                .get(PARAMETER_COMPONENT)
-                .orElseThrow();
+            String componentId = RouteParametersHelper.get(event.getRouteParameters(), (PARAMETER_COMPONENT));
             ComponentRepository.ComponentSummary componentSummary = componentService.find(projectKey, componentId);
         });
     }

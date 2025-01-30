@@ -8,13 +8,17 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.provider.CallbackDataProvider;
-import com.vaadin.flow.router.*;
+import com.vaadin.flow.router.BeforeEnterEvent;
+import com.vaadin.flow.router.BeforeEnterObserver;
+import com.vaadin.flow.router.Route;
+import com.vaadin.flow.router.RoutePrefix;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.jqassistant.tooling.dashboard.service.adapters.primary.ui.shared.DashboardLayout;
 import org.jqassistant.tooling.dashboard.service.adapters.primary.ui.shared.FilterableGrid;
 import org.jqassistant.tooling.dashboard.service.adapters.primary.ui.shared.QueryParamsHelper;
+import org.jqassistant.tooling.dashboard.service.adapters.primary.ui.shared.RouteParametersHelper;
 import org.jqassistant.tooling.dashboard.service.application.ComponentRepository.ComponentSummary;
 import org.jqassistant.tooling.dashboard.service.application.ComponentService;
 import org.jqassistant.tooling.dashboard.service.application.model.ComponentFilter;
@@ -125,10 +129,13 @@ public class ComponentsView extends VerticalLayout implements BeforeEnterObserve
         Grid<ComponentSummary> grid = filterableGrid.build();
 
         grid.addItemClickListener(event -> UI.getCurrent()
-            .navigate(ComponentView.class, new RouteParam(PARAMETER_OWNER, this.projectKey.getOwner()),
-                new RouteParam(PARAMETER_PROJECT, this.projectKey.getProject()), new RouteParam(PARAMETER_COMPONENT, event.getItem()
+            .navigate(ComponentView.class, RouteParametersHelper.builder()
+                .withParameter(PARAMETER_OWNER, this.projectKey.getOwner())
+                .withParameter(PARAMETER_PROJECT, this.projectKey.getProject())
+                .withParameter(PARAMETER_COMPONENT, event.getItem()
                     .getComponent()
-                    .getName())));
+                    .getName())
+                .build()));
         this.add(grid);
     }
 

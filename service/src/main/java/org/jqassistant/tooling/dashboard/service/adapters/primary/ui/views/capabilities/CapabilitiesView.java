@@ -8,13 +8,17 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.provider.CallbackDataProvider;
-import com.vaadin.flow.router.*;
+import com.vaadin.flow.router.BeforeEnterEvent;
+import com.vaadin.flow.router.BeforeEnterObserver;
+import com.vaadin.flow.router.Route;
+import com.vaadin.flow.router.RoutePrefix;
 import com.vaadin.flow.server.auth.AnonymousAllowed;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.jqassistant.tooling.dashboard.service.adapters.primary.ui.shared.DashboardLayout;
 import org.jqassistant.tooling.dashboard.service.adapters.primary.ui.shared.FilterableGrid;
 import org.jqassistant.tooling.dashboard.service.adapters.primary.ui.shared.QueryParamsHelper;
+import org.jqassistant.tooling.dashboard.service.adapters.primary.ui.shared.RouteParametersHelper;
 import org.jqassistant.tooling.dashboard.service.application.CapabilityRepository.CapabilitySummary;
 import org.jqassistant.tooling.dashboard.service.application.CapabilityService;
 import org.jqassistant.tooling.dashboard.service.application.model.Capability;
@@ -120,9 +124,12 @@ public class CapabilitiesView extends VerticalLayout implements BeforeEnterObser
             Capability capability = event.getItem()
                 .getCapability();
             UI.getCurrent()
-                .navigate(CapabilityView.class, new RouteParam(PARAMETER_OWNER, this.projectKey.getOwner()),
-                    new RouteParam(PARAMETER_PROJECT, this.projectKey.getProject()), new RouteParam(PARAMETER_CAPABILITY_TYPE, capability.getType()),
-                    new RouteParam(PARAMETER_CAPABILITY_VALUE, capability.getValue()));
+                .navigate(CapabilityView.class, RouteParametersHelper.builder()
+                    .withParameter(PARAMETER_OWNER, this.projectKey.getOwner())
+                    .withParameter(PARAMETER_PROJECT, this.projectKey.getProject())
+                    .withParameter(PARAMETER_CAPABILITY_TYPE, capability.getType())
+                    .withParameter(PARAMETER_CAPABILITY_VALUE, capability.getValue())
+                    .build());
         });
         this.add(grid);
     }
