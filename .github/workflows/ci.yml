@@ -43,9 +43,9 @@ jobs:
           sonatypeSnapshots: true
           servers: |
             [{
-              "id": "${{ secrets.REGISTRY_URL }}",
-              "username": "${{ secrets.REGISTRY_USERNAME }}",
-              "password": "${{ secrets.REGISTRY_PASSWORD }}"
+              "id": "ghcr.io/jqassistant-tooling/",
+              "username": "jqassistant-tooling",
+              "password": "${{ secrets.GITHUB_TOKEN }}"
             }]
       - name: build-image
-        run: mvn clean compile jib:build -f service/pom.xml -Ddashboard.image.registry=${{ secrets.REGISTRY_URL }} -Ddashboard.image.repository=${{ secrets.REPOSITORY_NAME }} -Pproduction
+        run: mvn -X compile jib:build -f service/pom.xml -Ddashboard.image.registry=ghcr.io/jqassistant-tooling -Ddashboard.image.repository=jqassistant-component-dashboard -Pproduction
