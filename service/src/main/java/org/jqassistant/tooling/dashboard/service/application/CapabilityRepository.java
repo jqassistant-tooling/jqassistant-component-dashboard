@@ -29,9 +29,9 @@ public interface CapabilityRepository {
 
     int countAll(Project project, Set<String> typeFilter, List<String> valueFilter);
 
-    Stream<Dependencies> getRequiredBy(Project project, CapabilityKey capabilityKey);
+    List<Dependencies> getRequiredBy(Project project, CapabilityKey capabilityKey);
 
-    Stream<Dependencies> getProvidedBy(Project project, CapabilityKey capabilityKey);
+    List<Dependencies> getProvidedBy(Project project, CapabilityKey capabilityKey);
 
     interface Dependencies {
 

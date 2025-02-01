@@ -2,8 +2,8 @@ package org.jqassistant.tooling.dashboard.service.adapters.secondary.xo;
 
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Stream;
 
-import com.buschmais.xo.api.Query.Result;
 import com.buschmais.xo.api.annotation.Repository;
 import com.buschmais.xo.api.annotation.ResultOf;
 import com.buschmais.xo.neo4j.api.annotation.Cypher;
@@ -70,7 +70,7 @@ public interface XOCapabilityRepository {
         RETURN
           capability, collect(distinct component) as providedByComponents
         """)
-    Result<CapabilityRepository.CapabilitySummary> findAll(Project project, Set<String> typeFilter, List<String> valueFilter, int offset, int limit);
+    Stream<CapabilityRepository.CapabilitySummary> findAll(Project project, Set<String> typeFilter, List<String> valueFilter, int offset, int limit);
 
     @ResultOf
     @Cypher("""
@@ -83,7 +83,7 @@ public interface XOCapabilityRepository {
         ORDER BY
           type
         """)
-    Result<String> getTypes(Project project);
+    List<String> getTypes(Project project);
 
     @ResultOf
     @Cypher("""
@@ -102,7 +102,7 @@ public interface XOCapabilityRepository {
             files: files
           }) as versions
         """)
-    Result<CapabilityRepository.Dependencies> getRequiredBy(Project project, String type, String value);
+    List<CapabilityRepository.Dependencies> getRequiredBy(Project project, String type, String value);
 
     @ResultOf
     @Cypher("""
@@ -121,6 +121,6 @@ public interface XOCapabilityRepository {
             files: files
           }) as versions
         """)
-    Result<CapabilityRepository.Dependencies> getProvidedBy(Project project, String type, String value);
+    List<CapabilityRepository.Dependencies> getProvidedBy(Project project, String type, String value);
 
 }

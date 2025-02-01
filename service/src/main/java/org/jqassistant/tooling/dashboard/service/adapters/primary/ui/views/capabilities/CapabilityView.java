@@ -2,7 +2,6 @@ package org.jqassistant.tooling.dashboard.service.adapters.primary.ui.views.capa
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Stream;
 
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.H3;
@@ -81,16 +80,16 @@ public class CapabilityView extends VerticalLayout implements BeforeEnterObserve
         });
     }
 
-    private static List<TreeNode> getTreeNodes(Stream<CapabilityRepository.Dependencies> dependenciesStream) {
+    private static List<TreeNode> getTreeNodes(List<CapabilityRepository.Dependencies> dependencies) {
         List<TreeNode> treeItems = new ArrayList<>();
-        for (CapabilityRepository.Dependencies dependencies : dependenciesStream.toList()) {
+        for (CapabilityRepository.Dependencies componentDependencies : dependencies) {
             TreeNode.TreeNodeBuilder<Component> componentNodeBuilder = TreeNode.builder();
 
-            Component component = dependencies.getComponent();
+            Component component = componentDependencies.getComponent();
             componentNodeBuilder.value(component);
             componentNodeBuilder.label(component.getName());
 
-            List<CapabilityRepository.Dependencies.VersionDependency> versions = dependencies.getVersions();
+            List<CapabilityRepository.Dependencies.VersionDependency> versions = componentDependencies.getVersions();
             for (CapabilityRepository.Dependencies.VersionDependency versionDependency : versions) {
                 TreeNode.TreeNodeBuilder<Version> versionNodeBuilder = TreeNode.builder();
                 Version version = versionDependency.getVersion();

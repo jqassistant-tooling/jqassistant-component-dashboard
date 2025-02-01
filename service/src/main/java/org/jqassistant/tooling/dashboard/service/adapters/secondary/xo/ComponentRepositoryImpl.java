@@ -24,7 +24,7 @@ public class ComponentRepositoryImpl extends AbstractXORepository<XOComponentRep
 
     @Override
     public Stream<ComponentSummary> findAll(Project project, List<String> nameFilter, List<String> descriptionFilter, int offset, int limit) {
-        return toStream(getXORepository().findAll(project, nameFilter, descriptionFilter, offset, limit));
+        return getXORepository().findAll(project, nameFilter, descriptionFilter, offset, limit);
     }
 
     @Override

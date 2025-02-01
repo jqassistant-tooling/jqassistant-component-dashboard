@@ -16,7 +16,7 @@
         <spring-boot.version>3.4.2</spring-boot.version>
         <vaadin.version>24.6.4</vaadin.version>
         <jib-maven-plugin.version>3.4.4</jib-maven-plugin.version>
-        <xo.version>2.6.1</xo.version>
+        <xo.version>2.7.0-SNAPSHOT</xo.version>
         <liquibase.version>4.31.0.2</liquibase.version>
         <dashboard.image.registry>localhost:32000</dashboard.image.registry>
         <dashboard.image.repository>jqassistant-component-dashboard</dashboard.image.repository>

@@ -44,12 +44,12 @@ public class CapabilityService {
         return capabilityRepository.getTypes(project);
     }
 
-    public Stream<CapabilityRepository.Dependencies> getRequiredByBy(CapabilityKey capabilityKey) {
+    public List<CapabilityRepository.Dependencies> getRequiredByBy(CapabilityKey capabilityKey) {
         Project project = projectService.find(capabilityKey.getProjectKey());
         return capabilityRepository.getRequiredBy(project, capabilityKey);
     }
 
-    public Stream<CapabilityRepository.Dependencies> getProvidedBy(CapabilityKey capabilityKey) {
+    public List<CapabilityRepository.Dependencies> getProvidedBy(CapabilityKey capabilityKey) {
         Project project = projectService.find(capabilityKey.getProjectKey());
         return capabilityRepository.getProvidedBy(project, capabilityKey);
     }

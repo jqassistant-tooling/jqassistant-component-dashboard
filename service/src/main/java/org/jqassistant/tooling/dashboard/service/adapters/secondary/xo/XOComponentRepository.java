@@ -1,8 +1,8 @@
 package org.jqassistant.tooling.dashboard.service.adapters.secondary.xo;
 
 import java.util.List;
+import java.util.stream.Stream;
 
-import com.buschmais.xo.api.Query.Result;
 import com.buschmais.xo.api.annotation.Repository;
 import com.buschmais.xo.api.annotation.ResultOf;
 import com.buschmais.xo.neo4j.api.annotation.Cypher;
@@ -65,7 +65,7 @@ public interface XOComponentRepository {
         LIMIT
           $limit
         """)
-    Result<ComponentRepository.ComponentSummary> findAll(Project project, List<String> nameFilter, List<String> descriptionFilter, int offset, int limit);
+    Stream<ComponentRepository.ComponentSummary> findAll(Project project, List<String> nameFilter, List<String> descriptionFilter, int offset, int limit);
 
     @ResultOf
     @Cypher(COMPONENT_FILTER + """

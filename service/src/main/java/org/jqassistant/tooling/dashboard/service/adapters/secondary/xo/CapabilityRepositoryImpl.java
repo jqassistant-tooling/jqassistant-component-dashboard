@@ -33,9 +33,9 @@ public class CapabilityRepositoryImpl extends AbstractXORepository<XOCapabilityR
 
     @Override
     public Stream<CapabilitySummary> findAll(Project project, Optional<CapabilityFilter> filter, int offset, int limit) {
-        return toStream(getXORepository().findAll(project, filter.map(CapabilityFilter::getTypeFilter)
+        return getXORepository().findAll(project, filter.map(CapabilityFilter::getTypeFilter)
             .orElse(null), filter.map(CapabilityFilter::getValueFilter)
-            .orElse(null), offset, limit));
+            .orElse(null), offset, limit);
     }
 
     @Override
@@ -45,16 +45,16 @@ public class CapabilityRepositoryImpl extends AbstractXORepository<XOCapabilityR
 
     @Override
     public List<String> getTypes(Project project) {
-        return toStream(getXORepository().getTypes(project)).toList();
+        return getXORepository().getTypes(project);
     }
 
     @Override
-    public Stream<Dependencies> getRequiredBy(Project project, CapabilityKey capabilityKey) {
-        return toStream(getXORepository().getRequiredBy(project, capabilityKey.getType(), capabilityKey.getValue()));
+    public List<Dependencies> getRequiredBy(Project project, CapabilityKey capabilityKey) {
+        return getXORepository().getRequiredBy(project, capabilityKey.getType(), capabilityKey.getValue());
     }
 
     @Override
-    public Stream<Dependencies> getProvidedBy(Project project, CapabilityKey capabilityKey) {
-        return toStream(getXORepository().getProvidedBy(project, capabilityKey.getType(), capabilityKey.getValue()));
+    public List<Dependencies> getProvidedBy(Project project, CapabilityKey capabilityKey) {
+        return getXORepository().getProvidedBy(project, capabilityKey.getType(), capabilityKey.getValue());
     }
 }
