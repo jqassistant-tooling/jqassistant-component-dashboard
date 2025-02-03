@@ -25,15 +25,6 @@ public interface XOComponentRepository {
         """)
     Component resolve(String project, String component);
 
-    String COMPONENT_FILTER = """
-        MATCH
-          (project:Project)-[:CONTAINS_COMPONENT]->(component:Component)-[:HAS_LATEST_VERSION]->(latestVersion:Version)
-        WHERE
-          id(project) = $project
-          and (isEmpty($nameFilter) or all(token in $nameFilter where toLower(latestVersion.name) contains toLower(token)))
-          and (isEmpty($descriptionFilter) or all(token in $descriptionFilter where toLower(latestVersion.description) contains toLower(token)))
-        """;
-
     @ResultOf
     @Cypher("""
         MATCH
@@ -49,6 +40,18 @@ public interface XOComponentRepository {
           component, latestVersion, count(version) as versionCount
         """)
     ComponentRepository.ComponentSummary find(Project project, String componentId);
+
+    /**
+     * The filter to be used for {@link #findAll(Project, List, List, int, int)} and {@link #countAll(Project, List, List)}
+     */
+    String COMPONENT_FILTER = """
+        MATCH
+          (project:Project)-[:CONTAINS_COMPONENT]->(component:Component)-[:HAS_LATEST_VERSION]->(latestVersion:Version)
+        WHERE
+          id(project) = $project
+          and (isEmpty($nameFilter) or all(token in $nameFilter where toLower(latestVersion.name) contains toLower(token)))
+          and (isEmpty($descriptionFilter) or all(token in $descriptionFilter where toLower(latestVersion.description) contains toLower(token)))
+        """;
 
     @ResultOf
     @Cypher(COMPONENT_FILTER + """

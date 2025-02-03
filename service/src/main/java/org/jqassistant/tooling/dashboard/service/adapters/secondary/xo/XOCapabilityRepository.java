@@ -39,6 +39,9 @@ public interface XOCapabilityRepository {
         """)
     Capability find(Project project, String type, String value);
 
+    /**
+     * The filter to be used for {@link #findAll(Project, Set, List, int, int)} and {@link #countAll(Project, Set, List)}
+     */
     String CAPABILITY_FILTER = """
         MATCH
           (project:Project)-[:CONTAINS_CAPABILITY]->(capability:Capability)
@@ -47,13 +50,6 @@ public interface XOCapabilityRepository {
           and ($typeFilter is null or isEmpty($typeFilter) or capability.type in $typeFilter)
           and (isEmpty($valueFilter) or all(token in $valueFilter where toLower(capability.value) contains toLower(token)))
         """;
-
-    @ResultOf
-    @Cypher(CAPABILITY_FILTER + """
-        RETURN
-          count(capability)
-        """)
-    int countAll(Project project, Set<String> typeFilter, List<String> valueFilter);
 
     @ResultOf
     @Cypher(CAPABILITY_FILTER + """
@@ -71,6 +67,13 @@ public interface XOCapabilityRepository {
           capability, collect(distinct component) as providedByComponents
         """)
     Stream<CapabilityRepository.CapabilitySummary> findAll(Project project, Set<String> typeFilter, List<String> valueFilter, int offset, int limit);
+
+    @ResultOf
+    @Cypher(CAPABILITY_FILTER + """
+        RETURN
+          count(capability)
+        """)
+    int countAll(Project project, Set<String> typeFilter, List<String> valueFilter);
 
     @ResultOf
     @Cypher("""
