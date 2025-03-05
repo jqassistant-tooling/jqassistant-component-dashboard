@@ -14,7 +14,6 @@
 
     <properties>
         <jersey-client.version>2.43</jersey-client.version>
-        <jackson.version>2.18.2</jackson.version>
     </properties>
 
     <build>
@@ -47,12 +46,10 @@
         <dependency>
             <groupId>com.fasterxml.jackson.jaxrs</groupId>
             <artifactId>jackson-jaxrs-json-provider</artifactId>
-            <version>${jackson.version}</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.datatype</groupId>
             <artifactId>jackson-datatype-jsr310</artifactId>
-            <version>${jackson.version}</version>
         </dependency>
         <dependency>
             <groupId>com.buschmais.jqassistant.core</groupId>

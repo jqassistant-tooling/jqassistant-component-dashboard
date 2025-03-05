@@ -16,7 +16,7 @@
         <spring-boot.version>3.4.3</spring-boot.version>
         <vaadin.version>24.6.6</vaadin.version>
         <jib-maven-plugin.version>3.4.4</jib-maven-plugin.version>
-        <xo.version>2.7.0-SNAPSHOT</xo.version>
+        <xo.version>2.6.2</xo.version>
         <liquibase.version>4.31.1</liquibase.version>
         <dashboard.image.registry>localhost:32000</dashboard.image.registry>
         <dashboard.image.repository>jqassistant-component-dashboard</dashboard.image.repository>
@@ -81,23 +81,19 @@
         <dependency>
             <groupId>com.buschmais.xo</groupId>
             <artifactId>xo.api</artifactId>
-            <version>${xo.version}</version>
         </dependency>
         <dependency>
             <groupId>com.buschmais.xo</groupId>
             <artifactId>xo.spi</artifactId>
-            <version>${xo.version}</version>
         </dependency>
         <dependency>
             <groupId>com.buschmais.xo</groupId>
             <artifactId>xo.impl</artifactId>
-            <version>${xo.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.buschmais.xo</groupId>
             <artifactId>xo.neo4j.remote</artifactId>
-            <version>${xo.version}</version>
         </dependency>
         <dependency>
             <groupId>com.buschmais.xo</groupId>
