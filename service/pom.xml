@@ -16,7 +16,7 @@
         <spring-boot.version>3.4.3</spring-boot.version>
         <vaadin.version>24.6.6</vaadin.version>
         <jib-maven-plugin.version>3.4.4</jib-maven-plugin.version>
-        <xo.version>2.6.2</xo.version>
+        <xo.version>2.6.3</xo.version>
         <liquibase.version>4.31.1</liquibase.version>
         <dashboard.image.registry>localhost:32000</dashboard.image.registry>
         <dashboard.image.repository>jqassistant-component-dashboard</dashboard.image.repository>
@@ -46,6 +46,13 @@
                 <groupId>com.vaadin</groupId>
                 <artifactId>vaadin-bom</artifactId>
                 <version>${vaadin.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.buschmais.xo</groupId>
+                <artifactId>xo.bom</artifactId>
+                <version>${xo.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -98,7 +105,6 @@
         <dependency>
             <groupId>com.buschmais.xo</groupId>
             <artifactId>xo.spring</artifactId>
-            <version>${xo.version}</version>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
