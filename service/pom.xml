@@ -119,7 +119,7 @@
         <dependency>
             <groupId>org.jmolecules</groupId>
             <artifactId>jmolecules-hexagonal-architecture</artifactId>
-            <version>${jmolecules.version}0</version>
+            <version>${jmolecules.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
