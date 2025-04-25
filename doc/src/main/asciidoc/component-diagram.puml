@@ -17,8 +17,11 @@ folder Desktop {
     component Browser as browser
 }
 
+database "Datenbank" as db <<Neo4j>>
+
 maven --> jqassistant : uses
 jqassistant --> plugin : uses
 plugin ..> api : publishes
 browser ..> ui : uses
+dashboard .down.> db : uses
 @enduml
