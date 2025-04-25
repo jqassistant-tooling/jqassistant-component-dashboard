@@ -1,0 +1,24 @@
+@startuml
+folder Build {
+    component Maven as maven
+    component jQAssistant as jqassistant
+    component "Component Dashboard Plugin" as plugin <<jQAssistant Plugin>>
+}
+
+folder Service {
+    component Dashboard as dashboard <<Spring Boot>>
+    interface API as api <<REST>>
+    interface UI as ui
+    dashboard .up.> api
+    dashboard .up.> ui
+}
+
+folder Desktop {
+    component Browser as browser
+}
+
+maven --> jqassistant : uses
+jqassistant --> plugin : uses
+plugin ..> api : publishes
+browser ..> ui : uses
+@enduml

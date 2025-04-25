@@ -39,6 +39,7 @@
         <module>plugin</module>
         <module>service</module>
         <module>projects</module>
+        <module>doc</module>
     </modules>
 
 </project>
