@@ -16,7 +16,6 @@
     <version>1.0.0-SNAPSHOT</version>
 
     <properties>
-        <jqassistant.version>2.6.0</jqassistant.version>
         <!-- SonarQube -->
         <sonar.organization>jqassistant-tooling</sonar.organization>
         <sonar.projectKey>jqassistant-tooling_jqassistant-component-dashboard</sonar.projectKey>
