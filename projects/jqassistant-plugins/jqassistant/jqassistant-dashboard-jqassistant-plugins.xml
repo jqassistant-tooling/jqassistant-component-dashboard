@@ -7,7 +7,7 @@
         <description>Identify a jQAssistant plugin as component version containing files.</description>
         <cypher><![CDATA[
             MATCH
-              (pom:Effective:Pom:Xml)-[:DESCRIBES]->(artifact:Artifact{type:"jar"})-[:CONTAINS]->(:File:Xml{fileName:"/META-INF/jqassistant-plugin.xml"})
+              (pom:Maven:Pom:Effective)-[:DESCRIBES]->(artifact:Artifact{type:"jar"})-[:CONTAINS]->(:File:Xml{fileName:"/META-INF/jqassistant-plugin.xml"})
             SET
               artifact:Dashboard
             RETURN

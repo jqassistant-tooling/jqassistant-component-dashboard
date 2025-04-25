@@ -8,7 +8,7 @@
         <!-- TODO: merge on Component{id:} should be executed on indexed attribute -->
         <cypher><![CDATA[
             MATCH
-              (pom:Effective:Pom:Xml)-[:DESCRIBES]->(artifact:Artifact:Dashboard)
+              (pom:Effective:Pom)-[:DESCRIBES]->(artifact:Artifact:Dashboard)
             WHERE NOT
               (artifact)-[:PROVIDES]->(:Dashboard:Version)
             WITH
