@@ -20,7 +20,7 @@ public class Application implements AppShellConfigurator {
 
     public interface Metadata {
         String APPLICATION_NAME = "jQAssistant Component Dashboard Application";
-        String APPLICATION_NAME_SHORT = "jQAssistant Dashboard";
+        String APPLICATION_NAME_SHORT = "jQAssistant Component Dashboard";
     }
 
     public static void main(String[] args) {
