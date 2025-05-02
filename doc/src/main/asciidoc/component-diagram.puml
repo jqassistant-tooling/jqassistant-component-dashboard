@@ -3,6 +3,7 @@ folder Build {
     component Maven as maven
     component jQAssistant as jqassistant
     component "Component Dashboard Plugin" as plugin <<jQAssistant Plugin>>
+    database "Plugin-Datenbank" as pluginDb <<Neo4j>>
 }
 
 folder Service {
@@ -11,17 +12,18 @@ folder Service {
     interface UI as ui
     dashboard .up.> api
     dashboard .up.> ui
+   database "Service-Datenbank" as db <<Neo4j>>
 }
 
 folder Desktop {
     component Browser as browser
 }
 
-database "Datenbank" as db <<Neo4j>>
 
 maven --> jqassistant : uses
 jqassistant --> plugin : uses
 plugin ..> api : publishes
+plugin .down.> pluginDb
 browser ..> ui : uses
 dashboard .down.> db : uses
 @enduml
