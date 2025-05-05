@@ -2,7 +2,7 @@
 
 == Prerequisites
 
-- Java 17 and Apache Maven 3.8+
+- Java 21 and Apache Maven 3.8+
 - Kubernetes cluster (e.g. <<MicroK8S>>) with image registry and Ingress controller
 - kubectl & helm
 
@@ -24,6 +24,8 @@ cd service
 mvn jqassistant:server
 ----
 - Run `org.jqassistant.tooling.dashboard.service.Application` (Spring Boot application)
++
+NOTE: Make sure that the module `service` is set as working directory as it contains the configuration `application.properties` for Spring Boot.
 
 === Publish Data to Dashboard
 
