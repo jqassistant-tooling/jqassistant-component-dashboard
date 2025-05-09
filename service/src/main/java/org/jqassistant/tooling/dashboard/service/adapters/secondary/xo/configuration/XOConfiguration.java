@@ -41,6 +41,9 @@ public class XOConfiguration {
 
     @PostConstruct
     void init() throws URISyntaxException {
+        if (xoNeo4jProperties.getUrl() == null) {
+            throw new IllegalStateException("Neo4j URL is not configured, please provide a valid configuration as application.properties or environment variable(s).");
+        }
         log.info("Connecting to '{}@{}'.", xoNeo4jProperties.getUsername(), xoNeo4jProperties.getUrl());
         migrate();
         Properties properties = new Properties();
