@@ -17,7 +17,7 @@
         <vaadin.version>24.7.3</vaadin.version>
         <jib-maven-plugin.version>3.4.5</jib-maven-plugin.version>
         <xo.version>2.6.4</xo.version>
-        <liquibase.version>4.29.2</liquibase.version>
+        <liquibase.version>4.31.1</liquibase.version>
         <jmolecules.version>1.10.0</jmolecules.version>
         <dashboard.image.registry>localhost:32000</dashboard.image.registry>
         <dashboard.image.repository>jqassistant-component-dashboard</dashboard.image.repository>
