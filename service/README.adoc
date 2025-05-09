@@ -12,12 +12,14 @@
 
 - Build and run tests
 ----
-mvn verify
+mvn install
 ----
+
+NOTE: The goal `install` is used to ensure that the dashboard plugin is available in the local Maven repository for publishing from projects (e.g. jQAssistant JEE plugin, see below)
 
 === Run Dashboard Service
 
-- Start a Neo4j server, the easiest way is to start the embedded jQAssistant server
+- Start a Neo4j server, the easiest way is to use the embedded jQAssistant server
 +
 ----
 cd service
