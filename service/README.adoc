@@ -2,13 +2,49 @@
 
 == Prerequisites
 
-- Java 17 and Apache Maven
+- Java 21 and Apache Maven 3.8+
 - Kubernetes cluster (e.g. <<MicroK8S>>) with image registry and Ingress controller
 - kubectl & helm
 
-== Installation
+== Development
 
-=== Maven
+=== Maven Build
+
+- Build and run tests
+----
+mvn install
+----
+
+NOTE: The goal `install` is used to ensure that the dashboard plugin is available in the local Maven repository for publishing from projects (e.g. jQAssistant JEE plugin, see below)
+
+=== Run Dashboard Service
+
+- Start a Neo4j server, the easiest way is to use the embedded jQAssistant server
++
+----
+cd service
+mvn jqassistant:server
+----
+- Run `org.jqassistant.tooling.dashboard.service.Application` (Spring Boot application)
++
+NOTE: Make sure that the module `service` is set as working directory as it contains the configuration `application.properties` for Spring Boot.
+
+=== Publish Data to Dashboard
+
+- Clone the repository `https://github.com/jqassistant-plugin/jqassistant-jee-plugin`
+- Checkout branch `feature/jqassistant-component-dashboard`
+- Run the build
++
+----
+mvn verify -DskipTests
+----
++
+NOTE: Make sure that the plugin version used by the build process (see `.jqassistant.yml` in the JEE plugin root directory)
+is the same or compatible with the API version required by the dashboard service.
+
+== Deployment
+
+=== Build and Deploy Docker Container
 
 - Build and deploy the image to the registry
 +
