@@ -15,6 +15,7 @@ import org.jqassistant.tooling.dashboard.service.adapters.primary.ui.shared.Rout
 import org.jqassistant.tooling.dashboard.service.application.ComponentRepository;
 import org.jqassistant.tooling.dashboard.service.application.ComponentService;
 import org.jqassistant.tooling.dashboard.service.application.model.ProjectKey;
+import org.jqassistant.tooling.dashboard.service.application.model.Version;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
 
@@ -50,8 +51,12 @@ public class ComponentView extends VerticalLayout implements BeforeEnterObserver
     public void beforeEnter(BeforeEnterEvent event) {
         transactionTemplate.executeWithoutResult(tx -> {
             projectKey = getProjectKey(event.getRouteParameters());
-            String componentId = RouteParametersHelper.get(event.getRouteParameters(), (PARAMETER_COMPONENT));
+            String componentId = RouteParametersHelper.get(event.getRouteParameters(), PARAMETER_COMPONENT);
             ComponentRepository.ComponentSummary componentSummary = componentService.find(projectKey, componentId);
+            title.setText(componentSummary.getComponent().getName());
+            Version latestVersion = componentSummary.getComponent().getLatestVersion();
+            url.setText(latestVersion.getUrl());
+            description.setText(latestVersion.getDescription());
         });
     }
 }
