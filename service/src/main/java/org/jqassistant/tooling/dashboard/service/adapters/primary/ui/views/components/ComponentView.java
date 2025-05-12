@@ -1,5 +1,6 @@
 package org.jqassistant.tooling.dashboard.service.adapters.primary.ui.views.components;
 
+import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -55,7 +56,10 @@ public class ComponentView extends VerticalLayout implements BeforeEnterObserver
             ComponentRepository.ComponentSummary componentSummary = componentService.find(projectKey, componentId);
             title.setText(componentSummary.getComponent().getName());
             Version latestVersion = componentSummary.getComponent().getLatestVersion();
-            url.setText(latestVersion.getUrl());
+            String latestVersionUrl = latestVersion.getUrl();
+            if (latestVersionUrl != null) {
+                url.add(new Anchor(latestVersionUrl, latestVersionUrl));
+            }
             description.setText(latestVersion.getDescription());
         });
     }
