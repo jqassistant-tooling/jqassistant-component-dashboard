@@ -38,7 +38,7 @@
         <module>plugin</module>
         <module>service</module>
         <module>projects</module>
-        <module>doc</module>
+        <module>documentation</module>
     </modules>
 
 </project>
