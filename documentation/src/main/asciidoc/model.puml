@@ -17,6 +17,13 @@ class Component {
   Version latestVersion
 }
 
+class Contributor {
+  String name
+  String email
+  String identString
+  List<Component> contributedTo
+}
+
 class Version <<Root>> {
   String name
   String url
@@ -45,4 +52,5 @@ Version      "1" --> "0..*" File : containsFiles
 File      "0..*" --> "0..*" Capability : providesCapabilities
 File      "0..*" --> "0..*" Capability : requiresCapabilities
 
+Contributor  "1..*" --> "1..* " Component : contributedTo
 @enduml
