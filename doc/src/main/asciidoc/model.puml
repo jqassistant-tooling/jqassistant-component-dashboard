@@ -1,0 +1,48 @@
+@startuml
+'!pragma layout smetana
+
+class Owner {
+  String name
+  List<Project> projects
+}
+
+class Project {
+  String name
+  List<Component> components
+}
+
+class Component {
+  String id
+  List<Version> versions
+  Version latestVersion
+}
+
+class Version <<Root>> {
+  String name
+  String url
+  String description
+  ZonedDateTime updatedAt
+  List<File> containsFiles
+}
+
+class File {
+  String fileName
+  List<Capability> providesCapabilities
+  List<Capability> requiresCapabilities
+}
+
+class Capability {
+  String type
+  String value
+  String description
+}
+
+Owner        "1" --> "0..*" Project : projects
+Project      "1" --> "0..*" Component : components
+Component    "1" --> "0..*" Version : versions
+Component    "1" --> "0..1" Version : latestVersion
+Version      "1" --> "0..*" File : containsFiles
+File      "0..*" --> "0..*" Capability : providesCapabilities
+File      "0..*" --> "0..*" Capability : requiresCapabilities
+
+@enduml
