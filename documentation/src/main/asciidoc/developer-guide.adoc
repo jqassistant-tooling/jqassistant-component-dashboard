@@ -1,4 +1,5 @@
-= Dashboard Service
+:toc:
+= Developer Guide
 
 == Prerequisites
 
@@ -6,7 +7,7 @@
 - Kubernetes cluster (e.g. <<MicroK8S>>) with image registry and Ingress controller
 - kubectl & helm
 
-== Development
+== Local Development
 
 === Maven Build
 
@@ -220,6 +221,4 @@ snap install kubectl --classic
 
 sudo microk8s refresh-certs -e ca.crt
 sudo microk8s config > ~/.kube/config
-
-skaffold dev
 ----

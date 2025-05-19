@@ -3,7 +3,7 @@ package org.jqassistant.tooling.dashboard.service.application.model;
 import com.buschmais.xo.neo4j.api.annotation.Label;
 
 @Label
-public interface Capability {
+public interface Capability extends DescriptionTemplate {
 
     String getType();
 
@@ -13,7 +13,4 @@ public interface Capability {
 
     void setValue(String value);
 
-    String getDescription();
-
-    void setDescription(String description);
 }
