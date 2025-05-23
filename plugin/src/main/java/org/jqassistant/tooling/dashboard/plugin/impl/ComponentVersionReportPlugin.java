@@ -146,6 +146,7 @@ public class ComponentVersionReportPlugin implements ReportPlugin {
         VersionDTO versionDTO = VersionMapper.MAPPER.toDTO(version);
         Component component = componentColumn.getValue();
         WebTarget versionTarget = apiTarget.path(encode(component.getId(), UTF_8))
+            .path("versions")
             .path(encode(version.getVersion(), UTF_8));
         try (Response put = versionTarget.request(MediaType.APPLICATION_JSON_TYPE)
             .header(AUTH_TOKEN_HEADER_NAME, apiKey)
