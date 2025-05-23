@@ -47,7 +47,7 @@ public class SecurityConfiguration extends VaadinWebSecurity {
         RequestMatcher restApiRequestMatcher = new AntPathRequestMatcher("/api/**");
         http.authorizeHttpRequests(auth -> auth.requestMatchers(restApiRequestMatcher)
             .authenticated()
-            .requestMatchers(antMatchers("/ui/**", "/v3/api-docs/**"))
+            .requestMatchers(antMatchers("/ui/**", "/v3/api-docs/**", "/v3/api-docs.yaml"))
             .permitAll());
 
         super.configure(http);
