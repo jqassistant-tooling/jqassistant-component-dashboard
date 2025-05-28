@@ -58,7 +58,11 @@ class VersionControllerTest {
         doReturn(version).when(versionMapper)
             .toVersion(eq(project), eq(component), any(VersionDTO.class));
 
-        mockMvc.perform(put("/api/rest/v1/jqassistant/plugins/test/versions/1.0.0").content("{ \"version\": \"1.0.0\" }")
+        mockMvc.perform(put("/api/rest/v1/jqassistant/plugins/test/versions/1.0.0").content("""
+                    {
+                        "version": "1.0.0"
+                    }"
+                    """)
                 .contentType(MediaType.APPLICATION_JSON)
                 .with(csrf())
                 .with(user("user").roles("USER"))
