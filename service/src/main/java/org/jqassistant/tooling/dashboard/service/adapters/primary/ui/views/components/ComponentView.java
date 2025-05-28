@@ -3,7 +3,6 @@ package org.jqassistant.tooling.dashboard.service.adapters.primary.ui.views.comp
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.Span;
-import com.vaadin.flow.component.html.UnorderedList;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
@@ -16,6 +15,7 @@ import org.jqassistant.tooling.dashboard.service.adapters.primary.ui.shared.Dash
 import org.jqassistant.tooling.dashboard.service.adapters.primary.ui.shared.RouteParametersHelper;
 import org.jqassistant.tooling.dashboard.service.application.ComponentRepository;
 import org.jqassistant.tooling.dashboard.service.application.ComponentService;
+import org.jqassistant.tooling.dashboard.service.application.ContributorService;
 import org.jqassistant.tooling.dashboard.service.application.model.ProjectKey;
 import org.jqassistant.tooling.dashboard.service.application.model.Version;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,6 +35,8 @@ public class ComponentView extends VerticalLayout implements BeforeEnterObserver
     public static final String PARAMETER_COMPONENT = "component";
 
     private final transient ComponentService componentService;
+
+    private final transient ContributorService contributorService;
 
     private final TransactionTemplate transactionTemplate;
 
@@ -69,7 +71,8 @@ public class ComponentView extends VerticalLayout implements BeforeEnterObserver
             // Contributors statisch hinzufügen
             contributorsLayout.removeAll();
             contributorsLayout.add(new H2("Contributors"));
-            Stream.of("Max", "Tobias", "Leonard", "Daniel", "Dirk")
+            Stream<String> contributors = contributorService.getContributors(projectKey,componentId);
+            contributors
                 .map(name -> new Span("• " + name))
                 .forEach(contributorsLayout::add);
         });
