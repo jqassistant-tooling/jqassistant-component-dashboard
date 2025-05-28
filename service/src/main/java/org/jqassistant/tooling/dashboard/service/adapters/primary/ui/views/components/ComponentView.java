@@ -3,6 +3,7 @@ package org.jqassistant.tooling.dashboard.service.adapters.primary.ui.views.comp
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.Span;
+import com.vaadin.flow.component.html.UnorderedList;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
@@ -19,6 +20,8 @@ import org.jqassistant.tooling.dashboard.service.application.model.ProjectKey;
 import org.jqassistant.tooling.dashboard.service.application.model.Version;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
+
+import java.util.stream.Stream;
 
 import static org.jqassistant.tooling.dashboard.service.adapters.primary.ui.views.projects.ProjectKeyHelper.getProjectKey;
 
@@ -41,13 +44,14 @@ public class ComponentView extends VerticalLayout implements BeforeEnterObserver
 
     private final Span description = new Span();
 
+    private final VerticalLayout contributorsLayout = new VerticalLayout();
+
     private transient ProjectKey projectKey;
 
     @PostConstruct
     void init() {
-        add(title, url, description);
+        add(title, url, description, contributorsLayout);
     }
-
     @Override
     public void beforeEnter(BeforeEnterEvent event) {
         transactionTemplate.executeWithoutResult(tx -> {
@@ -61,6 +65,13 @@ public class ComponentView extends VerticalLayout implements BeforeEnterObserver
                 url.add(new Anchor(latestVersionUrl, latestVersionUrl));
             }
             description.setText(latestVersion.getDescription());
+
+            // Contributors statisch hinzufügen
+            contributorsLayout.removeAll();
+            contributorsLayout.add(new H2("Contributors"));
+            Stream.of("Max", "Tobias", "Leonard", "Daniel", "Dirk")
+                .map(name -> new Span("• " + name))
+                .forEach(contributorsLayout::add);
         });
     }
 }
