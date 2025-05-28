@@ -43,6 +43,10 @@ mvn verify -DskipTests
 NOTE: Make sure that the plugin version used by the build process (see `.jqassistant.yml` in the JEE plugin root directory)
 is the same or compatible with the API version required by the dashboard service.
 
+* The published data is now available in the dashboard
+** Components: http://localhost:8080/ui/jqassistant/plugins/components
+** Capabilities: http://localhost:8080/ui/jqassistant/plugins/capabilities
+
 == Deployment
 
 === Build and Deploy Docker Container
