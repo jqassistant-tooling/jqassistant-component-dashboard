@@ -15,10 +15,13 @@ import org.jqassistant.tooling.dashboard.service.adapters.primary.ui.shared.Dash
 import org.jqassistant.tooling.dashboard.service.adapters.primary.ui.shared.RouteParametersHelper;
 import org.jqassistant.tooling.dashboard.service.application.ComponentRepository;
 import org.jqassistant.tooling.dashboard.service.application.ComponentService;
+import org.jqassistant.tooling.dashboard.service.application.ContributorService;
 import org.jqassistant.tooling.dashboard.service.application.model.ProjectKey;
 import org.jqassistant.tooling.dashboard.service.application.model.Version;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
+
+import java.util.stream.Stream;
 
 import static org.jqassistant.tooling.dashboard.service.adapters.primary.ui.views.projects.ProjectKeyHelper.getProjectKey;
 
@@ -33,6 +36,8 @@ public class ComponentView extends VerticalLayout implements BeforeEnterObserver
 
     private final transient ComponentService componentService;
 
+    private final transient ContributorService contributorService;
+
     private final TransactionTemplate transactionTemplate;
 
     private final H2 title = new H2();
@@ -41,13 +46,14 @@ public class ComponentView extends VerticalLayout implements BeforeEnterObserver
 
     private final Span description = new Span();
 
+    private final VerticalLayout contributorsLayout = new VerticalLayout();
+
     private transient ProjectKey projectKey;
 
     @PostConstruct
     void init() {
-        add(title, url, description);
+        add(title, url, description, contributorsLayout);
     }
-
     @Override
     public void beforeEnter(BeforeEnterEvent event) {
         transactionTemplate.executeWithoutResult(tx -> {
@@ -61,6 +67,14 @@ public class ComponentView extends VerticalLayout implements BeforeEnterObserver
                 url.add(new Anchor(latestVersionUrl, latestVersionUrl));
             }
             description.setText(latestVersion.getDescription());
+
+            // Contributors statisch hinzufügen
+            contributorsLayout.removeAll();
+            contributorsLayout.add(new H2("Contributors"));
+            Stream<String> contributors = contributorService.getContributors(projectKey,componentId);
+            contributors
+                .map(name -> new Span("• " + name))
+                .forEach(contributorsLayout::add);
         });
     }
 }
