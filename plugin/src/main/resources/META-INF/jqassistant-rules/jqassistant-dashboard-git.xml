@@ -1,0 +1,62 @@
+<jqassistant-rules xmlns="http://schema.jqassistant.org/rule/v2.2"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://schema.jqassistant.org/rule/v2.2 https://jqassistant.github.io/jqassistant/current/schema/jqassistant-rule-v2.2.xsd">
+
+    <concept id="jqassistant-dashboard-git:ComponentContributorsReport">
+        <requiresConcept refId="jqassistant-dashboard:ComponentVersionContainsFile"/>
+        <requiresConcept refId="jqassistant-dashboard-git:FileHasGitSourceFile" />
+        <description>Creates a relation :CONTRIBUTED_TO (with a property commits) between Git authors and dashboard components.</description>
+        <cypher><![CDATA[
+            MATCH
+              (component:Dashboard:Component)-[:HAS_VERSION]->(version:Dashboard:Version)-[:CONTAINS_FILE]->(:File)-[:HAS_SOURCE_FILE]->(sourceFile:Git:File),
+              (author)-[:COMMITTED]->(commit:Commit)-[:CONTAINS_CHANGE]->(:Change)-[:MODIFIES]->(sourceFile)
+            WITH
+              component, author, count(distinct commit) as commits
+            MERGE
+              (author)-[contributedTo:CONTRIBUTED_TO]->(component)
+            SET
+              contributedTo.commits = commits
+            RETURN
+              component as Component, author as Author, commits as Commits
+            ORDER BY
+              commits desc
+        ]]></cypher>
+        <!--
+        <report type="ComponentContributorReport" />
+        -->
+    </concept>
+
+    <concept id="jqassistant-dashboard-git:FileHasGitSourceFile">
+        <description>Creates a relation HAS_SOURCE_FILE between a Java type and the file from the Git history.</description>
+        <!-- TODO: add resources -->
+        <cypher><![CDATA[
+            MATCH
+              (artifact:Java:Artifact)-[:CONTAINS]->(type:Type)
+            // determine source file name from class name
+            WITH
+              type, split(type.fileName,"/") as segments
+            WITH
+              type, segments, range(0, size(segments)-2) as indexes
+            WITH
+              type, reduce(path = "", index in indexes | path + segments[index] + "/") + type.sourceFileName as sourceFileName
+            // find file in Git history that ends with the source file name
+            MATCH
+              (file:Git:File)
+            WHERE
+              file.relativePath ends with sourceFileName
+            CALL {
+              WITH
+                type, file
+              MERGE
+                (type)-[:HAS_SOURCE_FILE]->(file)
+            } IN TRANSACTIONS
+            RETURN
+              count(type) as TypesWithSourceFile
+        ]]></cypher>
+        <verify>
+            <aggregation/>
+        </verify>
+    </concept>
+
+</jqassistant-rules>
+
