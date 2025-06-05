@@ -59,7 +59,8 @@ public class XOConfiguration {
                 Component.class, XOComponentRepository.class, //
                 Version.class, XOVersionRepository.class, //
                 File.class, XOFileRepository.class, //
-                Capability.class, XOCapabilityRepository.class))
+                Capability.class, XOCapabilityRepository.class, //
+                Contributor.class, XOContributorRepository.class))
             .build();
         this.xoManagerFactory = new XOManagerFactoryImpl<>(xoUnit);
     }

@@ -1,9 +1,8 @@
 package org.jqassistant.tooling.dashboard.service.application;
 
-import com.buschmais.xo.api.annotation.Repository;
-
 import org.jqassistant.tooling.dashboard.service.application.model.Component;
 import org.jqassistant.tooling.dashboard.service.application.model.Version;
+import org.springframework.stereotype.Repository;
 
 @Repository
 public interface VersionRepository {

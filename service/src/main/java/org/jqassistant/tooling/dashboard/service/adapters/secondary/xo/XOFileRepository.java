@@ -4,11 +4,10 @@ import com.buschmais.xo.api.annotation.Repository;
 import com.buschmais.xo.api.annotation.ResultOf;
 import com.buschmais.xo.neo4j.api.annotation.Cypher;
 
-import org.jqassistant.tooling.dashboard.service.application.FileRepository;
 import org.jqassistant.tooling.dashboard.service.application.model.File;
 
 @Repository
-public interface XOFileRepository extends FileRepository {
+public interface XOFileRepository {
 
     @ResultOf
     @Cypher("""
@@ -17,7 +16,6 @@ public interface XOFileRepository extends FileRepository {
         RETURN
           f
         """)
-    @Override
     File create();
 
 }
