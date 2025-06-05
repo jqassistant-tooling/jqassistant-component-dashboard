@@ -16,6 +16,7 @@
     <rules>
         <resource>jqassistant-dashboard.xml</resource>
         <resource>jqassistant-dashboard-java.xml</resource>
+        <resource>jqassistant-dashboard-git.xml</resource>
     </rules>
     <report>
         <class id="dashboard-component-version-report">org.jqassistant.tooling.dashboard.plugin.impl.ComponentVersionReportPlugin</class>
