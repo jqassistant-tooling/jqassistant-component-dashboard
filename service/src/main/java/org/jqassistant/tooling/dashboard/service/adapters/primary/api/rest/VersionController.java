@@ -9,7 +9,7 @@ import org.jqassistant.tooling.dashboard.service.application.model.ProjectKey;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/rest/v1/{owner}/{project}/{component}/{version}")
+@RequestMapping("/api/rest/v1/{owner}/{project}/{component}/versions/{version}")
 @RequiredArgsConstructor
 @Slf4j
 public class VersionController {

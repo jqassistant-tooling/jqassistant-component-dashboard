@@ -13,6 +13,7 @@
     <artifactId>jqassistant-dashboard-plugin</artifactId>
 
     <properties>
+        <jqassistant.plugin.git.version>2.4.0</jqassistant.plugin.git.version>
         <jersey-client.version>2.43</jersey-client.version>
     </properties>
 
@@ -37,6 +38,11 @@
             <groupId>org.jqassistant.tooling.dashboard</groupId>
             <artifactId>jqassistant-dashboard-api</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>de.kontext-e.jqassistant.plugin</groupId>
+            <artifactId>jqassistant.plugin.git</artifactId>
+            <version>${jqassistant.plugin.git.version}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.jersey.core</groupId>
