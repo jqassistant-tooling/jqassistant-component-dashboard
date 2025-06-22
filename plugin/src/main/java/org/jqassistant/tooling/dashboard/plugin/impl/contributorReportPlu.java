@@ -2,51 +2,45 @@ package org.jqassistant.tooling.dashboard.plugin.impl;
 
 import java.security.GeneralSecurityException;
 import java.security.cert.X509Certificate;
-import java.util.Map;
-
+import java.util.*;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.client.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import com.buschmais.jqassistant.core.report.api.ReportContext;
-import com.buschmais.jqassistant.core.report.api.ReportException;
-import com.buschmais.jqassistant.core.report.api.ReportPlugin;
-import com.buschmais.jqassistant.core.report.api.model.Column;
-import com.buschmais.jqassistant.core.report.api.model.Result;
-import com.buschmais.jqassistant.core.report.api.model.Result.Status;
-import com.buschmais.jqassistant.core.report.api.model.Row;
+import com.buschmais.jqassistant.core.report.api.*;
+import com.buschmais.jqassistant.core.report.api.model.*;
 import com.buschmais.jqassistant.core.rule.api.model.ExecutableRule;
-
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
+
 import lombok.extern.slf4j.Slf4j;
+
 import org.jqassistant.tooling.dashboard.api.dto.ContributorDTO;
+import org.jqassistant.tooling.dashboard.plugin.api.model.Component;
+import org.jqassistant.tooling.dashboard.plugin.api.model.Contributor;
+import org.jqassistant.tooling.dashboard.plugin.impl.mapper.ContributorMapper;
 
 import static java.lang.Boolean.parseBoolean;
 import static java.net.URLEncoder.encode;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static javax.ws.rs.client.Entity.json;
-import static org.jqassistant.tooling.dashboard.plugin.impl.ComponentVersionReportPlugin.COLUMN_COMPONENT;
 
 @Slf4j
-public class ContributorsReportPlugin implements ReportPlugin {
+public class contributorsReportPlugin implements ReportPlugin {
 
     public static final String PROPERTY_DASHBOARD_URL = "dashboard.url";
     public static final String PROPERTY_DASHBOARD_OWNER = "dashboard.owner";
     public static final String PROPERTY_DASHBOARD_PROJECT = "dashboard.project";
     public static final String PROPERTY_DASHBOARD_API_KEY = "dashboard.api-key";
+    public static final String PROPERTY_DASHBOARD_COMPONENT = "dashboard.component";
     public static final String PROPERTY_DASHBOARD_SSL_VALIDATION = "dashboard.ssl-validation";
 
     private static final String CONCEPT_ID = "jqassistant-dashboard:Gitcontributors";
-    private static final String COLUMN_NAME = "name";
-    private static final String COLUMN_EMAIL = "email";
-    private static final String COLUMN_IDENT = "ident";
     private static final String COLUMN_COMPONENT = "component";
+    private static final String COLUMN_CONTRIBUTOR = "contributor";
 
     private static final String AUTH_TOKEN_HEADER_NAME = "X-API-KEY";
 
@@ -71,7 +65,7 @@ public class ContributorsReportPlugin implements ReportPlugin {
         if (!rule.getId().equals(CONCEPT_ID)) {
             throw new ReportException("The rule id is not " + CONCEPT_ID);
         }
-        if (!result.getStatus().equals(Status.SUCCESS)) {
+        if (!result.getStatus().equals(Result.Status.SUCCESS)) {
             log.warn("The concept '{}' returned status {}, report will not be published.", rule.getId(), result.getStatus());
         } else if (url == null || owner == null || project == null || apiKey == null) {
             log.info("Dashboard URL, owner, project or API key not configured, skipping.");
@@ -85,6 +79,7 @@ public class ContributorsReportPlugin implements ReportPlugin {
         ClientBuilder clientBuilder = ClientBuilder.newBuilder()
             .register(JacksonJsonProvider.class)
             .register(ObjectMapperContextResolver.class);
+
         if (!sslValidation) {
             log.warn("SSL validation is disabled.");
             clientBuilder.sslContext(getNoopSSLContext());
@@ -92,29 +87,45 @@ public class ContributorsReportPlugin implements ReportPlugin {
 
         Client client = clientBuilder.build();
         try {
-            WebTarget apiTarget = client.target(url)
+            WebTarget baseTarget = client.target(url)
                 .path("api")
                 .path("rest")
                 .path("v1")
-                .path(owner) //
-                .path(project)
-                .path("contributors");
+                .path(owner)
+                .path(project);
+
+            Map<String, List<ContributorDTO>> groupedContributors = new HashMap<>();
 
             for (Row row : result.getRows()) {
-                String component = (String)getColumn(row, COLUMN_COMPONENT).getValue();
-                String name = (String)getColumn(row, COLUMN_NAME).getValue();
-                String email = (String)getColumn(row, COLUMN_EMAIL).getValue();
-                String ident = (String)getColumn(row, COLUMN_IDENT).getValue();
-//mehrere dtos als json senden, pfad muss abgeändert werden
-                ContributorDTO dto = new ContributorDTO(name, email, ident);
-                try (Response response = apiTarget
-                    .path(encode(ident, UTF_8))
-                    .request(MediaType.APPLICATION_JSON_TYPE)
+                Column<Component> componentColumn = getColumn(row, COLUMN_COMPONENT);
+                Column<Contributor> contributorColumn = getColumn(row, COLUMN_CONTRIBUTOR);
+
+                Component comp = componentColumn.getValue();
+                Contributor contrib = contributorColumn.getValue();
+                ContributorDTO dto = ContributorMapper.MAPPER.toDTO(contrib);
+
+                groupedContributors
+                    .computeIfAbsent(comp.getId(), k -> new ArrayList<>())
+                    .add(dto);
+            }
+
+            for (Map.Entry<String, List<ContributorDTO>> entry : groupedContributors.entrySet()) {
+                String componentId = entry.getKey();
+                List<ContributorDTO> contributors = entry.getValue();
+
+                WebTarget apiTarget = baseTarget
+                    .path(encode(componentId, UTF_8))
+                    .path("contributors");
+
+                try (Response response = apiTarget.request(MediaType.APPLICATION_JSON_TYPE)
                     .header(AUTH_TOKEN_HEADER_NAME, apiKey)
-                    .put(json(dto))) {
-                    log.info("Contributor '{}' published (status={}).", name, response.getStatus());
+                    .put(json(contributors))) {
+
+                    log.info("Published {} contributors for component '{}', status: {}",
+                        contributors.size(), componentId, response.getStatus());
                 }
             }
+
         } finally {
             client.close();
         }
@@ -122,11 +133,13 @@ public class ContributorsReportPlugin implements ReportPlugin {
 
     private SSLContext getNoopSSLContext() throws ReportException {
         HttpsURLConnection.setDefaultHostnameVerifier((hostname, session) -> true);
-        TrustManager[] noopTrustManager = new TrustManager[] { new X509TrustManager() {
-            public X509Certificate[] getAcceptedIssuers() { return null; }
-            public void checkClientTrusted(X509Certificate[] certs, String authType) {}
-            public void checkServerTrusted(X509Certificate[] certs, String authType) {}
-        }};
+        TrustManager[] noopTrustManager = new TrustManager[] {
+            new X509TrustManager() {
+                public X509Certificate[] getAcceptedIssuers() { return null; }
+                public void checkClientTrusted(X509Certificate[] certs, String authType) {}
+                public void checkServerTrusted(X509Certificate[] certs, String authType) {}
+            }
+        };
         try {
             SSLContext sc = SSLContext.getInstance("ssl");
             sc.init(null, noopTrustManager, null);
@@ -136,6 +149,7 @@ public class ContributorsReportPlugin implements ReportPlugin {
         }
     }
 
+    @SuppressWarnings("unchecked")
     private static <T> Column<T> getColumn(Row row, String columnName) throws ReportException {
         Column<T> column = (Column<T>) row.getColumns().get(columnName);
         if (column == null) {
@@ -144,3 +158,4 @@ public class ContributorsReportPlugin implements ReportPlugin {
         return column;
     }
 }
+
