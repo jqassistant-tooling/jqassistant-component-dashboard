@@ -4,9 +4,7 @@ import org.jqassistant.tooling.dashboard.api.dto.ContributorDTO;
 import org.jqassistant.tooling.dashboard.api.dto.VersionDTO;
 import org.jqassistant.tooling.dashboard.service.application.ContributorService;
 import org.jqassistant.tooling.dashboard.service.application.model.*;
-import org.mapstruct.Context;
-import org.mapstruct.Mapper;
-import org.mapstruct.ObjectFactory;
+import org.mapstruct.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @Mapper(uses = FileMapper.class)
@@ -15,11 +13,14 @@ public abstract class ContributorMapper {
     @Autowired
     private ContributorService contributorService;
 
-    public abstract Contributor contributedto(@Context Project project, @Context Component component, ContributorDTO dto);
+    @Mapping(target = "identString", ignore = true)
+    @Mapping(target = "contributedTo", ignore = true)
+    @BeanMapping(ignoreUnmappedSourceProperties = "ident")
+    public abstract Contributor toContributor(ContributorDTO dto);
 
     @ObjectFactory
-    Version resolve(@Context Component component, ContributorDTO contributorDTO) {
-        return contributorService.resolve(component, contributorDTO.getContributors());
+    Contributor resolve(ContributorDTO contributorDTO) {
+        return contributorService.resolve(contributorDTO.getIdent());
     }
 
 

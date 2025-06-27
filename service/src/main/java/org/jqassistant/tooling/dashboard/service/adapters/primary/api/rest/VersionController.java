@@ -19,9 +19,14 @@ public class VersionController {
     private final VersionMapper versionMapper;
 
     @PutMapping
-    public void createOrUpdate(@PathVariable(name = "owner") String ownerId, @PathVariable(name = "project") String projectId,
-        @PathVariable(name = "component") String componentId, @PathVariable(name = "version") String versionId, @RequestBody VersionDTO versionDTO) {
+    public void createOrUpdate(@PathVariable(name = "owner") String ownerId,
+                               @PathVariable(name = "project") String projectId,
+                               @PathVariable(name = "component") String componentId,
+                               @PathVariable(name = "version") String versionId,
+                               @RequestBody VersionDTO versionDTO) {
+
         ProjectKey projectKey = new ProjectKey(ownerId, projectId);
+
         versionService.createOrUpdate(projectKey, componentId, versionId, (project, component) -> versionMapper.toVersion(project, component, versionDTO));
     }
 

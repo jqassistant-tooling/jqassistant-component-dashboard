@@ -13,7 +13,7 @@ import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 @Service
-@Transactional
+
 @RequiredArgsConstructor
 public class ContributorService {
 
@@ -27,10 +27,9 @@ public class ContributorService {
         return contributorRepository.resolveContributor(identString);
     }
 
-    public void setContributors(ProjectKey projectKey, String componentId, List<Supplier<Contributor>> contributorSuppliers) {
+    public void setContributors(ProjectKey projectKey, String componentId, List<Contributor> contributors) {
         Component component = componentService.resolve(projectKey, componentId);
-        for (Supplier<Contributor> contributorSupplier : contributorSuppliers) {
-               Contributor contributor = contributorSupplier.get();
+        for (Contributor contributor : contributors) {
                contributor.getContributedTo().add(component);
         }
     }
