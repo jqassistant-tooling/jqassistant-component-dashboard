@@ -29,7 +29,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static javax.ws.rs.client.Entity.json;
 
 @Slf4j
-public class contributorsReportPlugin implements ReportPlugin {
+public class ContributorsReportPlugin implements ReportPlugin {
 
     public static final String PROPERTY_DASHBOARD_URL = "dashboard.url";
     public static final String PROPERTY_DASHBOARD_OWNER = "dashboard.owner";
