@@ -1,4 +1,4 @@
-package org.jqassistant.tooling.dashboard.plugin.impl;
+package org.jqassistant.tooling.dashboard.rest.client;
 
 import java.security.GeneralSecurityException;
 import java.security.cert.X509Certificate;

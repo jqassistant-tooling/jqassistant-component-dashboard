@@ -20,6 +20,7 @@ import org.jqassistant.tooling.dashboard.api.dto.VersionDTO;
 import org.jqassistant.tooling.dashboard.plugin.api.model.Component;
 import org.jqassistant.tooling.dashboard.plugin.api.model.Version;
 import org.jqassistant.tooling.dashboard.plugin.impl.mapper.VersionMapper;
+import org.jqassistant.tooling.dashboard.rest.client.RESTClient;
 
 import static java.lang.Boolean.parseBoolean;
 import static java.net.URLEncoder.encode;

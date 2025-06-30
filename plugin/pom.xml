@@ -40,22 +40,14 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.jqassistant.tooling.dashboard</groupId>
+            <artifactId>jqassistant-dashboard-rest-client</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>de.kontext-e.jqassistant.plugin</groupId>
             <artifactId>jqassistant.plugin.git</artifactId>
             <version>${jqassistant.plugin.git.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.jersey.core</groupId>
-            <artifactId>jersey-client</artifactId>
-            <version>${jersey-client.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.jaxrs</groupId>
-            <artifactId>jackson-jaxrs-json-provider</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.datatype</groupId>
-            <artifactId>jackson-datatype-jsr310</artifactId>
         </dependency>
         <dependency>
             <groupId>com.buschmais.jqassistant.core</groupId>
