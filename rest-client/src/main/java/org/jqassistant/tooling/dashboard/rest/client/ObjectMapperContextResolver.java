@@ -1,4 +1,4 @@
-package org.jqassistant.tooling.dashboard.plugin.impl;
+package org.jqassistant.tooling.dashboard.rest.client;
 
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
@@ -9,7 +9,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import static com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS;
 
 @Provider
-public class ObjectMapperContextResolver implements ContextResolver<ObjectMapper> {
+class ObjectMapperContextResolver implements ContextResolver<ObjectMapper> {
 
     private final ObjectMapper mapper = new ObjectMapper();
 
