@@ -1,5 +1,6 @@
 package org.jqassistant.tooling.dashboard.plugin;
 
+import java.time.ZonedDateTime;
 import java.util.List;
 
 import javax.ws.rs.client.WebTarget;
@@ -24,6 +25,7 @@ public class VersionClientIT {
         VersionDTO versionDTO = new VersionDTO();
         versionDTO.setVersion("1.0.2");
         versionDTO.setName("jQAssistant JEE Plugin");
+        versionDTO.setUpdatedAt(ZonedDateTime.now());
         FileDTO fileDTO = new FileDTO();
         fileDTO.setFileName("pom.xml");
         versionDTO.setContainsFiles(List.of(fileDTO));
@@ -40,8 +42,7 @@ public class VersionClientIT {
                 .path("1.0.0");
             try (Response response = versionTarget.request(MediaType.APPLICATION_JSON_TYPE)
                 .put(json(versionDTO))) {
-                assertThat(response.getStatus())
-                    .isEqualTo(OK.getStatusCode());
+                assertThat(response.getStatus()).isEqualTo(OK.getStatusCode());
             }
         }
 
