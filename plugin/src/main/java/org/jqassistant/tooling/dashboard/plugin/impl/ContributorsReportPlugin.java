@@ -77,8 +77,7 @@ public class ContributorsReportPlugin implements ReportPlugin {
     private void publishContributors(Result<? extends ExecutableRule> result) throws ReportException {
         log.info("Publishing contributors to dashboard at '{}' (owner='{}', project='{}').", url, owner, project);
         ClientBuilder clientBuilder = ClientBuilder.newBuilder()
-            .register(JacksonJsonProvider.class)
-            .register(ObjectMapperContextResolver.class);
+            .register(JacksonJsonProvider.class);
 
         if (!sslValidation) {
             log.warn("SSL validation is disabled.");
