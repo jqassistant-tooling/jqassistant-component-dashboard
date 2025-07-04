@@ -10,9 +10,13 @@ import javax.net.ssl.X509TrustManager;
 import javax.ws.rs.client.*;
 import javax.ws.rs.ext.Provider;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import static com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS;
 
 /**
  * Represents a client for the REST API of the dashboard service.
@@ -29,9 +33,10 @@ public class RESTClient implements AutoCloseable {
     private WebTarget target;
 
     public RESTClient(String url, String apiKey, boolean sslValidation) {
+        ObjectMapper mapper = getObjectMapper();
+
         ClientBuilder clientBuilder = ClientBuilder.newBuilder()
-            .register(JacksonJsonProvider.class)
-            .register(ObjectMapperContextResolver.class)
+            .register(new JacksonJsonProvider(mapper))
             .register(new AuthenticationRequestFilter(apiKey));
 
         if (!sslValidation) {
@@ -54,6 +59,13 @@ public class RESTClient implements AutoCloseable {
      */
     public WebTarget target() {
         return target;
+    }
+
+    private static ObjectMapper getObjectMapper() {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+        mapper.configure(WRITE_DATES_AS_TIMESTAMPS, false);
+        return mapper;
     }
 
     private SSLContext getNoopSSLContext() {
