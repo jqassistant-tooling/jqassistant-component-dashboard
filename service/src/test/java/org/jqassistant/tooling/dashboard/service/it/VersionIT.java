@@ -26,9 +26,6 @@ public class VersionIT {
     private ComponentService componentService;
 
     @Autowired
-    private ContributorService contributorService;
-
-    @Autowired
     private VersionService versionService;
 
     @Test
@@ -43,12 +40,6 @@ public class VersionIT {
             version.setUpdatedAt(ZonedDateTime.now());
             return version;
         });
-        contributorService.setContributors(projectKey, "jqassistant-jee-plugin", List.of(() -> {
-            Contributor contributor = contributorService.resolve("max.mustermann@example.com");
-            contributor.setName("Max Mustermann");
-            contributor.setEmail("max.mustermann@example.com");
-            return contributor;
-        }));
 
         // then
         ComponentRepository.ComponentSummary componentSummary = componentService.find(projectKey, "jqassistant-jee-plugin");

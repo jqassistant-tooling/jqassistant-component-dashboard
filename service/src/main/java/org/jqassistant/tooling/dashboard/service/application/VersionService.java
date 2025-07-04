@@ -33,6 +33,7 @@ public class VersionService {
         Version latestVersion = component.getLatestVersion();
         if (latestVersion == null || latestVersion.getUpdatedAt()
             .isBefore(version.getUpdatedAt())) {
+            log.info("Updating latest version of component {} to {}.", componentId, versionId);
             component.setLatestVersion(version);
         }
         log.info("Updated project '{}' component '{}' with version '{}'", projectKey, component.getName(), version.getVersion());
