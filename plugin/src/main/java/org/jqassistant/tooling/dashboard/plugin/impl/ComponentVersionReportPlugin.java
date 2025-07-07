@@ -37,7 +37,7 @@ public class ComponentVersionReportPlugin implements ReportPlugin {
     public static final String PROPERTY_DASHBOARD_SSL_VALIDATION = "dashboard.ssl-validation";
 
     private static final String CONCEPT_ID = "jqassistant-dashboard:ComponentVersionReport";
-    private static final String COLUMN_COMPONENT = "Component";
+    public static final String COLUMN_COMPONENT = "Component";
     private static final String COLUMN_VERSION = "Version";
 
     private static final String AUTH_TOKEN_HEADER_NAME = "X-API-KEY";
