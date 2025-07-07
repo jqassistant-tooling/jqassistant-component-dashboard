@@ -57,5 +57,7 @@ jobs:
               "username": "${{ github.actor }}",
               "password": "${{ secrets.GITHUB_TOKEN }}"
             }]
+      - name: build-service-and-dependencies
+        run: mvn compile -am -pl :jqassistant-dashboard-service
       - name: build-image
-        run: mvn compile jib:build -f service/pom.xml -Ddashboard.image.registry=ghcr.io/${{ github.repository_owner }} -Ddashboard.image.repository=jqassistant-component-dashboard -Pproduction
+        run: mvn jib:build -pl :jqassistant-dashboard-service -Ddashboard.image.registry=ghcr.io/${{ github.repository_owner }} -Ddashboard.image.repository=jqassistant-component-dashboard -Pproduction
