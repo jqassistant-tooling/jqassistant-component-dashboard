@@ -22,6 +22,7 @@ import org.jqassistant.tooling.dashboard.api.dto.ContributorDTO;
 import org.jqassistant.tooling.dashboard.plugin.api.model.Component;
 import org.jqassistant.tooling.dashboard.plugin.api.model.Contributor;
 import org.jqassistant.tooling.dashboard.plugin.impl.mapper.ContributorMapper;
+import org.jqassistant.tooling.dashboard.rest.client.RESTClient;
 
 import static java.lang.Boolean.parseBoolean;
 import static java.net.URLEncoder.encode;
@@ -62,10 +63,12 @@ public class ContributorsReportPlugin implements ReportPlugin {
     @Override
     public void setResult(Result<? extends ExecutableRule> result) throws ReportException {
         ExecutableRule<?> rule = result.getRule();
-        if (!rule.getId().equals(CONCEPT_ID)) {
+        if (!rule.getId()
+            .equals(CONCEPT_ID)) {
             throw new ReportException("The rule id is not " + CONCEPT_ID);
         }
-        if (!result.getStatus().equals(Result.Status.SUCCESS)) {
+        if (!result.getStatus()
+            .equals(Result.Status.SUCCESS)) {
             log.warn("The concept '{}' returned status {}, report will not be published.", rule.getId(), result.getStatus());
         } else if (url == null || owner == null || project == null || apiKey == null) {
             log.info("Dashboard URL, owner, project or API key not configured, skipping.");
@@ -132,11 +135,17 @@ public class ContributorsReportPlugin implements ReportPlugin {
 
     private SSLContext getNoopSSLContext() throws ReportException {
         HttpsURLConnection.setDefaultHostnameVerifier((hostname, session) -> true);
-        TrustManager[] noopTrustManager = new TrustManager[] {
+        TrustManager[] noopTrustManager = new TrustManager[]{
             new X509TrustManager() {
-                public X509Certificate[] getAcceptedIssuers() { return null; }
-                public void checkClientTrusted(X509Certificate[] certs, String authType) {}
-                public void checkServerTrusted(X509Certificate[] certs, String authType) {}
+                public X509Certificate[] getAcceptedIssuers() {
+                    return null;
+                }
+
+                public void checkClientTrusted(X509Certificate[] certs, String authType) {
+                }
+
+                public void checkServerTrusted(X509Certificate[] certs, String authType) {
+                }
             }
         };
         try {
@@ -156,5 +165,46 @@ public class ContributorsReportPlugin implements ReportPlugin {
         }
         return column;
     }
-}
 
+
+    /// ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    private void publishContributors2(Result<? extends ExecutableRule> result) throws ReportException {
+        if (url == null || owner == null || project == null || apiKey == null) {
+            log.warn("Dashboard URL, owner, project or API key not configured, skipping.");
+        }else {
+            log.info("Publishing contributors to dashboard at '{}' (owner='{}', project='{}').", url, owner, project);
+            try (RESTClient restClient = new RESTClient(url, apiKey, sslValidation)) {
+                WebTarget apiTarget = restClient.target()
+                    .path("api")
+                    .path("rest")
+                    .path("v1")
+                    .path(owner)
+                    .path(project)
+                    .path("contributors"); // ?
+
+                for (Row row : result.getRows()) {
+                    Column<Component> componentColumn = getColumn(row, COLUMN_COMPONENT);
+                    Column<Contributor> contributorColumn = getColumn(row, COLUMN_CONTRIBUTOR);
+                    publishContributor(componentColumn, contributorColumn, apiTarget);
+                }
+            }
+        }
+    }
+
+
+    private void publishContributor(Column<Component> componentColumn, Column<Contributor> contributorColumn, WebTarget apiTarget) {
+        Contributor contributor = contributorColumn.getValue();
+        ContributorDTO contributorDTO = ContributorMapper.MAPPER.toDTO(contributor);
+        Component component = componentColumn.getValue();
+        WebTarget contributorTarget = apiTarget.path(encode(component.getId(), UTF_8))
+            .path("contributors")
+            .path(encode(contributor.getName(), UTF_8));
+        try (Response put = contributorTarget.request(MediaType.APPLICATION_JSON_TYPE)
+            .post(json(contributorDTO))) {
+            log.info("Component '{}' contributor '{}' published to '{}' (status={}).",
+                component.getId(), contributor.getName(), contributorTarget.getUri(), put.getStatus());
+        }
+    }
+}
