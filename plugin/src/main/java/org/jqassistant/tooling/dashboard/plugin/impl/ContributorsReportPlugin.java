@@ -79,17 +79,9 @@ public class ContributorsReportPlugin implements ReportPlugin {
 
     private void publishContributors(Result<? extends ExecutableRule> result) throws ReportException {
         log.info("Publishing contributors to dashboard at '{}' (owner='{}', project='{}').", url, owner, project);
-        ClientBuilder clientBuilder = ClientBuilder.newBuilder()
-            .register(JacksonJsonProvider.class);
 
-        if (!sslValidation) {
-            log.warn("SSL validation is disabled.");
-            clientBuilder.sslContext(getNoopSSLContext());
-        }
-
-        Client client = clientBuilder.build();
-        try {
-            WebTarget baseTarget = client.target(url)
+        try (RESTClient restClient = new RESTClient(url, apiKey, sslValidation)) {
+            WebTarget target = restClient.target()
                 .path("api")
                 .path("rest")
                 .path("v1")
@@ -115,7 +107,7 @@ public class ContributorsReportPlugin implements ReportPlugin {
                 String componentId = entry.getKey();
                 List<ContributorDTO> contributors = entry.getValue();
 
-                WebTarget apiTarget = baseTarget
+                WebTarget apiTarget = target
                     .path(encode(componentId, UTF_8))
                     .path("contributors");
 
@@ -127,35 +119,9 @@ public class ContributorsReportPlugin implements ReportPlugin {
                         contributors.size(), componentId, response.getStatus());
                 }
             }
-
-        } finally {
-            client.close();
         }
     }
 
-    private SSLContext getNoopSSLContext() throws ReportException {
-        HttpsURLConnection.setDefaultHostnameVerifier((hostname, session) -> true);
-        TrustManager[] noopTrustManager = new TrustManager[]{
-            new X509TrustManager() {
-                public X509Certificate[] getAcceptedIssuers() {
-                    return null;
-                }
-
-                public void checkClientTrusted(X509Certificate[] certs, String authType) {
-                }
-
-                public void checkServerTrusted(X509Certificate[] certs, String authType) {
-                }
-            }
-        };
-        try {
-            SSLContext sc = SSLContext.getInstance("ssl");
-            sc.init(null, noopTrustManager, null);
-            return sc;
-        } catch (GeneralSecurityException e) {
-            throw new ReportException("Cannot initialize NOOP SSL context", e);
-        }
-    }
 
     @SuppressWarnings("unchecked")
     private static <T> Column<T> getColumn(Row row, String columnName) throws ReportException {
@@ -166,45 +132,4 @@ public class ContributorsReportPlugin implements ReportPlugin {
         return column;
     }
 
-
-    /// ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-    private void publishContributors2(Result<? extends ExecutableRule> result) throws ReportException {
-        if (url == null || owner == null || project == null || apiKey == null) {
-            log.warn("Dashboard URL, owner, project or API key not configured, skipping.");
-        }else {
-            log.info("Publishing contributors to dashboard at '{}' (owner='{}', project='{}').", url, owner, project);
-            try (RESTClient restClient = new RESTClient(url, apiKey, sslValidation)) {
-                WebTarget apiTarget = restClient.target()
-                    .path("api")
-                    .path("rest")
-                    .path("v1")
-                    .path(owner)
-                    .path(project)
-                    .path("contributors"); // ?
-
-                for (Row row : result.getRows()) {
-                    Column<Component> componentColumn = getColumn(row, COLUMN_COMPONENT);
-                    Column<Contributor> contributorColumn = getColumn(row, COLUMN_CONTRIBUTOR);
-                    publishContributor(componentColumn, contributorColumn, apiTarget);
-                }
-            }
-        }
-    }
-
-
-    private void publishContributor(Column<Component> componentColumn, Column<Contributor> contributorColumn, WebTarget apiTarget) {
-        Contributor contributor = contributorColumn.getValue();
-        ContributorDTO contributorDTO = ContributorMapper.MAPPER.toDTO(contributor);
-        Component component = componentColumn.getValue();
-        WebTarget contributorTarget = apiTarget.path(encode(component.getId(), UTF_8))
-            .path("contributors")
-            .path(encode(contributor.getName(), UTF_8));
-        try (Response put = contributorTarget.request(MediaType.APPLICATION_JSON_TYPE)
-            .post(json(contributorDTO))) {
-            log.info("Component '{}' contributor '{}' published to '{}' (status={}).",
-                component.getId(), contributor.getName(), contributorTarget.getUri(), put.getStatus());
-        }
-    }
 }
