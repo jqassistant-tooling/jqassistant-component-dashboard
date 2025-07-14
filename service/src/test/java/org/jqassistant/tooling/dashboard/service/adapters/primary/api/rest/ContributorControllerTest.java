@@ -1,12 +1,8 @@
 package org.jqassistant.tooling.dashboard.service.adapters.primary.api.rest;
 
 import org.jqassistant.tooling.dashboard.api.dto.ContributorDTO;
-import org.jqassistant.tooling.dashboard.api.dto.VersionDTO;
 import org.jqassistant.tooling.dashboard.service.adapters.primary.api.rest.mapper.ContributorMapper;
-import org.jqassistant.tooling.dashboard.service.adapters.primary.api.rest.mapper.VersionMapper;
 import org.jqassistant.tooling.dashboard.service.application.ContributorService;
-import org.jqassistant.tooling.dashboard.service.application.EntitySupplier;
-import org.jqassistant.tooling.dashboard.service.application.VersionService;
 import org.jqassistant.tooling.dashboard.service.application.model.*;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
