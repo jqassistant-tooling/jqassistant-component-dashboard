@@ -1,19 +1,18 @@
 package org.jqassistant.tooling.dashboard.service.application;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.jqassistant.tooling.dashboard.service.application.model.Component;
 import org.jqassistant.tooling.dashboard.service.application.model.Contributor;
 import org.jqassistant.tooling.dashboard.service.application.model.Project;
 import org.jqassistant.tooling.dashboard.service.application.model.ProjectKey;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 @Service
-
+@Slf4j
 @RequiredArgsConstructor
 public class ContributorService {
 
@@ -32,6 +31,8 @@ public class ContributorService {
         for (Contributor contributor : contributors) {
                contributor.getContributedTo().add(component);
         }
+        log.info("Set {} contributors to component '{}' in project '{}'",
+            contributors, component.getName(), projectKey);
     }
 
     public Stream<Contributor> getContributors(ProjectKey projectKey, String componentId) {
