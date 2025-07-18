@@ -1,6 +1,7 @@
 package org.jqassistant.tooling.dashboard.service;
 
 import org.jqassistant.tooling.dashboard.service.application.model.Component;
+import org.jqassistant.tooling.dashboard.service.application.model.Contributor;
 import org.jqassistant.tooling.dashboard.service.application.model.Project;
 import org.jqassistant.tooling.dashboard.service.application.model.Version;
 
@@ -31,6 +32,14 @@ public class ModelFixture {
             .when(version)
             .getVersion();
         return version;
+    }
+
+    public static Contributor stubContributor(String identString) {
+        Contributor contributor = mock(Contributor.class);
+        lenient().doReturn(identString)
+            .when(contributor)
+            .getIdentString();
+        return contributor;
     }
 
 }
