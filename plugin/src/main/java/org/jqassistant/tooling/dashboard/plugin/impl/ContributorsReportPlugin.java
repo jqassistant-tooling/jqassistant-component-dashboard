@@ -1,12 +1,6 @@
 package org.jqassistant.tooling.dashboard.plugin.impl;
 
-import java.security.GeneralSecurityException;
-import java.security.cert.X509Certificate;
 import java.util.*;
-import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
 import javax.ws.rs.client.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -14,13 +8,12 @@ import javax.ws.rs.core.Response;
 import com.buschmais.jqassistant.core.report.api.*;
 import com.buschmais.jqassistant.core.report.api.model.*;
 import com.buschmais.jqassistant.core.rule.api.model.ExecutableRule;
-import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 
+import de.kontext_e.jqassistant.plugin.git.store.descriptor.GitAuthorDescriptor;
 import lombok.extern.slf4j.Slf4j;
 
 import org.jqassistant.tooling.dashboard.api.dto.ContributorDTO;
 import org.jqassistant.tooling.dashboard.plugin.api.model.Component;
-import org.jqassistant.tooling.dashboard.plugin.api.model.Contributor;
 import org.jqassistant.tooling.dashboard.plugin.impl.mapper.ContributorMapper;
 import org.jqassistant.tooling.dashboard.rest.client.RESTClient;
 
@@ -36,12 +29,11 @@ public class ContributorsReportPlugin implements ReportPlugin {
     public static final String PROPERTY_DASHBOARD_OWNER = "dashboard.owner";
     public static final String PROPERTY_DASHBOARD_PROJECT = "dashboard.project";
     public static final String PROPERTY_DASHBOARD_API_KEY = "dashboard.api-key";
-    public static final String PROPERTY_DASHBOARD_COMPONENT = "dashboard.component";
     public static final String PROPERTY_DASHBOARD_SSL_VALIDATION = "dashboard.ssl-validation";
 
-    private static final String CONCEPT_ID = "jqassistant-dashboard:Gitcontributors";
-    private static final String COLUMN_COMPONENT = "component";
-    private static final String COLUMN_CONTRIBUTOR = "contributor";
+    private static final String CONCEPT_ID = "jqassistant-dashboard-git:ComponentContributorsReport";
+    private static final String COLUMN_COMPONENT = "Component";
+    private static final String COLUMN_AUTHOR = "Author";
 
     private static final String AUTH_TOKEN_HEADER_NAME = "X-API-KEY";
 
@@ -92,10 +84,10 @@ public class ContributorsReportPlugin implements ReportPlugin {
 
             for (Row row : result.getRows()) {
                 Column<Component> componentColumn = getColumn(row, COLUMN_COMPONENT);
-                Column<Contributor> contributorColumn = getColumn(row, COLUMN_CONTRIBUTOR);
+                Column<GitAuthorDescriptor> authorColumn = getColumn(row, COLUMN_AUTHOR);
 
                 Component comp = componentColumn.getValue();
-                Contributor contrib = contributorColumn.getValue();
+                GitAuthorDescriptor contrib = authorColumn.getValue();
                 ContributorDTO dto = ContributorMapper.MAPPER.toDTO(contrib);
 
                 groupedContributors
