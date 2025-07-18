@@ -22,6 +22,7 @@ import org.jqassistant.tooling.dashboard.api.dto.ContributorDTO;
 import org.jqassistant.tooling.dashboard.plugin.api.model.Component;
 import org.jqassistant.tooling.dashboard.plugin.api.model.Contributor;
 import org.jqassistant.tooling.dashboard.plugin.impl.mapper.ContributorMapper;
+import org.jqassistant.tooling.dashboard.rest.client.RESTClient;
 
 import static java.lang.Boolean.parseBoolean;
 import static java.net.URLEncoder.encode;
@@ -62,10 +63,12 @@ public class ContributorsReportPlugin implements ReportPlugin {
     @Override
     public void setResult(Result<? extends ExecutableRule> result) throws ReportException {
         ExecutableRule<?> rule = result.getRule();
-        if (!rule.getId().equals(CONCEPT_ID)) {
+        if (!rule.getId()
+            .equals(CONCEPT_ID)) {
             throw new ReportException("The rule id is not " + CONCEPT_ID);
         }
-        if (!result.getStatus().equals(Result.Status.SUCCESS)) {
+        if (!result.getStatus()
+            .equals(Result.Status.SUCCESS)) {
             log.warn("The concept '{}' returned status {}, report will not be published.", rule.getId(), result.getStatus());
         } else if (url == null || owner == null || project == null || apiKey == null) {
             log.info("Dashboard URL, owner, project or API key not configured, skipping.");
@@ -76,17 +79,9 @@ public class ContributorsReportPlugin implements ReportPlugin {
 
     private void publishContributors(Result<? extends ExecutableRule> result) throws ReportException {
         log.info("Publishing contributors to dashboard at '{}' (owner='{}', project='{}').", url, owner, project);
-        ClientBuilder clientBuilder = ClientBuilder.newBuilder()
-            .register(JacksonJsonProvider.class);
 
-        if (!sslValidation) {
-            log.warn("SSL validation is disabled.");
-            clientBuilder.sslContext(getNoopSSLContext());
-        }
-
-        Client client = clientBuilder.build();
-        try {
-            WebTarget baseTarget = client.target(url)
+        try (RESTClient restClient = new RESTClient(url, apiKey, sslValidation)) {
+            WebTarget target = restClient.target()
                 .path("api")
                 .path("rest")
                 .path("v1")
@@ -112,7 +107,7 @@ public class ContributorsReportPlugin implements ReportPlugin {
                 String componentId = entry.getKey();
                 List<ContributorDTO> contributors = entry.getValue();
 
-                WebTarget apiTarget = baseTarget
+                WebTarget apiTarget = target
                     .path(encode(componentId, UTF_8))
                     .path("contributors");
 
@@ -124,29 +119,9 @@ public class ContributorsReportPlugin implements ReportPlugin {
                         contributors.size(), componentId, response.getStatus());
                 }
             }
-
-        } finally {
-            client.close();
         }
     }
 
-    private SSLContext getNoopSSLContext() throws ReportException {
-        HttpsURLConnection.setDefaultHostnameVerifier((hostname, session) -> true);
-        TrustManager[] noopTrustManager = new TrustManager[] {
-            new X509TrustManager() {
-                public X509Certificate[] getAcceptedIssuers() { return null; }
-                public void checkClientTrusted(X509Certificate[] certs, String authType) {}
-                public void checkServerTrusted(X509Certificate[] certs, String authType) {}
-            }
-        };
-        try {
-            SSLContext sc = SSLContext.getInstance("ssl");
-            sc.init(null, noopTrustManager, null);
-            return sc;
-        } catch (GeneralSecurityException e) {
-            throw new ReportException("Cannot initialize NOOP SSL context", e);
-        }
-    }
 
     @SuppressWarnings("unchecked")
     private static <T> Column<T> getColumn(Row row, String columnName) throws ReportException {
@@ -156,5 +131,5 @@ public class ContributorsReportPlugin implements ReportPlugin {
         }
         return column;
     }
-}
 
+}
