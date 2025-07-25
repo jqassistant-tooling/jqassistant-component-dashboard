@@ -24,7 +24,11 @@ class Contributor {
   List<Component> contributedTo
 }
 
-class Version <<Root>> {
+class Contributions {
+  int commits
+}
+
+class Version {
   String name
   String url
   String description
@@ -52,5 +56,6 @@ Version      "1" --> "0..*" File : containsFiles
 File      "0..*" --> "0..*" Capability : providesCapabilities
 File      "0..*" --> "0..*" Capability : requiresCapabilities
 
-Contributor  "1..*" --> "1..* " Component : contributedTo
+Contributor      "1" --> "1..*" Contributions
+Contributions "1..*" --> "1" Component
 @enduml
