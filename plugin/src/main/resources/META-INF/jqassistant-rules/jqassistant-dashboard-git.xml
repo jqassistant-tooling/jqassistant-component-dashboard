@@ -9,7 +9,7 @@
         <cypher><![CDATA[
             MATCH
               (component:Dashboard:Component)-[:HAS_VERSION]->(version:Dashboard:Version)-[:CONTAINS_FILE]->(:File)-[:HAS_SOURCE_FILE]->(sourceFile:Git:File),
-              (author)-[:COMMITTED]->(commit:Commit)-[:CONTAINS_CHANGE]->(:Change)-[:MODIFIES]->(sourceFile)
+              (author:Author)-[:COMMITTED]->(commit:Commit)-[:CONTAINS_CHANGE]->(:Change)-[:MODIFIES]->(sourceFile)
             WITH
               component, author, count(distinct commit) as commits
             MERGE
@@ -21,9 +21,7 @@
             ORDER BY
               commits desc
         ]]></cypher>
-        <!--
-        <report type="ComponentContributorReport" />
-        -->
+        <report type="dashboard-git-component-contributors-report" />
     </concept>
 
     <concept id="jqassistant-dashboard-git:FileHasGitSourceFile">

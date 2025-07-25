@@ -20,5 +20,6 @@
     </rules>
     <report>
         <class id="dashboard-component-version-report">org.jqassistant.tooling.dashboard.plugin.impl.ComponentVersionReportPlugin</class>
+        <class id="dashboard-git-component-contributors-report">org.jqassistant.tooling.dashboard.plugin.impl.ContributorsReportPlugin</class>
     </report>
 </jqassistant-plugin>
