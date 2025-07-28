@@ -1,8 +1,8 @@
 
 package org.jqassistant.tooling.dashboard.plugin.impl.mapper;
 
+import de.kontext_e.jqassistant.plugin.git.store.descriptor.GitAuthorDescriptor;
 import org.jqassistant.tooling.dashboard.api.dto.ContributorDTO;
-import org.jqassistant.tooling.dashboard.plugin.api.model.Contributor;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -13,10 +13,7 @@ public interface ContributorMapper {
 
     ContributorMapper MAPPER = Mappers.getMapper(ContributorMapper.class);
 
-    @BeanMapping(ignoreUnmappedSourceProperties = { "contributedComponents" })
-    @Mapping(target = "ident" , ignore = true)
-    @Mapping(target = "email" , ignore = true)
-    ContributorDTO toDTO(Contributor contributor);
+    @BeanMapping(ignoreUnmappedSourceProperties = { "id", "delegate", "commits" })
+    @Mapping(target = "ident", source = "identString")
+    ContributorDTO toDTO(GitAuthorDescriptor contributor);
 }
-
-// was ist beanmapping ?

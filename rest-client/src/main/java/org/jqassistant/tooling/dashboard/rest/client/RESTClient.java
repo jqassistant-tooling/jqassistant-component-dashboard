@@ -28,9 +28,9 @@ public class RESTClient implements AutoCloseable {
 
     private static final String AUTH_TOKEN_HEADER_NAME = "X-API-KEY";
 
-    private Client client;
+    private final Client client;
 
-    private WebTarget target;
+    private final WebTarget target;
 
     public RESTClient(String url, String apiKey, boolean sslValidation) {
         ObjectMapper mapper = getObjectMapper();
@@ -97,15 +97,14 @@ public class RESTClient implements AutoCloseable {
 
     @Provider
     @RequiredArgsConstructor
-    public class AuthenticationRequestFilter implements ClientRequestFilter {
+    public static class AuthenticationRequestFilter implements ClientRequestFilter {
 
         private final String apiKey;
 
         @Override
         public void filter(ClientRequestContext clientRequestContext) {
             clientRequestContext.getHeaders()
-                .add(AUTH_TOKEN_HEADER_NAME, apiKey);
-
+                .putSingle(AUTH_TOKEN_HEADER_NAME, apiKey);
         }
     }
 }
