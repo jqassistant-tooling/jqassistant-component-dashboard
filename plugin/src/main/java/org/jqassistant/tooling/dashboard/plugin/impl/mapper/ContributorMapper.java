@@ -15,8 +15,5 @@ public interface ContributorMapper {
 
     @BeanMapping(ignoreUnmappedSourceProperties = { "id", "delegate", "commits" })
     @Mapping(target = "ident", source = "identString")
-
     ContributorDTO toDTO(GitAuthorDescriptor contributor);
 }
-
-// was ist beanmapping ?

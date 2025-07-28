@@ -87,8 +87,8 @@ public class ContributorsReportPlugin implements ReportPlugin {
                 Column<GitAuthorDescriptor> authorColumn = getColumn(row, COLUMN_AUTHOR);
 
                 Component comp = componentColumn.getValue();
-                GitAuthorDescriptor contrib = authorColumn.getValue();
-                ContributorDTO dto = ContributorMapper.MAPPER.toDTO(contrib);
+                GitAuthorDescriptor author = authorColumn.getValue();
+                ContributorDTO dto = ContributorMapper.MAPPER.toDTO(author);
 
                 groupedContributors
                     .computeIfAbsent(comp.getId(), k -> new ArrayList<>())
