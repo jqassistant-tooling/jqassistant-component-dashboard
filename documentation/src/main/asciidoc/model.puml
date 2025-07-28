@@ -21,11 +21,12 @@ class Contributor {
   String name
   String email
   String identString
-  List<Component> contributedTo
+  Set<Contributions> contributed
 }
 
 class Contributions {
   int commits
+  Component toComponent
 }
 
 class Version {
@@ -56,6 +57,6 @@ Version      "1" --> "0..*" File : containsFiles
 File      "0..*" --> "0..*" Capability : providesCapabilities
 File      "0..*" --> "0..*" Capability : requiresCapabilities
 
-Contributor      "1" --> "1..*" Contributions
-Contributions "1..*" --> "1" Component
+Contributor      "1" --> "1..*" Contributions : contributed
+Contributions "1..*" --> "1" Component : toComponent
 @enduml
