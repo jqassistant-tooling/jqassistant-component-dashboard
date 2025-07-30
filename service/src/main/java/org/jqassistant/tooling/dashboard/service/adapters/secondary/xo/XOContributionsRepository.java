@@ -1,4 +1,4 @@
 package org.jqassistant.tooling.dashboard.service.adapters.secondary.xo;
 
-public interface XOContributionsRepository extends Object {
+public interface XOContributionsRepository {
 }
