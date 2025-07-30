@@ -1,4 +1,4 @@
-package org.jqassistant.tooling.dashboard.plugin.api.model;
+package org.jqassistant.tooling.dashboard.service.application.model;
 
 import com.buschmais.xo.neo4j.api.annotation.Label;
 import com.buschmais.xo.neo4j.api.annotation.Relation;

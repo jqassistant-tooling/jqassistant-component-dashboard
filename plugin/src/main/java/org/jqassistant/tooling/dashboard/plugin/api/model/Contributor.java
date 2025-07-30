@@ -3,7 +3,8 @@ package org.jqassistant.tooling.dashboard.plugin.api.model;
 import java.util.Set;
 
 import com.buschmais.xo.neo4j.api.annotation.Label;
-import com.buschmais.xo.neo4j.api.annotation.Relation.Outgoing;
+import com.buschmais.xo.neo4j.api.annotation.Relation;
+import org.jqassistant.tooling.dashboard.service.application.model.Contributions;
 
 @Label
 public interface Contributor {
@@ -17,6 +18,6 @@ public interface Contributor {
     String getIdentString();
     void setIdentString(String identString);
 
-    @Outgoing
+    @Relation("CONTRIBUTED")
     Set<Contributions> getContributed();
 }

@@ -23,7 +23,6 @@ import liquibase.ext.neo4j.database.jdbc.Neo4jDriver;
 import liquibase.resource.ClassLoaderResourceAccessor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.jqassistant.tooling.dashboard.plugin.api.model.Contributions;
 import org.jqassistant.tooling.dashboard.service.adapters.secondary.xo.*;
 import org.jqassistant.tooling.dashboard.service.application.model.*;
 import org.springframework.context.annotation.Bean;
