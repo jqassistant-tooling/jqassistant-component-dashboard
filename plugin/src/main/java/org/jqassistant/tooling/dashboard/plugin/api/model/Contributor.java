@@ -1,10 +1,10 @@
 package org.jqassistant.tooling.dashboard.plugin.api.model;
 
-import java.util.Set;
+import java.util.List;
 
 import com.buschmais.xo.neo4j.api.annotation.Label;
 import com.buschmais.xo.neo4j.api.annotation.Relation;
-import org.jqassistant.tooling.dashboard.service.application.model.Contributions;
+import com.buschmais.xo.neo4j.api.annotation.Relation.Outgoing;
 
 @Label
 public interface Contributor {
@@ -12,12 +12,12 @@ public interface Contributor {
     String getName();
     void setName(String name);
 
-    String getEmail();
-    void setEmail(String email);
+    @Comitted
+    @Outgoing
+    List<Component> getContributedComponents();
 
-    String getIdentString();
-    void setIdentString(String identString);
+    @Relation("Comitted")
+    @interface Comitted {
+    }
 
-    @Relation("CONTRIBUTED")
-    Set<Contributions> getContributed();
 }
