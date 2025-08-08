@@ -19,4 +19,5 @@ public interface Contributor {
     @Relation("Comitted")
     @interface Comitted {
     }
+
 }
