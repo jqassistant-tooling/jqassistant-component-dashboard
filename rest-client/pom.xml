@@ -13,7 +13,7 @@
     <artifactId>jqassistant-dashboard-rest-client</artifactId>
 
     <properties>
-        <jersey-client.version>2.47</jersey-client.version>
+        <jersey-client.version>3.1.11</jersey-client.version>
     </properties>
 
     <dependencies>
