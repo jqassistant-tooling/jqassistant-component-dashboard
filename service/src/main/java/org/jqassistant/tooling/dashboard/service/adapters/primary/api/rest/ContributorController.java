@@ -33,9 +33,11 @@ public class ContributorController {
 
 
 
+        //TODO: liste contributions in den contributions mapper geben
         //List<Contributor> contributors = contributorDTOs.stream().map(contributorDTO -> contributorMapper.toContributor(contributorDTO)).toList();
         List<Contributor> contributors = Collections.emptyList();
 
+        //TODO: umbauen zu contributions
         contributorService.setContributors(projectKey, componentId, contributors);
 
     }

@@ -8,6 +8,7 @@ import org.jqassistant.tooling.dashboard.service.application.model.Contributions
 @Repository
 public interface XOContributionsRepository {
 
+    //TODO: component und contributor über gemeinsame contribution verknüpfen mit MERGE, ident = Contributor, componentID = Component
     @ResultOf
     @Cypher("""
         // TODO
