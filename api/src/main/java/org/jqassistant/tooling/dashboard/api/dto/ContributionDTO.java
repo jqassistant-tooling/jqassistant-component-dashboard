@@ -7,6 +7,6 @@ import lombok.*;
 @Setter
 @ToString
 public class ContributionDTO {
-    private int commits;
+    private long commits;
     private ContributorDTO contributor;
 }

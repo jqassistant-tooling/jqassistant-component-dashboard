@@ -15,7 +15,7 @@ import java.util.List;
 
 @RestController
 @Transactional
-@RequestMapping("/api/rest/v1/{owner}/{project}/{component}/contributors")
+@RequestMapping("/api/rest/v1/{owner}/{project}/{component}/contributions")
 @RequiredArgsConstructor
 public class ContributorController {
 
@@ -27,7 +27,7 @@ public class ContributorController {
                                @PathVariable(name = "project") String projectId,
                                @PathVariable(name = "component") String componentId,
                                @RequestBody List<ContributionDTO> contributionDTOs) {
-
+        System.out.println(contributionDTOs);
         ProjectKey projectKey = new ProjectKey(ownerId, projectId);
 
 

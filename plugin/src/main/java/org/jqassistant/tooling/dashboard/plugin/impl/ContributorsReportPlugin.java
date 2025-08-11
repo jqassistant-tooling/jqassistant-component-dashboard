@@ -12,6 +12,7 @@ import com.buschmais.jqassistant.core.rule.api.model.ExecutableRule;
 import de.kontext_e.jqassistant.plugin.git.store.descriptor.GitAuthorDescriptor;
 import lombok.extern.slf4j.Slf4j;
 
+import org.jqassistant.tooling.dashboard.api.dto.ContributionDTO;
 import org.jqassistant.tooling.dashboard.api.dto.ContributorDTO;
 import org.jqassistant.tooling.dashboard.plugin.api.model.Component;
 import org.jqassistant.tooling.dashboard.plugin.impl.mapper.ContributorMapper;
@@ -34,8 +35,10 @@ public class ContributorsReportPlugin implements ReportPlugin {
     private static final String CONCEPT_ID = "jqassistant-dashboard-git:ComponentContributorsReport";
     private static final String COLUMN_COMPONENT = "Component";
     private static final String COLUMN_AUTHOR = "Author";
+    private static final String COLUMN_COMMITS = "Commits";
 
     private static final String AUTH_TOKEN_HEADER_NAME = "X-API-KEY";
+
 
     private String url;
     private String owner;
@@ -80,35 +83,38 @@ public class ContributorsReportPlugin implements ReportPlugin {
                 .path(owner)
                 .path(project);
 
-            Map<String, List<ContributorDTO>> groupedContributors = new HashMap<>();
+            Map<String, List<ContributionDTO>> groupedContributors = new HashMap<>();
 
             for (Row row : result.getRows()) {
                 Column<Component> componentColumn = getColumn(row, COLUMN_COMPONENT);
                 Column<GitAuthorDescriptor> authorColumn = getColumn(row, COLUMN_AUTHOR);
+                Column<Long> commitsColumn = getColumn(row, COLUMN_COMMITS);
 
                 Component comp = componentColumn.getValue();
                 GitAuthorDescriptor author = authorColumn.getValue();
-                ContributorDTO dto = ContributorMapper.MAPPER.toDTO(author);
+                ContributorDTO contributorDTO = ContributorMapper.MAPPER.toDTO(author);
+                ContributionDTO contributionDTO = new ContributionDTO(commitsColumn.getValue(), contributorDTO);
+
 
                 groupedContributors
                     .computeIfAbsent(comp.getId(), k -> new ArrayList<>())
-                    .add(dto);
+                    .add(contributionDTO);
             }
 
-            for (Map.Entry<String, List<ContributorDTO>> entry : groupedContributors.entrySet()) {
+            for (Map.Entry<String, List<ContributionDTO>> entry : groupedContributors.entrySet()) {
                 String componentId = entry.getKey();
-                List<ContributorDTO> contributors = entry.getValue();
+                List<ContributionDTO> contributionDTOS = entry.getValue();
 
                 WebTarget apiTarget = target
                     .path(encode(componentId, UTF_8))
-                    .path("contributors");
+                    .path("contributions");
 
                 try (Response response = apiTarget.request(MediaType.APPLICATION_JSON_TYPE)
                     .header(AUTH_TOKEN_HEADER_NAME, apiKey)
-                    .put(json(contributors))) {
+                    .put(json(contributionDTOS))) {
 
-                    log.info("Published {} contributors for component '{}', status: {}",
-                        contributors.size(), componentId, response.getStatus());
+                    log.info("Published {} contributions for component '{}', status: {}",
+                        contributionDTOS.size(), componentId, response.getStatus());
                 }
             }
         }

@@ -8,8 +8,8 @@ import com.buschmais.xo.neo4j.api.annotation.Relation.Outgoing;
 @Label("Contributions")
 public interface Contributions {
 
-    int getCommits();
-    void setCommits(int commits);
+    long getCommits();
+    void setCommits(long commits);
 
     @ToComponent
     @Outgoing
