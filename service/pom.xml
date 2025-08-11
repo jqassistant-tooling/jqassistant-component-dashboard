@@ -14,7 +14,7 @@
 
     <properties>
         <spring-boot.version>3.5.4</spring-boot.version>
-        <vaadin.version>24.8.4</vaadin.version>
+        <vaadin.version>24.8.5</vaadin.version>
         <jib-maven-plugin.version>3.4.6</jib-maven-plugin.version>
         <xo.version>2.6.4</xo.version>
         <liquibase.version>4.33.0</liquibase.version>
