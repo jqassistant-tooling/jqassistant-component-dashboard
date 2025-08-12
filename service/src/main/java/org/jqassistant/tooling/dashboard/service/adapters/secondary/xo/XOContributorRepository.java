@@ -4,6 +4,7 @@ import com.buschmais.xo.api.annotation.Repository;
 import com.buschmais.xo.api.annotation.ResultOf;
 import com.buschmais.xo.neo4j.api.annotation.Cypher;
 
+import org.jqassistant.tooling.dashboard.service.application.ContributorSummary;
 import org.jqassistant.tooling.dashboard.service.application.model.Contributor;
 import org.jqassistant.tooling.dashboard.service.application.model.Project;
 
@@ -15,22 +16,26 @@ public interface XOContributorRepository {
     @ResultOf
     @Cypher("""
         MATCH
-          (project:Project)-[:CONTAINS_COMPONENT]->(component:Component{name:$componentId})<-[:CONTRIBUTED_TO]-(contributor:Contributor)
+          (project:Project)-[:CONTAINS_COMPONENT]->(component:Component {id:$componentId})
+            <-[:toComponent]-(contrib:Contributions)<-[:contributed]-(contributor:Contributor)
         WHERE
-          id(project)=$project
+          id(project) = $project
         RETURN
-          contributor
+          contributor AS contributor,
+          contrib AS contributions
         ORDER BY
           contributor.identString
         """)
-    Stream<Contributor> getContributors(Project project, String componentId);
+    Stream<ContributorSummary> getContributorSummaries(Project project, String componentId);
 
     @ResultOf
     @Cypher("""
         MERGE
-          (contributor:Contributor{identString:$identString})
+          (contributor:Contributor {identString:$identString})
         RETURN
           contributor
         """)
     Contributor resolveContributor(String identString);
+
+    Stream<Contributor> getContributors(Project project, String componentId);
 }

@@ -35,9 +35,13 @@ public class ContributorService {
             contributors, component.getName(), projectKey);
     }
 
-    public Stream<Contributor> getContributors(ProjectKey projectKey, String componentId) {
+    public Stream<ContributorSummary> getContributorSummaries(ProjectKey projectKey, String componentId) {
         Project project = projectService.find(projectKey);
-        return contributorRepository.getContributors(project,componentId);
+        return contributorRepository.getContributorSummaries(project, componentId);
     }
 
+
+    public Stream<Contributor> getContributors(ProjectKey projectKey, String componentId) {
+        return null;
+    }
 }
