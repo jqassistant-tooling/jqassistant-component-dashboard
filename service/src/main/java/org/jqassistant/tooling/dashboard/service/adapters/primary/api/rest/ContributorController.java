@@ -3,8 +3,11 @@ package org.jqassistant.tooling.dashboard.service.adapters.primary.api.rest;
 import lombok.RequiredArgsConstructor;
 import org.jqassistant.tooling.dashboard.api.dto.ContributionDTO;
 import org.jqassistant.tooling.dashboard.api.dto.ContributorDTO;
+import org.jqassistant.tooling.dashboard.service.adapters.primary.api.rest.mapper.ContributionMapper;
 import org.jqassistant.tooling.dashboard.service.adapters.primary.api.rest.mapper.ContributorMapper;
+import org.jqassistant.tooling.dashboard.service.application.ContributionService;
 import org.jqassistant.tooling.dashboard.service.application.ContributorService;
+import org.jqassistant.tooling.dashboard.service.application.model.Contributions;
 import org.jqassistant.tooling.dashboard.service.application.model.Contributor;
 import org.jqassistant.tooling.dashboard.service.application.model.ProjectKey;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +24,8 @@ public class ContributorController {
 
     private final ContributorService contributorService;
     private final ContributorMapper contributorMapper;
+    private final ContributionMapper contributionMapper;
+    private final ContributionService contributionService;
 
     @PutMapping
     public void createOrUpdate(@PathVariable(name = "owner") String ownerId,
@@ -33,12 +38,13 @@ public class ContributorController {
 
 
 
-        //TODO: liste contributions in den contributions mapper geben
-        //List<Contributor> contributors = contributorDTOs.stream().map(contributorDTO -> contributorMapper.toContributor(contributorDTO)).toList();
-        List<Contributor> contributors = Collections.emptyList();
 
-        //TODO: umbauen zu contributions
-        contributorService.setContributors(projectKey, componentId, contributors);
+        //List<Contributor> contributors = contributorDTOs.stream().map(contributorDTO -> contributorMapper.toContributor(contributorDTO)).toList();
+        //List<Contributor> contributors = Collections.emptyList();
+        List<Contributions> contributions = contributionDTOs.stream().map(contributionDTO -> contributionMapper.toContribution(contributionDTO, projectKey, componentId)).toList();
+
+        //contributorService.setContributors(projectKey, componentId, contributors);
+        contributionService.setContribution(projectKey, componentId, contributions);
 
     }
 }
