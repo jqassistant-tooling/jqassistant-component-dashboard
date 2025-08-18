@@ -16,10 +16,6 @@ public class ContributorRepositoryImpl extends AbstractXORepository<XOContributo
         super(xoManager, XOContributorRepository.class);
     }
 
-    @Override
-    public Stream<Contributor> getContributors(Project project, String componentId) {
-        return getXORepository().getContributors(project, componentId);
-    }
 
     @Override
     public Contributor resolveContributor(String identString) {
@@ -28,6 +24,6 @@ public class ContributorRepositoryImpl extends AbstractXORepository<XOContributo
 
     @Override
     public Stream<ContributorSummary> getContributorSummaries(Project project, String componentId) {
-        return Stream.empty();
+        return getXORepository().getContributorSummaries(project, componentId);
     }
 }

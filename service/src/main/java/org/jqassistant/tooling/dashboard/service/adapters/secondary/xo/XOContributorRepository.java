@@ -16,8 +16,8 @@ public interface XOContributorRepository {
     @ResultOf
     @Cypher("""
         MATCH
-          (project:Project)-[:CONTAINS_COMPONENT]->(component:Component {id:$componentId})
-            <-[:toComponent]-(contrib:Contributions)<-[:contributed]-(contributor:Contributor)
+          (project:Project)-[:CONTAINS_COMPONENT]->(component:Component {name:$componentId})
+            <-[:TO_COMPONENT]-(contrib:Contributions)<-[:CONTRIBUTED]-(contributor:Contributor)
         WHERE
           id(project) = $project
         RETURN
@@ -37,5 +37,4 @@ public interface XOContributorRepository {
         """)
     Contributor resolveContributor(String identString);
 
-    Stream<Contributor> getContributors(Project project, String componentId);
 }

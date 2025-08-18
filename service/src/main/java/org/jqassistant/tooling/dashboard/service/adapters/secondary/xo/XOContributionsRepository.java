@@ -8,9 +8,20 @@ import org.jqassistant.tooling.dashboard.service.application.model.Contributions
 @Repository
 public interface XOContributionsRepository {
 
+
+    //TODO checken ob Contributions eigene ID brauchen, bzw componentID und contributor-ident
     @ResultOf
     @Cypher("""
-        // TODO
+            MERGE
+              (project:Project{name: $project})
+            MERGE
+              (project)-[:CONTAINS_COMPONENT]->(comp:Component{name: $componentID})
+            MERGE
+              (c:Contributor {identString:$ident})
+            MERGE
+              (c)-[:CONTRIBUTED]->(contrib:Contributions)-[:TO_COMPONENT]->(comp)
+            RETURN
+              contrib
         """)
-    Contributions resolveContribution(String ident, String componentID);
+    Contributions resolveContribution(String project, String componentID, String ident);
 }

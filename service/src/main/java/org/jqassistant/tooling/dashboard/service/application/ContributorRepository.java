@@ -9,8 +9,6 @@ import java.util.stream.Stream;
 @Repository
 public interface ContributorRepository {
 
-    Stream<Contributor> getContributors(Project project, String componentId);
-
     Contributor resolveContributor(String identString);
 
     Stream<ContributorSummary> getContributorSummaries(Project project, String componentId);

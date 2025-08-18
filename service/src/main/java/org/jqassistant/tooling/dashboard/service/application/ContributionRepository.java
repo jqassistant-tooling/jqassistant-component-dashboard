@@ -2,11 +2,12 @@ package org.jqassistant.tooling.dashboard.service.application;
 
 import com.buschmais.xo.api.annotation.Repository;
 import org.jqassistant.tooling.dashboard.service.application.model.Contributions;
+import org.jqassistant.tooling.dashboard.service.application.model.ProjectKey;
 
-@Repository
+
 public interface ContributionRepository {
 
     //Stream getContributions() ?
 
-    Contributions resolveContribution(String ident, String componentID);
+    public Contributions resolveContribution(ProjectKey projectKey, String componentID, String ident);
 }
