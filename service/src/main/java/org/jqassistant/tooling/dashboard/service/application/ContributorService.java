@@ -2,13 +2,9 @@ package org.jqassistant.tooling.dashboard.service.application;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.jqassistant.tooling.dashboard.service.application.model.Component;
 import org.jqassistant.tooling.dashboard.service.application.model.Contributor;
-import org.jqassistant.tooling.dashboard.service.application.model.Project;
 import org.jqassistant.tooling.dashboard.service.application.model.ProjectKey;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 import java.util.stream.Stream;
 
 @Service
@@ -24,10 +20,7 @@ public class ContributorService {
         return contributorRepository.resolveContributor(identString);
     }
 
-
-    public Stream<ContributorSummary> getContributorSummaries(ProjectKey projectKey, String componentId) {
-        Project project = projectService.find(projectKey);
-        return contributorRepository.getContributorSummaries(project, componentId);
+    public Stream<ContributionSummary> getContributionSummaries(ProjectKey projectKey, String componentId) {
+        return null;
     }
-
 }

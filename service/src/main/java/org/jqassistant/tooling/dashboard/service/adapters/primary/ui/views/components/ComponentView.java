@@ -15,8 +15,8 @@ import org.jqassistant.tooling.dashboard.service.adapters.primary.ui.shared.Dash
 import org.jqassistant.tooling.dashboard.service.adapters.primary.ui.shared.RouteParametersHelper;
 import org.jqassistant.tooling.dashboard.service.application.ComponentRepository;
 import org.jqassistant.tooling.dashboard.service.application.ComponentService;
+import org.jqassistant.tooling.dashboard.service.application.ContributionSummary;
 import org.jqassistant.tooling.dashboard.service.application.ContributorService;
-import org.jqassistant.tooling.dashboard.service.application.ContributorSummary;
 import org.jqassistant.tooling.dashboard.service.application.model.Contributions;
 import org.jqassistant.tooling.dashboard.service.application.model.Contributor;
 import org.jqassistant.tooling.dashboard.service.application.model.ProjectKey;
@@ -73,7 +73,7 @@ public class ComponentView extends VerticalLayout implements BeforeEnterObserver
             description.setText(latestVersion.getDescription());
 
             // Contributors statisch hinzufügen
-            Stream<ContributorSummary> summaries = contributorService.getContributorSummaries(projectKey, componentId);
+            Stream<ContributionSummary> summaries = contributorService.getContributionSummaries(projectKey, componentId);
             summaries.map(summary -> {
                     Contributor contributor = summary.getContributor();
                     Contributions contributions = summary.getContributions();

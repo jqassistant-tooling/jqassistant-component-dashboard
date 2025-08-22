@@ -11,5 +11,5 @@ public interface ContributorRepository {
 
     Contributor resolveContributor(String identString);
 
-    Stream<ContributorSummary> getContributorSummaries(Project project, String componentId);
+    Stream<ContributionSummary> getContributionSummaries(Project project, String componentId);
 }
