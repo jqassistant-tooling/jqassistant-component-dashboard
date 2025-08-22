@@ -61,7 +61,7 @@ public class XOConfiguration {
                 File.class, XOFileRepository.class, //
                 Capability.class, XOCapabilityRepository.class, //
                 Contributor.class, XOContributorRepository.class,
-                Contribution.class, XOContributionsRepository.class))
+                Contributions.class, XOContributionsRepository.class))
             .build();
         this.xoManagerFactory = new XOManagerFactoryImpl<>(xoUnit);
     }

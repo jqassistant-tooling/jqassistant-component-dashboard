@@ -1,11 +1,8 @@
 package org.jqassistant.tooling.dashboard.service.adapters.primary.api.rest;
 
 import org.jqassistant.tooling.dashboard.api.dto.ContributionDTO;
-import org.jqassistant.tooling.dashboard.api.dto.ContributorDTO;
 import org.jqassistant.tooling.dashboard.service.adapters.primary.api.rest.mapper.ContributionMapper;
-import org.jqassistant.tooling.dashboard.service.adapters.primary.api.rest.mapper.ContributorMapper;
 import org.jqassistant.tooling.dashboard.service.application.ContributionService;
-import org.jqassistant.tooling.dashboard.service.application.ContributorService;
 import org.jqassistant.tooling.dashboard.service.application.model.*;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -30,7 +27,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(ContributionController.class)
-class ContributorControllerTest {
+class ContributionsControllerTest {
 
     @MockitoBean
     private ContributionService contributionService;
@@ -46,8 +43,8 @@ class ContributorControllerTest {
 
     @Test
     void setContributors() throws Exception {
-        Contribution contribution = stubContribution();
-        doReturn(contribution).when(contributionMapper)
+        Contributions contributions = stubContribution();
+        doReturn(contributions).when(contributionMapper)
             .toContribution(any(ContributionDTO.class), any(ProjectKey.class), anyString());
 
 
@@ -64,7 +61,7 @@ class ContributorControllerTest {
 
 
         verify(contributionMapper).toContribution(any(ContributionDTO.class), any(ProjectKey.class), eq("test"));
-        verify(contributionService).setContribution(projectKeyArgumentCaptor.capture(), eq("test"), eq(List.of(contribution)));
+        verify(contributionService).setContribution(projectKeyArgumentCaptor.capture(), eq("test"), eq(List.of(contributions)));
         ProjectKey projectKey = projectKeyArgumentCaptor.getValue();
         assertThat(projectKey.getOwner()).isEqualTo("jqassistant");
         assertThat(projectKey.getProject()).isEqualTo("plugins");

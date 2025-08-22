@@ -39,8 +39,8 @@ public class ModelFixture {
         return contributor;
     }
 
-    public static Contribution stubContribution() {
-        return mock(Contribution.class);
+    public static Contributions stubContribution() {
+        return mock(Contributions.class);
     }
 
 }

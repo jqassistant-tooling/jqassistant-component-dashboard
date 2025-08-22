@@ -18,6 +18,6 @@ public interface Contributor {
     void setIdentString(String identString);
 
     @Relation("CONTRIBUTED")
-    Set<Contribution> getContributedTo();
+    Set<Contributions> getContributedTo();
 }
 

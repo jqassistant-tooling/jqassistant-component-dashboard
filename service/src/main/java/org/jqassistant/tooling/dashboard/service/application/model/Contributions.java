@@ -6,7 +6,7 @@ import com.buschmais.xo.neo4j.api.annotation.Relation.Incoming;
 import com.buschmais.xo.neo4j.api.annotation.Relation.Outgoing;
 
 @Label("Contributions")
-public interface Contribution {
+public interface Contributions {
 
     long getCommits();
     void setCommits(long commits);
