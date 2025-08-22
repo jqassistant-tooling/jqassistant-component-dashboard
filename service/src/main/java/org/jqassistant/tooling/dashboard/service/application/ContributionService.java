@@ -8,7 +8,6 @@ import org.jqassistant.tooling.dashboard.service.application.model.Component;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Stream;
 
 @Service
 @Slf4j
