@@ -3,7 +3,7 @@ package org.jqassistant.tooling.dashboard.service.adapters.secondary.xo;
 import com.buschmais.xo.api.annotation.Repository;
 import com.buschmais.xo.api.annotation.ResultOf;
 import com.buschmais.xo.neo4j.api.annotation.Cypher;
-import org.jqassistant.tooling.dashboard.service.application.model.Contributions;
+import org.jqassistant.tooling.dashboard.service.application.model.Contribution;
 
 @Repository
 public interface XOContributionsRepository {
@@ -23,5 +23,5 @@ public interface XOContributionsRepository {
             RETURN
               contrib
         """)
-    Contributions resolveContribution(String project, String componentID, String ident);
+    Contribution resolveContribution(String project, String componentID, String ident);
 }

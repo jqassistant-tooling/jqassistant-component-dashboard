@@ -1,7 +1,10 @@
 package org.jqassistant.tooling.dashboard.service.adapters.primary.api.rest;
 
+import org.jqassistant.tooling.dashboard.api.dto.ContributionDTO;
 import org.jqassistant.tooling.dashboard.api.dto.ContributorDTO;
+import org.jqassistant.tooling.dashboard.service.adapters.primary.api.rest.mapper.ContributionMapper;
 import org.jqassistant.tooling.dashboard.service.adapters.primary.api.rest.mapper.ContributorMapper;
+import org.jqassistant.tooling.dashboard.service.application.ContributionService;
 import org.jqassistant.tooling.dashboard.service.application.ContributorService;
 import org.jqassistant.tooling.dashboard.service.application.model.*;
 import org.junit.jupiter.api.Test;
@@ -26,14 +29,14 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(ContributorController.class)
+@WebMvcTest(ContributionController.class)
 class ContributorControllerTest {
 
     @MockitoBean
-    private ContributorService contributorService;
+    private ContributionService contributionService;
 
     @MockitoBean
-    private ContributorMapper contributorMapper;
+    private ContributionMapper contributionMapper;
 
     @Captor
     private ArgumentCaptor<ProjectKey> projectKeyArgumentCaptor;
@@ -43,11 +46,12 @@ class ContributorControllerTest {
 
     @Test
     void setContributors() throws Exception {
-        Contributor contributor = stubContributor("MaxMustermann");
-        doReturn(contributor).when(contributorMapper)
-            .toContributor(any(ContributorDTO.class));
+        Contribution contribution = stubContribution();
+        doReturn(contribution).when(contributionMapper)
+            .toContribution(any(ContributionDTO.class), any(ProjectKey.class), anyString());
 
-        mockMvc.perform(put("/api/rest/v1/jqassistant/plugins/test/contributors").content("""
+
+        mockMvc.perform(put("/api/rest/v1/jqassistant/plugins/test/contributions").content("""
                     [
                       { "ident": "MaxMustermann" }
                     ]"
@@ -58,12 +62,13 @@ class ContributorControllerTest {
                 .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
 
-        //TODO an contribution anpassen
-        //verify(contributorService).setContributors(projectKeyArgumentCaptor.capture(), eq("test"), eq(List.of(contributor)));
+
+        verify(contributionMapper).toContribution(any(ContributionDTO.class), any(ProjectKey.class), eq("test"));
+        verify(contributionService).setContribution(projectKeyArgumentCaptor.capture(), eq("test"), eq(List.of(contribution)));
         ProjectKey projectKey = projectKeyArgumentCaptor.getValue();
         assertThat(projectKey.getOwner()).isEqualTo("jqassistant");
         assertThat(projectKey.getProject()).isEqualTo("plugins");
-        verify(contributorMapper).toContributor(any(ContributorDTO.class));
+
     }
 
 }
