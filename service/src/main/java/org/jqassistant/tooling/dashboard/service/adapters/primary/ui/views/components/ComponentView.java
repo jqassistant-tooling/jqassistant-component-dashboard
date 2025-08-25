@@ -1,7 +1,5 @@
 package org.jqassistant.tooling.dashboard.service.adapters.primary.ui.views.components;
 
-import java.util.stream.Stream;
-
 import com.vaadin.flow.component.html.*;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.BeforeEnterEvent;
@@ -15,14 +13,16 @@ import org.jqassistant.tooling.dashboard.service.adapters.primary.ui.shared.Dash
 import org.jqassistant.tooling.dashboard.service.adapters.primary.ui.shared.RouteParametersHelper;
 import org.jqassistant.tooling.dashboard.service.application.ComponentRepository;
 import org.jqassistant.tooling.dashboard.service.application.ComponentService;
+import org.jqassistant.tooling.dashboard.service.application.ContributionService;
 import org.jqassistant.tooling.dashboard.service.application.ContributionSummary;
-import org.jqassistant.tooling.dashboard.service.application.ContributorService;
 import org.jqassistant.tooling.dashboard.service.application.model.Contributions;
 import org.jqassistant.tooling.dashboard.service.application.model.Contributor;
 import org.jqassistant.tooling.dashboard.service.application.model.ProjectKey;
 import org.jqassistant.tooling.dashboard.service.application.model.Version;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
+
+import java.util.stream.Stream;
 
 import static org.jqassistant.tooling.dashboard.service.adapters.primary.ui.views.projects.ProjectKeyHelper.getProjectKey;
 
@@ -37,7 +37,7 @@ public class ComponentView extends VerticalLayout implements BeforeEnterObserver
 
     private final transient ComponentService componentService;
 
-    private final transient ContributorService contributorService;
+    private final transient ContributionService contributionService;
 
     private final TransactionTemplate transactionTemplate;
 
@@ -72,8 +72,7 @@ public class ComponentView extends VerticalLayout implements BeforeEnterObserver
             }
             description.setText(latestVersion.getDescription());
 
-            // Contributors statisch hinzufügen
-            Stream<ContributionSummary> summaries = contributorService.getContributionSummaries(projectKey, componentId);
+            Stream<ContributionSummary> summaries = contributionService.getContributionSummaries(projectKey, componentId);
             summaries.map(summary -> {
                     Contributor contributor = summary.getContributor();
                     Contributions contributions = summary.getContributions();
