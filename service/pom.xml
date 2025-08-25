@@ -22,7 +22,7 @@
         <dashboard.image.registry>localhost:32000</dashboard.image.registry>
         <dashboard.image.repository>jqassistant-component-dashboard</dashboard.image.repository>
         <dashboard.image.allowInsecureRegistries>true</dashboard.image.allowInsecureRegistries>
-        <springdoc-openapi-starter-webmvc-ui.version>2.8.10</springdoc-openapi-starter-webmvc-ui.version>
+        <springdoc-openapi-starter-webmvc-ui.version>2.8.11</springdoc-openapi-starter-webmvc-ui.version>
     </properties>
 
     <repositories>
