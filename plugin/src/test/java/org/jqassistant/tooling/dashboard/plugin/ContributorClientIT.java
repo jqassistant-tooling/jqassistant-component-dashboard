@@ -25,7 +25,7 @@ public class ContributorClientIT {
         contributorDTO.setName("Tobias Krakau");
         contributorDTO.setEmail("tobias.krakau.berlin@gmail.com");
         contributorDTO.setIdent("tobiaskrakau");
-        ContributionDTO contributionDTO = new ContributionDTO(11, contributorDTO);
+        ContributionDTO contributionDTO = new ContributionDTO(12, contributorDTO);
 
 
         try (RESTClient restClient = new RESTClient("http://localhost:8080", "secret_api_token", true)) {
