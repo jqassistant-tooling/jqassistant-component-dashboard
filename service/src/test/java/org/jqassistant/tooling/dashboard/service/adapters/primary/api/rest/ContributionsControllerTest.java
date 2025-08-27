@@ -61,7 +61,7 @@ class ContributionsControllerTest {
 
 
         verify(contributionMapper).toContribution(any(ContributionDTO.class), any(ProjectKey.class), eq("test"));
-        verify(contributionService).setContribution(projectKeyArgumentCaptor.capture(), eq("test"), eq(List.of(contributions)));
+        verify(contributionService).setContributions(projectKeyArgumentCaptor.capture(), eq("test"), eq(List.of(contributions)));
         ProjectKey projectKey = projectKeyArgumentCaptor.getValue();
         assertThat(projectKey.getOwner()).isEqualTo("jqassistant");
         assertThat(projectKey.getProject()).isEqualTo("plugins");

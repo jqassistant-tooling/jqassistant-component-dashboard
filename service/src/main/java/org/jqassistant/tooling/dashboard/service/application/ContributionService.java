@@ -27,7 +27,7 @@ public class ContributionService {
     }
 
 
-    public void setContribution(ProjectKey projectKey, String componentId, List<Contributions> contributions) {
+    public void setContributions(ProjectKey projectKey, String componentId, List<Contributions> contributions) {
         Component component = componentService.resolve(projectKey, componentId);
         for (Contributions contribution: contributions) {
             contribution.setToComponent(component);

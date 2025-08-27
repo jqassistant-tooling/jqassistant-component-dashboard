@@ -27,17 +27,8 @@ public class ContributionController {
                                @RequestBody List<ContributionDTO> contributionDTOs) {
         System.out.println(contributionDTOs);
         ProjectKey projectKey = new ProjectKey(ownerId, projectId);
-
-
-
-
-
-        //List<Contributor> contributors = contributorDTOs.stream().map(contributorDTO -> contributorMapper.toContributor(contributorDTO)).toList();
-        //List<Contributor> contributors = Collections.emptyList();
         List<Contributions> contributions = contributionDTOs.stream().map(contributionDTO -> contributionMapper.toContribution(contributionDTO, projectKey, componentId)).toList();
-
-        //contributorService.setContributors(projectKey, componentId, contributors);
-        contributionService.setContribution(projectKey, componentId, contributions);
+        contributionService.setContributions(projectKey, componentId, contributions);
 
     }
 }
