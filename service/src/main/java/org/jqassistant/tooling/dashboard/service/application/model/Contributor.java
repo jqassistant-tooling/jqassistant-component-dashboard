@@ -17,7 +17,7 @@ public interface Contributor {
     String getIdentString();
     void setIdentString(String identString);
 
-    @Relation("CONTRIBUTED_TO")
-    Set<Component> getContributedTo();
+    @Relation("CONTRIBUTED")
+    Set<Contributions> getContributedTo();
 }
 
