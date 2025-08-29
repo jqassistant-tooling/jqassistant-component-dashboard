@@ -26,14 +26,6 @@ public class ContributorService {
         return contributorRepository.resolveContributor(identString);
     }
 
-    public void setContributors(ProjectKey projectKey, String componentId, List<Contributor> contributors) {
-        Component component = componentService.resolve(projectKey, componentId);
-        for (Contributor contributor : contributors) {
-               contributor.getContributedTo().add(component);
-        }
-        log.info("Set {} contributors to component '{}' in project '{}'",
-            contributors, component.getName(), projectKey);
-    }
 
     public Stream<Contributor> getContributors(ProjectKey projectKey, String componentId) {
         Project project = projectService.find(projectKey);
