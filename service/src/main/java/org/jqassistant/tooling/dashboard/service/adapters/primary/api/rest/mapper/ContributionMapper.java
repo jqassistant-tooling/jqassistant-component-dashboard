@@ -5,7 +5,10 @@ import org.jqassistant.tooling.dashboard.api.dto.ContributionDTO;
 import org.jqassistant.tooling.dashboard.service.application.ContributionService;
 import org.jqassistant.tooling.dashboard.service.application.model.Contributions;
 import org.jqassistant.tooling.dashboard.service.application.model.ProjectKey;
-import org.mapstruct.*;
+import org.mapstruct.Context;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.ObjectFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @Mapper(uses = ContributorMapper.class)

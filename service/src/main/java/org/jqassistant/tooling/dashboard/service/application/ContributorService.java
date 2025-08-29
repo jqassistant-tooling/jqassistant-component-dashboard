@@ -10,8 +10,6 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class ContributorService {
 
-    private final ProjectService projectService;
-
     private final ContributorRepository contributorRepository;
 
     public Contributor resolve(String identString) {

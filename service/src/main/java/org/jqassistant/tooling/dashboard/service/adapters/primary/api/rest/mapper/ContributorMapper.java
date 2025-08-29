@@ -1,10 +1,12 @@
 package org.jqassistant.tooling.dashboard.service.adapters.primary.api.rest.mapper;
 
 import org.jqassistant.tooling.dashboard.api.dto.ContributorDTO;
-import org.jqassistant.tooling.dashboard.api.dto.VersionDTO;
 import org.jqassistant.tooling.dashboard.service.application.ContributorService;
-import org.jqassistant.tooling.dashboard.service.application.model.*;
-import org.mapstruct.*;
+import org.jqassistant.tooling.dashboard.service.application.model.Contributor;
+import org.mapstruct.BeanMapping;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.ObjectFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @Mapper(uses = FileMapper.class)
