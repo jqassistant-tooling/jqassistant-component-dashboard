@@ -1,9 +1,6 @@
 package org.jqassistant.tooling.dashboard.service;
 
-import org.jqassistant.tooling.dashboard.service.application.model.Component;
-import org.jqassistant.tooling.dashboard.service.application.model.Contributor;
-import org.jqassistant.tooling.dashboard.service.application.model.Project;
-import org.jqassistant.tooling.dashboard.service.application.model.Version;
+import org.jqassistant.tooling.dashboard.service.application.model.*;
 
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
@@ -40,6 +37,10 @@ public class ModelFixture {
             .when(contributor)
             .getIdentString();
         return contributor;
+    }
+
+    public static Contributions stubContribution() {
+        return mock(Contributions.class);
     }
 
 }
