@@ -6,6 +6,7 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.jqassistant.tooling.dashboard.api.dto.ContributionDTO;
 import org.jqassistant.tooling.dashboard.api.dto.ContributorDTO;
 import org.jqassistant.tooling.dashboard.rest.client.RESTClient;
 import org.junit.jupiter.api.Disabled;
@@ -24,6 +25,7 @@ public class ContributorClientIT {
         contributorDTO.setName("Tobias Krakau");
         contributorDTO.setEmail("tobias.krakau.berlin@gmail.com");
         contributorDTO.setIdent("tobiaskrakau");
+        ContributionDTO contributionDTO = new ContributionDTO(12, contributorDTO);
 
 
         try (RESTClient restClient = new RESTClient("http://localhost:8080", "secret_api_token", true)) {
@@ -34,9 +36,9 @@ public class ContributorClientIT {
                 .path("jqassistant")
                 .path("plugins")
                 .path("jqassistant-jee-plugin")
-                .path("contributors");
+                .path("contributions");
             try (Response response = versionTarget.request(MediaType.APPLICATION_JSON_TYPE)
-                .put(json(List.of(contributorDTO)))) {
+                .put(json(List.of(contributionDTO)))) {
                 assertThat(response.getStatus()).isEqualTo(OK.getStatusCode());
             }
         }
