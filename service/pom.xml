@@ -18,7 +18,7 @@
         <jib-maven-plugin.version>3.4.6</jib-maven-plugin.version>
         <xo.version>2.6.4</xo.version>
         <liquibase.version>5.0.0</liquibase.version>
-        <jmolecules.version>1.10.0</jmolecules.version>
+        <jmolecules.version>2.0.0</jmolecules.version>
         <dashboard.image.registry>localhost:32000</dashboard.image.registry>
         <dashboard.image.repository>jqassistant-component-dashboard</dashboard.image.repository>
         <dashboard.image.allowInsecureRegistries>true</dashboard.image.allowInsecureRegistries>
