@@ -15,7 +15,7 @@
     <properties>
         <spring-boot.version>3.5.7</spring-boot.version>
         <vaadin.version>24.9.5</vaadin.version>
-        <jib-maven-plugin.version>3.4.6</jib-maven-plugin.version>
+        <jib-maven-plugin.version>3.5.0</jib-maven-plugin.version>
         <xo.version>2.6.4</xo.version>
         <liquibase.version>5.0.0</liquibase.version>
         <jmolecules.version>1.10.0</jmolecules.version>
