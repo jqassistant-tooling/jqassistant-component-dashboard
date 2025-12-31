@@ -13,10 +13,10 @@
     <artifactId>jqassistant-dashboard-service</artifactId>
 
     <properties>
-        <spring-boot.version>3.5.7</spring-boot.version>
+        <spring-boot.version>4.0.1</spring-boot.version>
         <vaadin.version>25.0.2</vaadin.version>
         <jib-maven-plugin.version>3.5.1</jib-maven-plugin.version>
-        <xo.version>2.6.4</xo.version>
+        <xo.version>2.6.5</xo.version>
         <liquibase.version>5.0.0</liquibase.version>
         <jmolecules.version>2.0.1</jmolecules.version>
         <dashboard.image.registry>localhost:32000</dashboard.image.registry>
@@ -74,6 +74,11 @@
         <dependency>
             <groupId>com.vaadin</groupId>
             <artifactId>vaadin-spring-boot-starter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.vaadin</groupId>
+            <artifactId>vaadin-dev</artifactId>
+            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -135,6 +140,11 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-webmvc-test</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
