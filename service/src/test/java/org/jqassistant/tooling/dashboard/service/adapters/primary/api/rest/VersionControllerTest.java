@@ -9,10 +9,12 @@ import org.jqassistant.tooling.dashboard.service.application.model.Project;
 import org.jqassistant.tooling.dashboard.service.application.model.ProjectKey;
 import org.jqassistant.tooling.dashboard.service.application.model.Version;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -22,12 +24,11 @@ import static org.jqassistant.tooling.dashboard.service.ModelFixture.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(VersionController.class)
+@ExtendWith(MockitoExtension.class)
 class VersionControllerTest {
 
     @MockitoBean
@@ -61,11 +62,9 @@ class VersionControllerTest {
         mockMvc.perform(put("/api/rest/v1/jqassistant/plugins/test/versions/1.0.0").content("""
                     {
                         "version": "1.0.0"
-                    }"
+                    }
                     """)
                 .contentType(MediaType.APPLICATION_JSON)
-                .with(csrf())
-                .with(user("user").roles("USER"))
                 .accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk());
 
