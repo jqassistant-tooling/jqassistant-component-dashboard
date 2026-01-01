@@ -1,13 +1,10 @@
 package org.jqassistant.tooling.dashboard.service.it;
 
 import java.time.ZonedDateTime;
-import java.util.List;
 
 import org.jqassistant.tooling.dashboard.service.application.ComponentRepository;
 import org.jqassistant.tooling.dashboard.service.application.ComponentService;
-import org.jqassistant.tooling.dashboard.service.application.ContributorService;
 import org.jqassistant.tooling.dashboard.service.application.VersionService;
-import org.jqassistant.tooling.dashboard.service.application.model.Contributor;
 import org.jqassistant.tooling.dashboard.service.application.model.ProjectKey;
 import org.jqassistant.tooling.dashboard.service.application.model.Version;
 import org.junit.jupiter.api.Disabled;
