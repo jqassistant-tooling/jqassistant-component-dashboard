@@ -14,7 +14,6 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.web.filter.GenericFilterBean;
 
 @Slf4j
@@ -23,18 +22,16 @@ public class AuthenticationFilter extends GenericFilterBean {
 
     public static final String AUTH_TOKEN_HEADER_NAME = "X-API-KEY";
 
-    private final RequestMatcher requestMatcher;
-
     private final RestApiProperties restApiProperties;
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain) throws IOException, ServletException {
-        if (request instanceof HttpServletRequest httpServletRequest && requestMatcher.matches(httpServletRequest)) {
+        if (request instanceof HttpServletRequest httpServletRequest) {
             String apiKey = httpServletRequest.getHeader(AUTH_TOKEN_HEADER_NAME);
             if (apiKey == null) {
                 throw new BadCredentialsException("API key is missing.");
             }
-            if (apiKey == null || !apiKey.equals(restApiProperties.getAuthToken())) {
+            if (!apiKey.equals(restApiProperties.getAuthToken())) {
                 throw new BadCredentialsException("API key is invalid.");
             }
             Authentication authentication = new ApiTokenAuthentication(apiKey, AuthorityUtils.NO_AUTHORITIES);
