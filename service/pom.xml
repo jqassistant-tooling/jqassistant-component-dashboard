@@ -16,7 +16,7 @@
         <spring-boot.version>4.0.1</spring-boot.version>
         <vaadin.version>25.0.3</vaadin.version>
         <jib-maven-plugin.version>3.5.1</jib-maven-plugin.version>
-        <xo.version>2.6.5</xo.version>
+        <xo.version>2.6.6</xo.version>
         <liquibase.version>5.0.0</liquibase.version>
         <jmolecules.version>2.0.1</jmolecules.version>
         <dashboard.image.registry>localhost:32000</dashboard.image.registry>
