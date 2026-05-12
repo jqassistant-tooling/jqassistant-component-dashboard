@@ -13,7 +13,7 @@
     <artifactId>jqassistant-dashboard-plugin</artifactId>
 
     <properties>
-        <jqassistant.plugin.git.version>2.4.0</jqassistant.plugin.git.version>
+        <jqassistant.plugin.git.version>2.4.1</jqassistant.plugin.git.version>
         <jersey-client.version>2.43</jersey-client.version>
     </properties>
 
