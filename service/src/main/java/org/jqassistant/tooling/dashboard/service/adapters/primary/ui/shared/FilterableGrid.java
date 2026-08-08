@@ -1,11 +1,5 @@
 package org.jqassistant.tooling.dashboard.service.adapters.primary.ui.shared;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
-
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.combobox.ComboBox;
@@ -22,6 +16,12 @@ import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.function.SerializableFunction;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+
 import static com.vaadin.flow.component.grid.GridVariant.*;
 
 public class FilterableGrid<T, F> {
@@ -31,7 +31,7 @@ public class FilterableGrid<T, F> {
     private final GridDataView<T> gridDataView;
     private final Grid<T> grid;
     private final HeaderRow headerRow;
-    private List<Consumer<F>> filterListeners = new ArrayList<>();
+    private final List<Consumer<F>> filterListeners = new ArrayList<>();
 
     public static <T, F> FilterableGrid<T, F> builder(Class<T> type, CallbackDataProvider<T, F> callbackDataProvider, F filter) {
         return new FilterableGrid<>(type, callbackDataProvider, filter);
