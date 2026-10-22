@@ -47,7 +47,7 @@ jobs:
           distribution: temurin
           java-version: "17"
           cache: 'maven'
-      - uses: s4u/maven-settings-action@v4.0.0
+      - uses: s4u/maven-settings-action@v4.1.0
         with:
           sonatypeSnapshots: true
           servers: |
